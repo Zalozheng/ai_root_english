@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "AI词根记忆 Pro",
+  "short_name": "airootenglish",
+  "version": "26.0.1",
+  "description": "专业级词汇解析引擎：支持 Ollama/API 双擎、独立词根保护与深度情景定制。",
+  "icons": {
+    "16": "icons/ui_16.png",
+    "24": "icons/ui_24.png",
+    "32": "icons/ui_32.png",
+    "64": "icons/ui_64.png",
+    "128": "icons/ui_128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tts",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AI词根记忆"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "description": "呼出 AI词汇解析引擎 (由用户自定义快捷键)"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "resources": [
+        "popup.html",
+        "popup.js",
+        "options.html",
+        "icons/*",
+        "js/*"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}
