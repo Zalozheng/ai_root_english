@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "AI词根记忆 Pro",
-  "short_name": "airootenglish",
+  "short_name": "AI词根记忆",
   "version": "26.0.1",
-  "description": "专业级词汇解析引擎：支持 Ollama/API 双擎、独立词根保护与深度情景定制。",
+  "description": "智能英语词汇解析工具：一键拆解词根词缀，结合 AI 生成记忆故事与情景例句，支持 Ollama 本地模型与云端 API 双模式，让每个单词深入脑海。",
   "icons": {
     "16": "icons/ui_16.png",
     "24": "icons/ui_24.png",
@@ -24,7 +24,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "AI词根记忆"
+    "default_title": "AI词根记忆 Pro"
   },
   "options_ui": {
     "page": "options.html",
@@ -47,7 +47,7 @@
   ],
   "commands": {
     "_execute_action": {
-      "description": "呼出 AI词汇解析引擎 (由用户自定义快捷键)"
+      "description": "呼出 AI 词汇解析面板（可在扩展快捷键设置中自定义）"
     }
   },
   "web_accessible_resources": [
