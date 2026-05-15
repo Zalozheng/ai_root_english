@@ -1,5 +1,7 @@
 # AI词根记忆 Pro (AI Root English)
 
+![Gemini_Generated_Image_jh0x60jh0x60jh0x](./assets/Gemini_Generated_Image_jh0x60jh0x60jh0x.png)
+
 ## 🌟 项目简介
 
 **AI词根记忆 Pro** 彻底颠覆了传统的死记硬背。它不仅是一个划词翻译工具，更是一个**本地化的私人英语词汇知识库**。
