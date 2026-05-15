@@ -58,7 +58,7 @@
 
 ### 方法一：从商店安装 (推荐)
 
-🎉 **Microsoft Edge Add-ons**：*(等待过审后填入你的商店链接)*
+🎉 **Microsoft Edge Add-ons**：*(edg浏览器直接搜索 :AI词根记忆)*
 
 ### 方法二：开发者模式手动安装
 
