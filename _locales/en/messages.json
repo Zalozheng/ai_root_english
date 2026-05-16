@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "AI Root Memory"
+  },
+  "extShortName": {
+    "message": "AI Root"
+  },
+  "extDescription": {
+    "message": "Smart English vocabulary tool: break down roots and affixes instantly, generate memory stories and example sentences with AI. Supports Ollama local models and cloud API."
+  },
+  "extCommand": {
+    "message": "Open AI vocabulary panel (customizable in extension shortcut settings)"
+  }
+}
