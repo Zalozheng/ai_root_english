@@ -211,6 +211,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 【新增：导入逻辑补全】
+    const importBtn = document.getElementById('import-btn');
+    const importFile = document.getElementById('import-file');
+    const importTarget = document.getElementById('import-target');
+
+    if (importBtn && importFile) {
+        // 1. 解决没弹窗问题
+        importBtn.onclick = () => importFile.click();
+        // 2. 解决导入逻辑问题
+        importFile.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (importTarget.value === "replace") {
+                        // 彻底清除并替换
+                        chrome.storage.local.get(null, (all) => {
+                            const keysToRemove = Object.keys(all).filter(k => k.startsWith("W:") || k.startsWith("R:"));
+                            chrome.storage.local.remove(keysToRemove, () => {
+                                chrome.storage.local.set(data, () => window.showStatus("✅ 替换成功", "#10b981"));
+                            });
+                        });
+                    } else {
+                        // 无损合并
+                        chrome.storage.local.set(data, () => window.showStatus("✅ 合并成功", "#10b981"));
+                    }
+                    importFile.value = ''; // 清空 input
+                } catch (err) {
+                    window.showStatus("❌ 导入失败：JSON 格式错误", "#ef4444");
+                }
+            };
+            reader.readAsText(file);
+        };
+    }
+
     if(document.getElementById('clear-all-data-btn')) {
         document.getElementById('clear-all-data-btn').addEventListener('click', () => {
           if(confirm("确定清空本地所有单词和词根故事吗？")) {
