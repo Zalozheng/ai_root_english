@@ -1,0 +1,111 @@
+{
+  "R:abl": {
+    "deep_origin": "来自拉丁语 -abilis，表示'可以被……的'，是英文里制造形容词的万能工厂，比如 readable、lovable。",
+    "derivatives": [
+      "capable",
+      "reliable",
+      "available"
+    ],
+    "lookup_count": 0,
+    "meaning": "能够……的",
+    "segment": "abl",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:prob": {
+    "deep_origin": "源自拉丁语 probare（证明、检验）。古罗马商人买马时要 prob 一下，看看这马靠不靠谱，所以 prob 自带'验证靠谱程度'的味道。",
+    "derivatives": [
+      "probe",
+      "prove",
+      "proof",
+      "probable",
+      "probability"
+    ],
+    "lookup_count": 0,
+    "meaning": "证明；测试",
+    "segment": "prob",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:y": {
+    "deep_origin": "古英语 -lice 演化而来，把形容词变成副词，相当于中文里的'地'。probable + ly = probably。",
+    "derivatives": [
+      "quickly",
+      "happily",
+      "really"
+    ],
+    "lookup_count": 0,
+    "meaning": "（副词后缀，由 -ly 简化）",
+    "segment": "y",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "W:probably": {
+    "display_breakdown": "prob.a.bly",
+    "lookup_count": 0,
+    "memory_lines": [
+      "1. 证明(`prob`) + 能够的(`abl`) + 地(`y`) → **probably**(很可能；大概)",
+      "",
+      "2. 💡 情景联想：收银员问'卡里钱够吗？'你笑：probably。",
+      "",
+      "3. It will probably rain tonight. (今晚很可能下雨。)"
+    ],
+    "memory_lines_map": {
+      "custom_custom": [
+        "1. 证明(`prob`) + 能够的(`abl`) + 地(`y`) → **probably**(很可能；大概)",
+        "",
+        "2. 💡 情景联想：收银员问'卡里钱够吗？'你笑：probably。",
+        "",
+        "3. It will probably rain tonight. (今晚很可能下雨。)"
+      ]
+    },
+    "noun_source": "probability (可能性)",
+    "parts": [
+      {
+        "deep_origin": "源自拉丁语 probare（证明、检验）。古罗马商人买马时要 prob 一下，看看这马靠不靠谱，所以 prob 自带'验证靠谱程度'的味道。",
+        "derivatives": [
+          "probe",
+          "prove",
+          "proof",
+          "probable",
+          "probability"
+        ],
+        "lookup_count": 0,
+        "meaning": "证明；测试",
+        "segment": "prob",
+        "type": "词根",
+        "updated_at": 1779329486131
+      },
+      {
+        "deep_origin": "来自拉丁语 -abilis，表示'可以被……的'，是英文里制造形容词的万能工厂，比如 readable、lovable。",
+        "derivatives": [
+          "capable",
+          "reliable",
+          "available"
+        ],
+        "lookup_count": 0,
+        "meaning": "能够……的",
+        "segment": "abl",
+        "type": "后缀",
+        "updated_at": 1779329486131
+      },
+      {
+        "deep_origin": "古英语 -lice 演化而来，把形容词变成副词，相当于中文里的'地'。probable + ly = probably。",
+        "derivatives": [
+          "quickly",
+          "happily",
+          "really"
+        ],
+        "lookup_count": 0,
+        "meaning": "（副词后缀，由 -ly 简化）",
+        "segment": "y",
+        "type": "后缀",
+        "updated_at": 1779329486131
+      }
+    ],
+    "phonetic_us": "/ˈprɑːbəbli/",
+    "primary_meaning": "很可能；大概",
+    "updated_at": 1779329486131,
+    "word": "probably"
+  }
+}
