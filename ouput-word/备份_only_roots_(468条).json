@@ -1,0 +1,5705 @@
+{
+  "R:a": {
+    "deep_origin": "拉丁/希腊语后缀。",
+    "derivatives": [
+      "schema",
+      "data"
+    ],
+    "lookup_count": 0,
+    "meaning": "（后缀）",
+    "segment": "a",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:abil": {
+    "deep_origin": "来自拉丁语 -abilis，表示'可以被……的'。",
+    "derivatives": [
+      "ability",
+      "probability"
+    ],
+    "lookup_count": 0,
+    "meaning": "能...的",
+    "segment": "abil",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ability": {
+    "deep_origin": "由 -able + -ity 组合，表示'能力'、'性质'。",
+    "derivatives": [
+      "stability",
+      "capability"
+    ],
+    "lookup_count": 0,
+    "meaning": "能力；性质",
+    "segment": "ability",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:abl": {
+    "deep_origin": "来自拉丁语 -abilis，表示'可以被……的'。",
+    "derivatives": [
+      "capable",
+      "reliable",
+      "available"
+    ],
+    "lookup_count": 0,
+    "meaning": "能够……的",
+    "segment": "abl",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:able": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "capable"
+    ],
+    "lookup_count": 0,
+    "meaning": "能够",
+    "segment": "able",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ably": {
+    "deep_origin": "由 -able + -ly 组合而成，表示'能够……地'。",
+    "derivatives": [
+      "comfortably",
+      "readably"
+    ],
+    "lookup_count": 0,
+    "meaning": "能够……地",
+    "segment": "ably",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:abs": {
+    "deep_origin": "拉丁语前缀，表示'离开、从...中分离'。",
+    "derivatives": [
+      "absent",
+      "abstract"
+    ],
+    "lookup_count": 0,
+    "meaning": "离开；分离",
+    "segment": "abs",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:abul": {
+    "deep_origin": "拉丁语词缀的演变形式，构成名词。",
+    "derivatives": [
+      "vocabulary"
+    ],
+    "lookup_count": 0,
+    "meaning": "（连接词）",
+    "segment": "abul",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ac": {
+    "deep_origin": "后缀，表示某种特征。",
+    "derivatives": [
+      "active"
+    ],
+    "lookup_count": 0,
+    "meaning": "具有……特征",
+    "segment": "ac",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:acerb": {
+    "deep_origin": "来自拉丁语 acerbus，意为'尖锐'或'苦涩'。",
+    "derivatives": [
+      "acrid"
+    ],
+    "lookup_count": 0,
+    "meaning": "尖锐/苦涩",
+    "segment": "acerb",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:acious": {
+    "deep_origin": "后缀，表示'倾向于/充满'。",
+    "derivatives": [
+      "loquacious",
+      "voracious"
+    ],
+    "lookup_count": 0,
+    "meaning": "（后缀）倾向于/多……的",
+    "segment": "acious",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:acle": {
+    "deep_origin": "名词后缀。",
+    "derivatives": [
+      "spectacle",
+      "obstacle"
+    ],
+    "lookup_count": 0,
+    "meaning": "（后缀）名词后缀",
+    "segment": "acle",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:act": {
+    "deep_origin": "拉丁语 agere 的完成分词 actus，表示'做、驱动'。",
+    "derivatives": [
+      "action",
+      "actor"
+    ],
+    "lookup_count": 0,
+    "meaning": "行动",
+    "segment": "act",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ad": {
+    "deep_origin": "拉丁语 ad-，表示'向、朝'。",
+    "derivatives": [
+      "adapt",
+      "adjust"
+    ],
+    "lookup_count": 0,
+    "meaning": "朝向",
+    "segment": "ad",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:ag": {
+    "deep_origin": "拉丁语 agere，意为'做、行动、驱动'。",
+    "derivatives": [
+      "agent",
+      "action",
+      "active"
+    ],
+    "lookup_count": 0,
+    "meaning": "做；行动",
+    "segment": "ag",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:age_noun": {
+    "deep_origin": "来自古法语 -age，拉丁语 -aticum，表示'集合、状态或行为结果'。package（打包的结果）、storage（储存状态）、usage（使用状态）都用这个后缀。",
+    "derivatives": [
+      "package",
+      "storage",
+      "usage",
+      "manage"
+    ],
+    "lookup_count": 0,
+    "meaning": "集合；状态；结果（名词后缀）",
+    "segment": "age",
+    "type": "后缀",
+    "updated_at": 1779355503688
+  },
+  "R:al": {
+    "deep_origin": "形容词后缀，表示'……的'。",
+    "derivatives": [
+      "natural",
+      "final",
+      "total"
+    ],
+    "lookup_count": 0,
+    "meaning": "……的",
+    "segment": "al",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:al_adj": {
+    "deep_origin": "来自拉丁语 -alis，是最常见的形容词后缀之一，表示'与……有关的'，如 terminal、digital、central。",
+    "derivatives": [
+      "terminal",
+      "digital",
+      "central",
+      "logical"
+    ],
+    "lookup_count": 0,
+    "meaning": "……的；与……有关的（形容词后缀）",
+    "segment": "al",
+    "type": "后缀",
+    "updated_at": 1779355503688
+  },
+  "R:al_prefix": {
+    "deep_origin": "拉丁语 ad- 的变体（在 l 前同化为 al-），表示'去、朝向'。",
+    "derivatives": [
+      "allocate",
+      "allow"
+    ],
+    "lookup_count": 0,
+    "meaning": "朝向",
+    "segment": "al",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:algo": {
+    "deep_origin": "源自数学家 Al-Khwarizmi 的名字。",
+    "derivatives": [
+      "algorithmic"
+    ],
+    "lookup_count": 0,
+    "meaning": "算法（源名）",
+    "segment": "algo",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:algor": {
+    "deep_origin": "源自波斯数学家 Al-Khwarizmi 的名字，后来演变为表示计算规则。",
+    "derivatives": [
+      "algorithm"
+    ],
+    "lookup_count": 0,
+    "meaning": "算法",
+    "segment": "algor",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:align": {
+    "deep_origin": "古法语 alignier，意为'排成一行'（a- 向着 + ligne 线）。",
+    "derivatives": [
+      "alignment",
+      "align"
+    ],
+    "lookup_count": 0,
+    "meaning": "对齐",
+    "segment": "align",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:all": {
+    "deep_origin": "拉丁语前缀，表示'向...；给...'。",
+    "derivatives": [
+      "allocate",
+      "allot"
+    ],
+    "lookup_count": 0,
+    "meaning": "向...；给...",
+    "segment": "all",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:allel": {
+    "deep_origin": "希腊语 allēlōn，表示'互相、彼此'。",
+    "derivatives": [
+      "parallel"
+    ],
+    "lookup_count": 0,
+    "meaning": "彼此",
+    "segment": "allel",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:alt": {
+    "deep_origin": "来自拉丁语 alter，意为'其他的'。",
+    "derivatives": [
+      "alternative",
+      "alter"
+    ],
+    "lookup_count": 0,
+    "meaning": "其他的",
+    "segment": "alt",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:alty": {
+    "deep_origin": "名词后缀。",
+    "derivatives": [
+      "penalty"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "alty",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:am": {
+    "deep_origin": "希腊语词缀，常用于表示'动作、状态'。",
+    "derivatives": [
+      "amorphous"
+    ],
+    "lookup_count": 0,
+    "meaning": "动作",
+    "segment": "am",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ambi": {
+    "deep_origin": "来自拉丁语 ambi，表示'周围'或'两者'。",
+    "derivatives": [
+      "ambivalent",
+      "ambiguous",
+      "ambidextrous"
+    ],
+    "lookup_count": 0,
+    "meaning": "两者；周围",
+    "segment": "ambi",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:ana": {
+    "deep_origin": "来自希腊语 ana，表示'相反'、'回溯'或'向上'。",
+    "derivatives": [
+      "analysis",
+      "anagram"
+    ],
+    "lookup_count": 0,
+    "meaning": "相反；回溯",
+    "segment": "ana",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:ance": {
+    "deep_origin": "名词后缀，表示'状态'或'行为'。",
+    "derivatives": [
+      "importance",
+      "distance",
+      "performance"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态；行为",
+    "segment": "ance",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:anim": {
+    "deep_origin": "来自拉丁语 animus，意为'灵魂'或'精神'。",
+    "derivatives": [
+      "animal",
+      "animate"
+    ],
+    "lookup_count": 0,
+    "meaning": "灵魂；精神",
+    "segment": "anim",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ant": {
+    "deep_origin": "名词后缀，表示'状态或性质'。",
+    "derivatives": [
+      "assistant"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态",
+    "segment": "ant",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:anthrop": {
+    "deep_origin": "来自希腊语 anthropos，表示'人类'。",
+    "derivatives": [
+      "anthropology",
+      "misanthrope"
+    ],
+    "lookup_count": 0,
+    "meaning": "人类",
+    "segment": "anthrop",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:appear": {
+    "deep_origin": "来自拉丁语 ad + parere，意为'显露'。",
+    "derivatives": [
+      "appearance",
+      "apparent"
+    ],
+    "lookup_count": 0,
+    "meaning": "出现",
+    "segment": "appear",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ar": {
+    "deep_origin": "拉丁语 -aris，形容词后缀，表示'与...相关的'。",
+    "derivatives": [
+      "linear",
+      "scalar"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词后缀）",
+    "segment": "ar",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:arch": {
+    "deep_origin": "希腊语 arkhos，表示'首领、主要的'。",
+    "derivatives": [
+      "architecture",
+      "architect"
+    ],
+    "lookup_count": 0,
+    "meaning": "主要的",
+    "segment": "arch",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:archi": {
+    "deep_origin": "来自希腊语 arkheion（政府档案馆），进一步追溯到 arkhe（开始、起源、权威）。archive 原指存放重要官方文件的地方，Linux 中指把多个文件打包归档。",
+    "derivatives": [
+      "archive",
+      "architect",
+      "archaeology"
+    ],
+    "lookup_count": 0,
+    "meaning": "开始；起源；档案",
+    "segment": "archi",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:argu": {
+    "deep_origin": "来自拉丁语 arguere（证明、指出、争论）。原意是'让某事变得明亮清晰'，argument 在命令行中指'传给命令的参数'——你明确指出让程序做什么。",
+    "derivatives": [
+      "argument",
+      "argue",
+      "arguable"
+    ],
+    "lookup_count": 0,
+    "meaning": "证明；争论；指出",
+    "segment": "argu",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:ary": {
+    "deep_origin": "表示'存放...的地方'或相关集合的后缀。",
+    "derivatives": [
+      "vocabulary",
+      "dictionary",
+      "library"
+    ],
+    "lookup_count": 0,
+    "meaning": "（集合/场所后缀）",
+    "segment": "ary",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:asyn": {
+    "deep_origin": "希腊语 a- (不) + syn- (共同) + chronos (时间)。",
+    "derivatives": [
+      "asynchronous"
+    ],
+    "lookup_count": 0,
+    "meaning": "不同时",
+    "segment": "asyn",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:at": {
+    "deep_origin": "拉丁语 ad- 的变体（在 t 字母前同化为 at-），表示'去、朝向'。",
+    "derivatives": [
+      "attach",
+      "attempt"
+    ],
+    "lookup_count": 0,
+    "meaning": "朝向",
+    "segment": "at",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:ate": {
+    "deep_origin": "动词后缀。",
+    "derivatives": [
+      "activate"
+    ],
+    "lookup_count": 0,
+    "meaning": "使……",
+    "segment": "ate",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ation": {
+    "deep_origin": "后缀，用于将动词转为名词，表示'行为'或'过程'。",
+    "derivatives": [
+      "creation",
+      "education",
+      "information"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态；过程",
+    "segment": "ation",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ation_suffix": {
+    "deep_origin": "复合名词后缀，表示动作或状态。",
+    "derivatives": [
+      "segmentation",
+      "representation"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "ation",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ative": {
+    "deep_origin": "拉丁语复合后缀 -ativus，构成形容词。",
+    "derivatives": [
+      "creative",
+      "generative"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词后缀）",
+    "segment": "ative",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:aud": {
+    "deep_origin": "来自拉丁语 audire，表示'听'。",
+    "derivatives": [
+      "audio",
+      "audience"
+    ],
+    "lookup_count": 0,
+    "meaning": "听",
+    "segment": "aud",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:auth": {
+    "deep_origin": "来自希腊语 authentes，表示'最初的、权威的'。",
+    "derivatives": [
+      "author",
+      "authority"
+    ],
+    "lookup_count": 0,
+    "meaning": "权威；原作者",
+    "segment": "auth",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:auto": {
+    "deep_origin": "希腊语 autos，表示'自己、自动'。",
+    "derivatives": [
+      "automatic",
+      "automobile",
+      "autonomy"
+    ],
+    "lookup_count": 0,
+    "meaning": "自己；自动",
+    "segment": "auto",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:back": {
+    "deep_origin": "古英语 bæc，表示'后背、向后'。",
+    "derivatives": [
+      "backward",
+      "background"
+    ],
+    "lookup_count": 0,
+    "meaning": "后",
+    "segment": "back",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:base": {
+    "deep_origin": "希腊语 basis，意为'底部、台阶'。",
+    "derivatives": [
+      "baseline",
+      "basic"
+    ],
+    "lookup_count": 0,
+    "meaning": "基础",
+    "segment": "base",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:batch": {
+    "deep_origin": "古英语 bæcce，意为'烤出的一炉面包'，引申为'一批'。",
+    "derivatives": [
+      "batch"
+    ],
+    "lookup_count": 0,
+    "meaning": "一批",
+    "segment": "batch",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:bed": {
+    "deep_origin": "古英语 bedd，意为'床、底部、种植床'。",
+    "derivatives": [
+      "embed",
+      "bed"
+    ],
+    "lookup_count": 0,
+    "meaning": "床；基座",
+    "segment": "bed",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:bell": {
+    "deep_origin": "来自拉丁语 bellum，表示'战争'。",
+    "derivatives": [
+      "rebellion",
+      "bellicose"
+    ],
+    "lookup_count": 0,
+    "meaning": "战争",
+    "segment": "bell",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:bench": {
+    "deep_origin": "古英语 benc，工作台或长凳。",
+    "derivatives": [
+      "benchmark"
+    ],
+    "lookup_count": 0,
+    "meaning": "长凳；基准台",
+    "segment": "bench",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:bene": {
+    "deep_origin": "来自拉丁语 bene，表示'好'、'善'。",
+    "derivatives": [
+      "benefit",
+      "beneficial",
+      "benefactor"
+    ],
+    "lookup_count": 0,
+    "meaning": "好；善",
+    "segment": "bene",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:bias": {
+    "deep_origin": "源自古法语 biais，意为'倾斜、斜线'，引申为偏向、偏差。",
+    "derivatives": [
+      "bias",
+      "biased"
+    ],
+    "lookup_count": 0,
+    "meaning": "偏斜",
+    "segment": "bias",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:bin": {
+    "deep_origin": "来自拉丁语 bini（两个一组），源自 bis（两次）。binary 指'以二为基础的'，即只用 0 和 1 表示的数据。Linux 的 /bin 目录存放的正是编译好的二进制可执行文件。",
+    "derivatives": [
+      "binary",
+      "bit",
+      "binaural",
+      "combine"
+    ],
+    "lookup_count": 0,
+    "meaning": "二；两个一组",
+    "segment": "bin",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:bio": {
+    "deep_origin": "来自希腊语 bios，意为'生命'。",
+    "derivatives": [
+      "biology",
+      "biography",
+      "biosphere"
+    ],
+    "lookup_count": 0,
+    "meaning": "生命",
+    "segment": "bio",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:bottle": {
+    "deep_origin": "中世纪拉丁语 butticula，表示'小酒桶、瓶子'。",
+    "derivatives": [
+      "bottleneck"
+    ],
+    "lookup_count": 0,
+    "meaning": "瓶",
+    "segment": "bottle",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:broad": {
+    "deep_origin": "古英语 brad，意为'宽阔的'。",
+    "derivatives": [
+      "broadcast",
+      "broaden"
+    ],
+    "lookup_count": 0,
+    "meaning": "宽广",
+    "segment": "broad",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:buff": {
+    "deep_origin": "来自古法语 buffe（击打、缓冲），原指用软物吸收冲击力的动作。buffer 在 Linux 中指'吸收数据冲击'的临时存储区——数据来得太快时先缓存在 buffer 里。",
+    "derivatives": [
+      "buffer",
+      "buff",
+      "rebuff"
+    ],
+    "lookup_count": 0,
+    "meaning": "缓冲；吸收冲击",
+    "segment": "buff",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:cach": {
+    "deep_origin": "法语 cacher，意为'隐藏'。",
+    "derivatives": [
+      "cache"
+    ],
+    "lookup_count": 0,
+    "meaning": "隐藏",
+    "segment": "cach",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cache": {
+    "deep_origin": "源自法语 cache，意为'隐藏、躲藏'。",
+    "derivatives": [
+      "cachet"
+    ],
+    "lookup_count": 0,
+    "meaning": "隐藏；藏匿",
+    "segment": "cache",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:call": {
+    "deep_origin": "古诺斯语 kalla，意为'大声叫喊'。",
+    "derivatives": [
+      "recall"
+    ],
+    "lookup_count": 0,
+    "meaning": "呼叫",
+    "segment": "call",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cap": {
+    "deep_origin": "来自拉丁语 capere，表示'拿'、'取'、'容纳'。",
+    "derivatives": [
+      "capacity",
+      "capture",
+      "capable"
+    ],
+    "lookup_count": 0,
+    "meaning": "拿；容纳",
+    "segment": "cap",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:capr": {
+    "deep_origin": "来自拉丁语 capra，意为'山羊'（山羊跳跃不定）。",
+    "derivatives": [
+      "capricorn"
+    ],
+    "lookup_count": 0,
+    "meaning": "山羊/跳跃",
+    "segment": "capr",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:capsul": {
+    "deep_origin": "来自拉丁语 capsula，意为'小盒子'。",
+    "derivatives": [
+      "capsule",
+      "encapsulate"
+    ],
+    "lookup_count": 0,
+    "meaning": "小盒子；胶囊",
+    "segment": "capsul",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cast": {
+    "deep_origin": "古诺斯语 kasta，意为'投掷'。",
+    "derivatives": [
+      "broadcast",
+      "podcast"
+    ],
+    "lookup_count": 0,
+    "meaning": "投掷",
+    "segment": "cast",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:caten": {
+    "deep_origin": "拉丁语 catena，表示'链条'。",
+    "derivatives": [
+      "catenary",
+      "concatenate"
+    ],
+    "lookup_count": 0,
+    "meaning": "链条",
+    "segment": "caten",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ceive": {
+    "deep_origin": "来自拉丁语 capere，表示'拿/取'（变体）。",
+    "derivatives": [
+      "receive",
+      "perceive",
+      "deceive"
+    ],
+    "lookup_count": 0,
+    "meaning": "拿；取",
+    "segment": "ceive",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cept": {
+    "deep_origin": "拉丁语 capere 的完成分词 captus（在复合词中为-ceptus），表示'拿取、接收'。",
+    "derivatives": [
+      "perception",
+      "accept",
+      "concept"
+    ],
+    "lookup_count": 0,
+    "meaning": "拿；接收",
+    "segment": "cept",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cess": {
+    "deep_origin": "来自拉丁语 cedere（走、移动）的过去分词词干 cess/ceed。process（向前走）、access（走向入口）、success（走向成功）都源于此。",
+    "derivatives": [
+      "process",
+      "access",
+      "success",
+      "excess"
+    ],
+    "lookup_count": 0,
+    "meaning": "走；移动",
+    "segment": "cess",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:chip": {
+    "deep_origin": "源自英语 \"chip\"，意为“碎片、小块”。在硬件中指代硅片切割出的集成电路。",
+    "derivatives": [
+      "chip",
+      "chipped"
+    ],
+    "lookup_count": 0,
+    "meaning": "碎片；芯片",
+    "segment": "chip",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:chron": {
+    "deep_origin": "意为'时间'。",
+    "derivatives": [
+      "chronic",
+      "chronology"
+    ],
+    "lookup_count": 0,
+    "meaning": "时间",
+    "segment": "chron",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cip": {
+    "deep_origin": "来自拉丁语 capere，意为'拿'或'取'。",
+    "derivatives": [
+      "accept",
+      "receive",
+      "participation"
+    ],
+    "lookup_count": 0,
+    "meaning": "拿；取",
+    "segment": "cip",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cis": {
+    "deep_origin": "拉丁语 caedere 的过去分词，表示'切、割'。",
+    "derivatives": [
+      "precision",
+      "concise"
+    ],
+    "lookup_count": 0,
+    "meaning": "切",
+    "segment": "cis",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:class": {
+    "deep_origin": "拉丁语 classis，古罗马社会的分级或舰队，引申为'等级、类别'。",
+    "derivatives": [
+      "classic",
+      "classify"
+    ],
+    "lookup_count": 0,
+    "meaning": "类别；等级",
+    "segment": "class",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:clus": {
+    "deep_origin": "拉丁语 claudere，表示'关闭、包围'，引申为抱团。",
+    "derivatives": [
+      "cluster",
+      "include",
+      "exclude"
+    ],
+    "lookup_count": 0,
+    "meaning": "包围；聚集",
+    "segment": "clus",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:clust": {
+    "deep_origin": "源自古英语 clustor，表示'聚集、簇'。",
+    "derivatives": [
+      "cluster"
+    ],
+    "lookup_count": 0,
+    "meaning": "簇；聚集",
+    "segment": "clust",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:code": {
+    "deep_origin": "拉丁语 codex，意为'树干、木板上的书写'，后指法典、密码、代码。",
+    "derivatives": [
+      "code",
+      "encode",
+      "decode"
+    ],
+    "lookup_count": 0,
+    "meaning": "代码",
+    "segment": "code",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:col": {
+    "deep_origin": "来自拉丁语 collāre，表示'连接、粘合'。",
+    "derivatives": [
+      "collect",
+      "collision"
+    ],
+    "lookup_count": 0,
+    "meaning": "连接；粘合",
+    "segment": "col",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:col_protocol": {
+    "deep_origin": "来自希腊语 kolla（胶水）+ kollan（粘贴）。古代 protokollon 是'粘在卷轴开头'的摘要页，col 在此代表'粘合、集合'的含义。",
+    "derivatives": [
+      "protocol",
+      "collect",
+      "collaborate"
+    ],
+    "lookup_count": 0,
+    "meaning": "粘合；集合",
+    "segment": "col",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:com": {
+    "deep_origin": "共同/加强语气。",
+    "derivatives": [
+      "combine"
+    ],
+    "lookup_count": 2,
+    "meaning": "共同",
+    "segment": "com",
+    "type": "前缀",
+    "updated_at": 1779368863924
+  },
+  "R:com_press": {
+    "deep_origin": "来自拉丁语前缀 com-（共同、一起）+ premere（压）。compress 就是'把东西一起压紧'，pressure、print 也源于同一词根 premere。",
+    "derivatives": [
+      "compress",
+      "pressure",
+      "print",
+      "impress",
+      "express"
+    ],
+    "lookup_count": 0,
+    "meaning": "共同压；压紧",
+    "segment": "com+press",
+    "type": "词根组合",
+    "updated_at": 1779355503688
+  },
+  "R:comfort": {
+    "deep_origin": "来自拉丁语 con + fortis，意为'加强'、'安慰'。",
+    "derivatives": [
+      "comfortable",
+      "comforting"
+    ],
+    "lookup_count": 1,
+    "meaning": "安慰；舒适",
+    "segment": "comfort",
+    "type": "词根",
+    "updated_at": 1779368876489
+  },
+  "R:con": {
+    "deep_origin": "加强语气或表示'共同'。",
+    "derivatives": [
+      "connect"
+    ],
+    "lookup_count": 4,
+    "meaning": "共同/加强",
+    "segment": "con",
+    "type": "前缀",
+    "updated_at": 1779368886218
+  },
+  "R:con_prefix": {
+    "deep_origin": "拉丁语 com- 的变体，表示'一起、共同'。",
+    "derivatives": [
+      "context",
+      "connect"
+    ],
+    "lookup_count": 0,
+    "meaning": "共同；一起",
+    "segment": "con",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:contra": {
+    "deep_origin": "拉丁语前缀 contra，表示'相反'、'反对'。",
+    "derivatives": [
+      "contrast",
+      "contradict",
+      "contrary"
+    ],
+    "lookup_count": 1,
+    "meaning": "相反；反对",
+    "segment": "contra",
+    "type": "前缀",
+    "updated_at": 1779368887466
+  },
+  "R:corp": {
+    "deep_origin": "拉丁语 corpus，意为'身体、实体'。",
+    "derivatives": [
+      "corpus",
+      "corporation"
+    ],
+    "lookup_count": 0,
+    "meaning": "身体；实体",
+    "segment": "corp",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cred": {
+    "deep_origin": "来自拉丁语 credere，表示'相信'、'信任'。",
+    "derivatives": [
+      "credible",
+      "credit",
+      "incredulous"
+    ],
+    "lookup_count": 0,
+    "meaning": "相信；信任",
+    "segment": "cred",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cret": {
+    "deep_origin": "拉丁语 cernere 的完成分词 cretus，表示'筛选、区分'。",
+    "derivatives": [
+      "discrete",
+      "secret",
+      "excrete"
+    ],
+    "lookup_count": 0,
+    "meaning": "区分",
+    "segment": "cret",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:crypt": {
+    "deep_origin": "来自希腊语 kryptos，表示'隐藏的'。",
+    "derivatives": [
+      "cryptography",
+      "cryptic",
+      "encrypt"
+    ],
+    "lookup_count": 0,
+    "meaning": "隐藏；秘密",
+    "segment": "crypt",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cul": {
+    "deep_origin": "来自拉丁语 cura，意为'关怀'或'小心'。",
+    "derivatives": [
+      "cure"
+    ],
+    "lookup_count": 0,
+    "meaning": "关怀/小心",
+    "segment": "cul",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:cur": {
+    "deep_origin": "拉丁语 cura，表示'小心、关心、注意'。",
+    "derivatives": [
+      "accurate",
+      "secure",
+      "cure"
+    ],
+    "lookup_count": 0,
+    "meaning": "关心",
+    "segment": "cur",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:curr": {
+    "deep_origin": "拉丁语 currere，表示'跑、流动、发生'。",
+    "derivatives": [
+      "current",
+      "occur",
+      "currency"
+    ],
+    "lookup_count": 0,
+    "meaning": "跑；流动",
+    "segment": "curr",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:curs": {
+    "deep_origin": "来自拉丁语 currere，表示'跑'。",
+    "derivatives": [
+      "current",
+      "course",
+      "occur"
+    ],
+    "lookup_count": 0,
+    "meaning": "跑；流",
+    "segment": "curs",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:daemon_root": {
+    "deep_origin": "来自希腊语 daimon（守护神、精灵）。1963 年 MIT 程序员受'麦克斯韦妖'（Maxwell's Demon）启发，将默默在后台运行的进程命名为 daemon——一个看不见却一直工作的守护精灵。",
+    "derivatives": [
+      "daemon",
+      "demon"
+    ],
+    "lookup_count": 0,
+    "meaning": "守护神；后台精灵",
+    "segment": "daemon",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:data": {
+    "deep_origin": "拉丁语 datum 的复数形式，意为'给定的事实'。",
+    "derivatives": [
+      "dataloader",
+      "dataset"
+    ],
+    "lookup_count": 0,
+    "meaning": "数据",
+    "segment": "data",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:de": {
+    "deep_origin": "拉丁语 de-，表示'向下、分离、衍生'。",
+    "derivatives": [
+      "derivative",
+      "decode",
+      "deploy"
+    ],
+    "lookup_count": 0,
+    "meaning": "向下；衍生",
+    "segment": "de",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:de_scent": {
+    "deep_origin": "拉丁语 descendere，意为'向下爬、下降'（de- 向下 + scandere 爬）。",
+    "derivatives": [
+      "descent",
+      "descend"
+    ],
+    "lookup_count": 0,
+    "meaning": "向下爬",
+    "segment": "de",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:dens": {
+    "deep_origin": "拉丁语 densus，意为'浓密的、厚实的'。",
+    "derivatives": [
+      "dense",
+      "density"
+    ],
+    "lookup_count": 0,
+    "meaning": "密集",
+    "segment": "dens",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:di": {
+    "deep_origin": "拉丁语 dis- 的变体，表示'分开、向四面八方'。",
+    "derivatives": [
+      "dilation",
+      "diverge"
+    ],
+    "lookup_count": 0,
+    "meaning": "分开",
+    "segment": "di",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:dict": {
+    "deep_origin": "意为'说'。",
+    "derivatives": [
+      "dictate"
+    ],
+    "lookup_count": 0,
+    "meaning": "说",
+    "segment": "dict",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ding": {
+    "deep_origin": "动名词后缀 -ing 连用 d 辅音双写。",
+    "derivatives": [
+      "padding"
+    ],
+    "lookup_count": 0,
+    "meaning": "（动名词后缀）",
+    "segment": "ding",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:direct": {
+    "deep_origin": "来自拉丁语 dirigere（排列、引导），di-（分开）+ regere（引导）。directory 就是'引导你找到文件的地方'。",
+    "derivatives": [
+      "directory",
+      "direct",
+      "direction",
+      "redirect"
+    ],
+    "lookup_count": 0,
+    "meaning": "引导；直接",
+    "segment": "direct",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:dis": {
+    "deep_origin": "来自拉丁语，表示'分开'、'否定'。",
+    "derivatives": [
+      "distance",
+      "disagree",
+      "disappear"
+    ],
+    "lookup_count": 0,
+    "meaning": "分开；否定",
+    "segment": "dis",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:do_sudo": {
+    "deep_origin": "来自古英语 don（做、执行），是最基础的动作词根。sudo = su + do，即'以替代用户的身份去做某事'。",
+    "derivatives": [
+      "sudo",
+      "do",
+      "undo",
+      "redo"
+    ],
+    "lookup_count": 0,
+    "meaning": "做；执行",
+    "segment": "do",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:dress": {
+    "deep_origin": "源自拉丁语 directus，表示'笔直的、排列的'。",
+    "derivatives": [
+      "address"
+    ],
+    "lookup_count": 0,
+    "meaning": "笔直；排列",
+    "segment": "dress",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:drive": {
+    "deep_origin": "源自古英语 drīfan，表示'驱使、引导'。",
+    "derivatives": [
+      "driver",
+      "driveway"
+    ],
+    "lookup_count": 0,
+    "meaning": "驱动；驱使",
+    "segment": "drive",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:drop": {
+    "deep_origin": "古英语 dropa，意为'水滴、落下'。",
+    "derivatives": [
+      "dropout",
+      "droplet"
+    ],
+    "lookup_count": 0,
+    "meaning": "掉落",
+    "segment": "drop",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:dyn": {
+    "deep_origin": "来自希腊语 dynamis，表示'力量、能量'。",
+    "derivatives": [
+      "dynamic",
+      "dynamite"
+    ],
+    "lookup_count": 0,
+    "meaning": "力量；能量",
+    "segment": "dyn",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:dynam": {
+    "deep_origin": "希腊语 dynamis，意为'力量、动力'。",
+    "derivatives": [
+      "dynamite",
+      "dynasty"
+    ],
+    "lookup_count": 0,
+    "meaning": "力量；动力",
+    "segment": "dynam",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:e": {
+    "deep_origin": "表示'向外'。",
+    "derivatives": [
+      "exit"
+    ],
+    "lookup_count": 0,
+    "meaning": "向外",
+    "segment": "e",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:eco": {
+    "deep_origin": "来自希腊语 oikos，意为'房屋'或'家庭'（引申为环境/经济）",
+    "derivatives": [
+      "ecology",
+      "economy",
+      "economic"
+    ],
+    "lookup_count": 0,
+    "meaning": "家/环境",
+    "segment": "eco",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:ecut": {
+    "deep_origin": "来自拉丁语 sequi（跟随）的变体词根，execute 原意是'跟随到底、彻底完成'，引申为'执行'。",
+    "derivatives": [
+      "execute",
+      "consecutive",
+      "prosecute"
+    ],
+    "lookup_count": 0,
+    "meaning": "跟随；完成",
+    "segment": "ecut",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:ed": {
+    "deep_origin": "英语过去分词或形容词后缀，表示'被...的'或'具有...特征的'。",
+    "derivatives": [
+      "supervised",
+      "advanced"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词后缀）",
+    "segment": "ed",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:eger": {
+    "deep_origin": "后缀，用于构成名词。",
+    "derivatives": [
+      "manager"
+    ],
+    "lookup_count": 0,
+    "meaning": "者；物",
+    "segment": "eger",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:el": {
+    "deep_origin": "来自拉丁语 ex，表示'出'。",
+    "derivatives": [
+      "elevate"
+    ],
+    "lookup_count": 0,
+    "meaning": "出",
+    "segment": "el",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:em": {
+    "deep_origin": "来自拉丁语 ex + emere (取/拿)。",
+    "derivatives": [
+      "emblem"
+    ],
+    "lookup_count": 0,
+    "meaning": "拿/取",
+    "segment": "em",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:en": {
+    "deep_origin": "后缀。",
+    "derivatives": [
+      "token"
+    ],
+    "lookup_count": 0,
+    "meaning": "（后缀）",
+    "segment": "en",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:encap": {
+    "deep_origin": "前缀 en- (进入) + capsula (小盒子)。",
+    "derivatives": [
+      "encapsulate"
+    ],
+    "lookup_count": 0,
+    "meaning": "装入胶囊",
+    "segment": "encap",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ence": {
+    "deep_origin": "拉丁语 -entia，名词后缀，表示状态或行为。",
+    "derivatives": [
+      "difference",
+      "science",
+      "evidence"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "ence",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ency": {
+    "deep_origin": "名词后缀，表示'状态、性质或行为'。",
+    "derivatives": [
+      "efficiency",
+      "agency"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态；性质",
+    "segment": "ency",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ent": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "different"
+    ],
+    "lookup_count": 0,
+    "meaning": "……的",
+    "segment": "ent",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:environ": {
+    "deep_origin": "古法语 environner，意为'包围、环绕'。",
+    "derivatives": [
+      "environment"
+    ],
+    "lookup_count": 0,
+    "meaning": "包围",
+    "segment": "environ",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:epi": {
+    "deep_origin": "希腊语 epi，表示'在上面'。",
+    "derivatives": [
+      "epitome"
+    ],
+    "lookup_count": 0,
+    "meaning": "在之上",
+    "segment": "epi",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:equa": {
+    "deep_origin": "来自拉丁语 aequus，意为'相等'。",
+    "derivatives": [
+      "equal",
+      "equation"
+    ],
+    "lookup_count": 0,
+    "meaning": "相等",
+    "segment": "equa",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:er": {
+    "deep_origin": "形容词/名词后缀。",
+    "derivatives": [
+      "teacher"
+    ],
+    "lookup_count": 0,
+    "meaning": "……者",
+    "segment": "er",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:er_agent": {
+    "deep_origin": "来自古英语后缀 -ere，表示'执行某动作的人或物'。buffer（缓冲者）、server（服务者）、filter（过滤者）都用这个后缀。",
+    "derivatives": [
+      "buffer",
+      "server",
+      "filter",
+      "router"
+    ],
+    "lookup_count": 0,
+    "meaning": "……者；执行……的物（名词后缀）",
+    "segment": "er",
+    "type": "后缀",
+    "updated_at": 1779355503688
+  },
+  "R:er_suffix": {
+    "deep_origin": "名词后缀，表示执行动作的机器或人。",
+    "derivatives": [
+      "tokenizer",
+      "encoder"
+    ],
+    "lookup_count": 0,
+    "meaning": "（器/人后缀）",
+    "segment": "er",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:err": {
+    "deep_origin": "来自拉丁语 errare（游荡、犯错）。error、errant（游荡的）都源于'走偏了路'的意象——stderr 就是程序'走偏时'发出的警告通道。",
+    "derivatives": [
+      "stderr",
+      "error",
+      "errant",
+      "erroneous"
+    ],
+    "lookup_count": 0,
+    "meaning": "错误；偏离",
+    "segment": "err",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:erty": {
+    "deep_origin": "名词后缀，表示'性质、状态或品质'。",
+    "derivatives": [
+      "liberty"
+    ],
+    "lookup_count": 0,
+    "meaning": "性质；状态",
+    "segment": "erty",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:eso": {
+    "deep_origin": "希腊语 esō，表示'在内部'。",
+    "derivatives": [
+      "esoteric"
+    ],
+    "lookup_count": 0,
+    "meaning": "在内部",
+    "segment": "eso",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:et": {
+    "deep_origin": "指小词后缀，表示'小'。",
+    "derivatives": [
+      "booklet",
+      "piglet"
+    ],
+    "lookup_count": 0,
+    "meaning": "小的",
+    "segment": "et",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:et_small": {
+    "deep_origin": "来自古法语小称后缀 -et/-ette，表示'小的……'。socket（小插孔）、packet（小包）、ticket（小条）都用这个后缀。",
+    "derivatives": [
+      "socket",
+      "packet",
+      "ticket",
+      "basket"
+    ],
+    "lookup_count": 0,
+    "meaning": "小……（小称后缀）",
+    "segment": "et",
+    "type": "后缀",
+    "updated_at": 1779355503688
+  },
+  "R:eu": {
+    "deep_origin": "希腊语 eu，表示'好'或'善'。",
+    "derivatives": [
+      "eulogy",
+      "euphemism"
+    ],
+    "lookup_count": 0,
+    "meaning": "好；善",
+    "segment": "eu",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:evit": {
+    "deep_origin": "来自拉丁语 evitare，意为'避开'。",
+    "derivatives": [
+      "avoid"
+    ],
+    "lookup_count": 0,
+    "meaning": "避开",
+    "segment": "evit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ex": {
+    "deep_origin": "表示'出'或'离开'。",
+    "derivatives": [
+      "exclude"
+    ],
+    "lookup_count": 0,
+    "meaning": "出",
+    "segment": "ex",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:face": {
+    "deep_origin": "来自拉丁语 facies（面、外观），源自 facere（做、制造）。interface 中 face 指'两个系统相对的那一面'，即接触面。",
+    "derivatives": [
+      "interface",
+      "surface",
+      "face",
+      "facade"
+    ],
+    "lookup_count": 0,
+    "meaning": "面；外观",
+    "segment": "face",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:fastid": {
+    "deep_origin": "来自拉丁语 fastidium，意为'厌恶'或'轻蔑'。",
+    "derivatives": [
+      "fastidiousness"
+    ],
+    "lookup_count": 0,
+    "meaning": "厌恶；挑剔",
+    "segment": "fastid",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:feat": {
+    "deep_origin": "拉丁语 factum（做的事）演变为古法语 fet，再到 feature，指构成事物的形态或特点。",
+    "derivatives": [
+      "feature"
+    ],
+    "lookup_count": 0,
+    "meaning": "特征；形态",
+    "segment": "feat",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:fer": {
+    "deep_origin": "来自拉丁语 ferre，意为'携带'。",
+    "derivatives": [
+      "transfer",
+      "offer"
+    ],
+    "lookup_count": 0,
+    "meaning": "携带/带来",
+    "segment": "fer",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:fid": {
+    "deep_origin": "来自拉丁语 fides，表示'信任'、'忠诚'。",
+    "derivatives": [
+      "confidence",
+      "fidelity",
+      "perfidy"
+    ],
+    "lookup_count": 0,
+    "meaning": "信任；忠诚",
+    "segment": "fid",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:fig": {
+    "deep_origin": "来自拉丁语 figere，表示'固定、塑造、形状'。",
+    "derivatives": [
+      "figure",
+      "configure"
+    ],
+    "lookup_count": 0,
+    "meaning": "形状；塑造",
+    "segment": "fig",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:figur": {
+    "deep_origin": "来自拉丁语 figura（形状、外形），源自 fingere（塑造）。configure 就是'把系统塑造成特定形状'——赋予它特定的配置形态。",
+    "derivatives": [
+      "configure",
+      "figure",
+      "figurative",
+      "disfigure"
+    ],
+    "lookup_count": 0,
+    "meaning": "形状；塑造",
+    "segment": "figur",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:fine": {
+    "deep_origin": "古法语 fin，意为'结束、极好的'，引申为精细的。",
+    "derivatives": [
+      "fine",
+      "finetune"
+    ],
+    "lookup_count": 0,
+    "meaning": "精细的",
+    "segment": "fine",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:fit": {
+    "deep_origin": "中古英语 fitten，表示'排列、适合'。",
+    "derivatives": [
+      "overfit",
+      "underfit",
+      "fitness"
+    ],
+    "lookup_count": 0,
+    "meaning": "适合；拟合",
+    "segment": "fit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:flag_root": {
+    "deep_origin": "来自古挪威语 flaga 或中低地德语 flagge（旗帜），旗帜是'传递信号的标志物'。在 Linux 中 flag 指命令行中传递状态或开关信息的标记符，与 option 类似但更强调'开/关'的二元性。",
+    "derivatives": [
+      "flag",
+      "flagged",
+      "unflag"
+    ],
+    "lookup_count": 0,
+    "meaning": "旗帜；标记；信号",
+    "segment": "flag",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:flat": {
+    "deep_origin": "古诺斯语 flatr，意为'平坦的'。",
+    "derivatives": [
+      "flatten",
+      "flat"
+    ],
+    "lookup_count": 0,
+    "meaning": "平坦",
+    "segment": "flat",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:flu": {
+    "deep_origin": "来自拉丁语 fluere，意为'流动'。",
+    "derivatives": [
+      "fluid",
+      "influence"
+    ],
+    "lookup_count": 0,
+    "meaning": "流动",
+    "segment": "flu",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:flush": {
+    "deep_origin": "源自古英语 fluschen，表示'冲洗、流动'。",
+    "derivatives": [
+      "flushing"
+    ],
+    "lookup_count": 0,
+    "meaning": "冲洗；流出",
+    "segment": "flush",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:fold": {
+    "deep_origin": "古英语 feald，表示'折叠、倍数'。",
+    "derivatives": [
+      "manifold",
+      "unfold"
+    ],
+    "lookup_count": 0,
+    "meaning": "折叠；层",
+    "segment": "fold",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:for": {
+    "deep_origin": "来自拉丁语 fortis，意为'强壮'。",
+    "derivatives": [
+      "fortress",
+      "fortify"
+    ],
+    "lookup_count": 0,
+    "meaning": "强壮",
+    "segment": "for",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:force": {
+    "deep_origin": "拉丁语 fortis，意为'强壮的'，引申为力量。",
+    "derivatives": [
+      "force",
+      "reinforce"
+    ],
+    "lookup_count": 0,
+    "meaning": "力量",
+    "segment": "force",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:form": {
+    "deep_origin": "来自拉丁语 forma，表示'形状'、'形式'。",
+    "derivatives": [
+      "format",
+      "reform",
+      "uniform"
+    ],
+    "lookup_count": 0,
+    "meaning": "形状；形式",
+    "segment": "form",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:frame": {
+    "deep_origin": "古英语 framian，意为'有用的、搭建起结构'。",
+    "derivatives": [
+      "framework",
+      "frame"
+    ],
+    "lookup_count": 0,
+    "meaning": "框架",
+    "segment": "frame",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:funct": {
+    "deep_origin": "来自拉丁语 functus，表示'执行、履行'。",
+    "derivatives": [
+      "function",
+      "functional"
+    ],
+    "lookup_count": 0,
+    "meaning": "执行；履行",
+    "segment": "funct",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:gen": {
+    "deep_origin": "来自希腊语/拉丁语，表示'产生'、'种族'或'种类'。",
+    "derivatives": [
+      "generate",
+      "congenial",
+      "genesis"
+    ],
+    "lookup_count": 0,
+    "meaning": "产生；种类",
+    "segment": "gen",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:gener": {
+    "deep_origin": "拉丁语 genus，表示'种类、出生、全体'。",
+    "derivatives": [
+      "general",
+      "generalize",
+      "generate"
+    ],
+    "lookup_count": 0,
+    "meaning": "种类；全体",
+    "segment": "gener",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:gon": {
+    "deep_origin": "希腊语 gōnia，表示'角'。",
+    "derivatives": [
+      "polygon",
+      "diagonal"
+    ],
+    "lookup_count": 0,
+    "meaning": "角",
+    "segment": "gon",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:grad": {
+    "deep_origin": "拉丁语 gradus，表示'步、级'。",
+    "derivatives": [
+      "grade",
+      "gradual",
+      "graduate"
+    ],
+    "lookup_count": 0,
+    "meaning": "步；级",
+    "segment": "grad",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:graph": {
+    "deep_origin": "源自希腊语 \"graphein\"，意为“写、画”。在计算机中指代图形、绘图或数据结构中的图。",
+    "derivatives": [
+      "graphic",
+      "graph",
+      "autograph"
+    ],
+    "lookup_count": 0,
+    "meaning": "写；画",
+    "segment": "graph",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:gress": {
+    "deep_origin": "拉丁语 gradi 的完成分词 gressus，表示'走、步'。",
+    "derivatives": [
+      "progress",
+      "aggressive",
+      "congress"
+    ],
+    "lookup_count": 0,
+    "meaning": "走；步",
+    "segment": "gress",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:group_root": {
+    "deep_origin": "来自古意大利语 gruppo（结、圆圈），源自日耳曼语 kruppaz（一团、一堆）。Linux 的 group 机制把多个 user 捆成一组，统一管理权限——一个 group 就是一个'权限圈子'。",
+    "derivatives": [
+      "group",
+      "grouping",
+      "regroup",
+      "subgroup"
+    ],
+    "lookup_count": 0,
+    "meaning": "群；组；圈",
+    "segment": "group",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:gu": {
+    "deep_origin": "源自拉丁语 dubium (怀疑/双重)。",
+    "derivatives": [
+      "ambiguous"
+    ],
+    "lookup_count": 0,
+    "meaning": "双重/不确定",
+    "segment": "gu",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:heap": {
+    "deep_origin": "源自古英语 hēap，表示'一堆、大量'。",
+    "derivatives": [
+      "heaping"
+    ],
+    "lookup_count": 0,
+    "meaning": "堆；大量",
+    "segment": "heap",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:hem": {
+    "deep_origin": "来自希腊语 hemera，意为'天/日'。",
+    "derivatives": [
+      "hemisphere"
+    ],
+    "lookup_count": 0,
+    "meaning": "天/日",
+    "segment": "hem",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:her": {
+    "deep_origin": "来自拉丁语 haerere，意为'粘附'或'紧贴'。",
+    "derivatives": [
+      "adhere",
+      "cohesion"
+    ],
+    "lookup_count": 0,
+    "meaning": "粘附/紧贴",
+    "segment": "her",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:herit": {
+    "deep_origin": "源自拉丁语 hereditare，表示'继承、传给'。",
+    "derivatives": [
+      "heritage",
+      "heir"
+    ],
+    "lookup_count": 0,
+    "meaning": "继承",
+    "segment": "herit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:heur": {
+    "deep_origin": "希腊语 heuriskein，表示'发现、找到'（Eureka 也同源）。",
+    "derivatives": [
+      "heuristic",
+      "heuristics"
+    ],
+    "lookup_count": 0,
+    "meaning": "发现",
+    "segment": "heur",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:hood": {
+    "deep_origin": "古英语 -had，名词后缀，表示状态、性质、身份。",
+    "derivatives": [
+      "likelihood",
+      "childhood",
+      "neighborhood"
+    ],
+    "lookup_count": 0,
+    "meaning": "（状态后缀）",
+    "segment": "hood",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:host_root": {
+    "deep_origin": "来自拉丁语 hospes（主人、客人），中世纪拉丁语 hostis（外来者）。host 在 Linux/网络中指'提供服务的主机'——它是网络上的'主人'，接待来自各处的连接请求。",
+    "derivatives": [
+      "host",
+      "hostname",
+      "localhost",
+      "hosted"
+    ],
+    "lookup_count": 0,
+    "meaning": "主人；主机",
+    "segment": "host",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:hyper": {
+    "deep_origin": "希腊语 hyper，表示'在...之上、超越'。",
+    "derivatives": [
+      "hyperplane",
+      "hyperparameter",
+      "hyperlink"
+    ],
+    "lookup_count": 0,
+    "meaning": "超；超越",
+    "segment": "hyper",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:ial": {
+    "deep_origin": "形容词后缀，表示'与...相关的'。",
+    "derivatives": [
+      "essential",
+      "partial"
+    ],
+    "lookup_count": 0,
+    "meaning": "相关的",
+    "segment": "ial",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ible": {
+    "deep_origin": "变体后缀，表示'能够……的'。",
+    "derivatives": [
+      "visible",
+      "eligible",
+      "audible"
+    ],
+    "lookup_count": 0,
+    "meaning": "能够……的",
+    "segment": "ible",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ic": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "magic"
+    ],
+    "lookup_count": 0,
+    "meaning": "……的",
+    "segment": "ic",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ical": {
+    "deep_origin": "后缀，将名词转为形容词，意为'关于……的'。",
+    "derivatives": [
+      "musical",
+      "logical",
+      "historical"
+    ],
+    "lookup_count": 0,
+    "meaning": "关于……的",
+    "segment": "ical",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:icy": {
+    "deep_origin": "名词后缀，表示性质或状态。",
+    "derivatives": [
+      "policy"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "icy",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:id": {
+    "deep_origin": "拉丁语 -idus，表示具有某种状态的形容词后缀。",
+    "derivatives": [
+      "valid",
+      "fluid"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词后缀）",
+    "segment": "id",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ident": {
+    "deep_origin": "来自拉丁语 idem，表示'相同的'。",
+    "derivatives": [
+      "identical",
+      "identity"
+    ],
+    "lookup_count": 0,
+    "meaning": "相同",
+    "segment": "ident",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ient": {
+    "deep_origin": "拉丁语 -iens，构成形容词或名词。",
+    "derivatives": [
+      "ingredient",
+      "patient",
+      "client"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词/名词后缀）",
+    "segment": "ient",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ific": {
+    "deep_origin": "由 -fying/ -fy 演变而来，表示'做'或'制造'。",
+    "derivatives": [
+      "magnificent",
+      "scientific",
+      "significant"
+    ],
+    "lookup_count": 0,
+    "meaning": "制造；做",
+    "segment": "ific",
+    "type": "词根/后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ify": {
+    "deep_origin": "源自拉丁语 facere 的后缀化形式 -ificare，表示'使变成、做'。",
+    "derivatives": [
+      "simplify",
+      "verify"
+    ],
+    "lookup_count": 0,
+    "meaning": "使...化",
+    "segment": "ify",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:im": {
+    "deep_origin": "否定前缀，表示'不'。",
+    "derivatives": [
+      "impossible",
+      "imperfect"
+    ],
+    "lookup_count": 0,
+    "meaning": "不",
+    "segment": "im",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:in": {
+    "deep_origin": "否定前缀，表示'不'。",
+    "derivatives": [
+      "incorrect"
+    ],
+    "lookup_count": 0,
+    "meaning": "不",
+    "segment": "in",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:in_prefix": {
+    "deep_origin": "来自古英语/拉丁语前缀 in-，意为'向内、进入'。input、install、include 都以 in 表示'进入内部'的方向。",
+    "derivatives": [
+      "input",
+      "install",
+      "include",
+      "stdin"
+    ],
+    "lookup_count": 0,
+    "meaning": "向内；进入",
+    "segment": "in",
+    "type": "前缀",
+    "updated_at": 1779355503688
+  },
+  "R:in_stall": {
+    "deep_origin": "来自中世纪拉丁语 installare，in-（进入）+ stallum（位置、固定的地方，源自古高地德语 stal，即'马厩隔间'）。install 就是'把程序放进它固定的位置'——安装到系统中。",
+    "derivatives": [
+      "install",
+      "stall",
+      "reinstall",
+      "uninstall"
+    ],
+    "lookup_count": 0,
+    "meaning": "放入位置；固定安置",
+    "segment": "in+stall",
+    "type": "词根组合",
+    "updated_at": 1779355503688
+  },
+  "R:in_suffix": {
+    "deep_origin": "名词后缀。",
+    "derivatives": [
+      "margin",
+      "origin"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "in",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ing": {
+    "deep_origin": "动名词后缀。",
+    "derivatives": [
+      "masking",
+      "pooling"
+    ],
+    "lookup_count": 0,
+    "meaning": "（动名词后缀）",
+    "segment": "ing",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:instanti": {
+    "deep_origin": "源自拉丁语 instantiāre，表示'使站立、使存在'。",
+    "derivatives": [
+      "instance",
+      "instant"
+    ],
+    "lookup_count": 0,
+    "meaning": "使实例化；使存在",
+    "segment": "instanti",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:int": {
+    "deep_origin": "来自拉丁语 integer，表示'完整的、未受损的'。",
+    "derivatives": [
+      "integrity",
+      "integer"
+    ],
+    "lookup_count": 0,
+    "meaning": "完整；整数",
+    "segment": "int",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:integ": {
+    "deep_origin": "源自拉丁语 integer，表示'完整的、未受损的'。",
+    "derivatives": [
+      "integer",
+      "integrity"
+    ],
+    "lookup_count": 0,
+    "meaning": "完整；整数",
+    "segment": "integ",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:inter": {
+    "deep_origin": "来自拉丁语，表示'在……之间'。",
+    "derivatives": [
+      "internet",
+      "interview",
+      "interact"
+    ],
+    "lookup_count": 0,
+    "meaning": "在……之间",
+    "segment": "inter",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:ion": {
+    "deep_origin": "名词后缀。",
+    "derivatives": [
+      "action"
+    ],
+    "lookup_count": 0,
+    "meaning": "过程/行为",
+    "segment": "ion",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ious": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "serious"
+    ],
+    "lookup_count": 0,
+    "meaning": "……的",
+    "segment": "ious",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ism": {
+    "deep_origin": "表示主义、学说或行为的后缀。",
+    "derivatives": [
+      "capitalism"
+    ],
+    "lookup_count": 0,
+    "meaning": "主义/行为",
+    "segment": "ism",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ist": {
+    "deep_origin": "希腊语 -istes，表示'从事...的人'或特性的后缀。",
+    "derivatives": [
+      "artist",
+      "scientist",
+      "tourist"
+    ],
+    "lookup_count": 0,
+    "meaning": "（特性/人后缀）",
+    "segment": "ist",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:it": {
+    "deep_origin": "名词后缀，用于构成抽象名词。",
+    "derivatives": [
+      "exit"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态",
+    "segment": "it",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:iter": {
+    "deep_origin": "拉丁语 iterum，表示'再一次、重新'。",
+    "derivatives": [
+      "iteration",
+      "reiterate"
+    ],
+    "lookup_count": 0,
+    "meaning": "再次；重复",
+    "segment": "iter",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ithm": {
+    "deep_origin": "希腊语 arithmos，表示'数字、计算'的变体结尾。",
+    "derivatives": [
+      "algorithm",
+      "logarithm"
+    ],
+    "lookup_count": 0,
+    "meaning": "计算",
+    "segment": "ithm",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ition": {
+    "deep_origin": "来自拉丁语名词后缀 -itio/-itionis，表示'行为或过程的结果'，常接在以 -t 结尾的词根后。partition、definition、competition 都用这个后缀。",
+    "derivatives": [
+      "partition",
+      "definition",
+      "competition",
+      "position"
+    ],
+    "lookup_count": 0,
+    "meaning": "行为；过程的结果（名词后缀）",
+    "segment": "ition",
+    "type": "后缀",
+    "updated_at": 1779355503688
+  },
+  "R:itive": {
+    "deep_origin": "形容词后缀，表示'具有...性质的'。",
+    "derivatives": [
+      "sensitive",
+      "repetitive"
+    ],
+    "lookup_count": 0,
+    "meaning": "具有...性质的",
+    "segment": "itive",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:itory": {
+    "deep_origin": "名词后缀，表示'场所、地方'。",
+    "derivatives": [
+      "territory",
+      "directory"
+    ],
+    "lookup_count": 0,
+    "meaning": "场所；地方",
+    "segment": "itory",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ity": {
+    "deep_origin": "名词后缀，表示'状态'。",
+    "derivatives": [
+      "purity"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态",
+    "segment": "ity",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:iv": {
+    "deep_origin": "源自拉丁语 -ivus，表示有某种倾向或性质的形容词后缀。",
+    "derivatives": [
+      "active",
+      "native"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词后缀）",
+    "segment": "iv",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ive": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "active",
+      "native"
+    ],
+    "lookup_count": 0,
+    "meaning": "（后缀）形容词后缀",
+    "segment": "ive",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ix": {
+    "deep_origin": "拉丁语 -ix，名词后缀。",
+    "derivatives": [
+      "matrix",
+      "appendix"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "ix",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:iz": {
+    "deep_origin": "动词后缀，表示'使...化'。",
+    "derivatives": [
+      "realize"
+    ],
+    "lookup_count": 0,
+    "meaning": "使...化",
+    "segment": "iz",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ize": {
+    "deep_origin": "希腊语 -izein，把名词/形容词变为动词的后缀。",
+    "derivatives": [
+      "generalize",
+      "optimize"
+    ],
+    "lookup_count": 0,
+    "meaning": "使变成...",
+    "segment": "ize",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ject": {
+    "deep_origin": "源自拉丁语 \"jacere\"，意为“扔、掷”。它代表了一种抛出或甩开的力量。",
+    "derivatives": [
+      "reject",
+      "inject",
+      "eject"
+    ],
+    "lookup_count": 0,
+    "meaning": "扔；掷",
+    "segment": "ject",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:jud": {
+    "deep_origin": "来自拉丁语 judicare，表示'判断'。",
+    "derivatives": [
+      "judge",
+      "judicial",
+      "judicious"
+    ],
+    "lookup_count": 0,
+    "meaning": "判断",
+    "segment": "jud",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:kern": {
+    "deep_origin": "古英语 cyrnel，表示'种子、果核'。",
+    "derivatives": [
+      "kernel"
+    ],
+    "lookup_count": 0,
+    "meaning": "核",
+    "segment": "kern",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:lat": {
+    "deep_origin": "拉丁语 latus，表示'宽阔的'。",
+    "derivatives": [
+      "dilation",
+      "latitude"
+    ],
+    "lookup_count": 0,
+    "meaning": "宽阔",
+    "segment": "lat",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:lay": {
+    "deep_origin": "古英语 lecgan，意为'平放、放置'。",
+    "derivatives": [
+      "layer",
+      "layout"
+    ],
+    "lookup_count": 0,
+    "meaning": "放置",
+    "segment": "lay",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:licit": {
+    "deep_origin": "来自拉丁语 licere，意为'允许'或'被吸引'。",
+    "derivatives": [
+      "licit",
+      "illicit"
+    ],
+    "lookup_count": 0,
+    "meaning": "允许/吸引",
+    "segment": "licit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:like": {
+    "deep_origin": "古英语 lic，意为'身体、外表相似'。",
+    "derivatives": [
+      "likelihood",
+      "likely"
+    ],
+    "lookup_count": 0,
+    "meaning": "相似；可能",
+    "segment": "like",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:line": {
+    "deep_origin": "拉丁语 linea，意为'线、绳'。",
+    "derivatives": [
+      "linear",
+      "pipeline",
+      "baseline"
+    ],
+    "lookup_count": 0,
+    "meaning": "线",
+    "segment": "line",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:link": {
+    "deep_origin": "源自古诺斯语 linkr，表示'连接、纽带'。",
+    "derivatives": [
+      "linker"
+    ],
+    "lookup_count": 0,
+    "meaning": "连接；纽带",
+    "segment": "link",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:load": {
+    "deep_origin": "古英语 lad，意为'引导、承载物'。",
+    "derivatives": [
+      "dataloader",
+      "download"
+    ],
+    "lookup_count": 0,
+    "meaning": "加载；承载",
+    "segment": "load",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:loc": {
+    "deep_origin": "拉丁语 locus，表示'地方、位置'。",
+    "derivatives": [
+      "local",
+      "location"
+    ],
+    "lookup_count": 0,
+    "meaning": "地方；位置",
+    "segment": "loc",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:log": {
+    "deep_origin": "来自古北欧语 lag（原木），航海时水手把原木扔进海里计算船速，记录在航海日志里，这本日志就叫 logbook，后来 log 引申为'记录'。login 中 log 取'记录进入'之意。",
+    "derivatives": [
+      "login",
+      "logout",
+      "logfile",
+      "syslog"
+    ],
+    "lookup_count": 0,
+    "meaning": "记录；日志",
+    "segment": "log",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:logy": {
+    "deep_origin": "希腊语 -logia，表示'学问、科学'。",
+    "derivatives": [
+      "topology",
+      "biology",
+      "technology"
+    ],
+    "lookup_count": 0,
+    "meaning": "学问；逻辑",
+    "segment": "logy",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:loqu": {
+    "deep_origin": "来自拉丁语 loqui，意为'说'。",
+    "derivatives": [
+      "eloquent",
+      "soliloquy"
+    ],
+    "lookup_count": 0,
+    "meaning": "说",
+    "segment": "loqu",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:luc": {
+    "deep_origin": "来自拉丁语 lux/lucis，表示'光'、'明亮'。",
+    "derivatives": [
+      "lucid",
+      "translucent",
+      "elucidate"
+    ],
+    "lookup_count": 0,
+    "meaning": "光；明亮",
+    "segment": "luc",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:lucin": {
+    "deep_origin": "拉丁语 hallucinari，意为'游荡、做梦、精神错乱'。",
+    "derivatives": [
+      "hallucinate",
+      "hallucination"
+    ],
+    "lookup_count": 0,
+    "meaning": "幻觉",
+    "segment": "lucin",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:magn": {
+    "deep_origin": "来自拉丁语 magnus，意为'巨大的'。",
+    "derivatives": [
+      "magnify",
+      "magnitude"
+    ],
+    "lookup_count": 0,
+    "meaning": "大；巨大",
+    "segment": "magn",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:mal": {
+    "deep_origin": "来自拉丁语 male，意为'坏'。",
+    "derivatives": [
+      "malice",
+      "malfunction"
+    ],
+    "lookup_count": 0,
+    "meaning": "坏；恶",
+    "segment": "mal",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:mand": {
+    "deep_origin": "来自拉丁语 mandare（委托、命令），词根含义是'交到手中'。command、demand、mandate 都含这个'下令'的核心。",
+    "derivatives": [
+      "command",
+      "demand",
+      "mandate",
+      "commander"
+    ],
+    "lookup_count": 0,
+    "meaning": "命令；托付",
+    "segment": "mand",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:mani": {
+    "deep_origin": "古英语 manig，表示'很多、多'（many 的词源）。",
+    "derivatives": [
+      "manifold"
+    ],
+    "lookup_count": 0,
+    "meaning": "多",
+    "segment": "mani",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:mar": {
+    "deep_origin": "源自拉丁语 \"mare\"，意为“海洋”。",
+    "derivatives": [
+      "marine",
+      "maritime",
+      "submarine"
+    ],
+    "lookup_count": 0,
+    "meaning": "海洋",
+    "segment": "mar",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:marg": {
+    "deep_origin": "拉丁语 margo，表示'边界、边缘'。",
+    "derivatives": [
+      "margin",
+      "marginal"
+    ],
+    "lookup_count": 0,
+    "meaning": "边缘",
+    "segment": "marg",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:mark": {
+    "deep_origin": "古英语 mearc，标记、界限。",
+    "derivatives": [
+      "benchmark"
+    ],
+    "lookup_count": 0,
+    "meaning": "标记",
+    "segment": "mark",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:mask": {
+    "deep_origin": "法语 masque，意为'面具'。",
+    "derivatives": [
+      "masking",
+      "mask"
+    ],
+    "lookup_count": 0,
+    "meaning": "面具；遮盖",
+    "segment": "mask",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:matic": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "automatic"
+    ],
+    "lookup_count": 0,
+    "meaning": "……的",
+    "segment": "matic",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:matr": {
+    "deep_origin": "拉丁语 mater，表示'母亲、子宫'，引申为孕育事物的母体/基础环境。",
+    "derivatives": [
+      "matrix",
+      "maternal"
+    ],
+    "lookup_count": 0,
+    "meaning": "母亲；母体",
+    "segment": "matr",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:max": {
+    "deep_origin": "拉丁语 maximus，意为'最大的'。",
+    "derivatives": [
+      "softmax",
+      "maximum"
+    ],
+    "lookup_count": 0,
+    "meaning": "最大",
+    "segment": "max",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:mechan": {
+    "deep_origin": "希腊语 mēkhanē，表示'机器、工具'。",
+    "derivatives": [
+      "mechanism",
+      "mechanic"
+    ],
+    "lookup_count": 0,
+    "meaning": "机器",
+    "segment": "mechan",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:melli": {
+    "deep_origin": "来自拉丁语 mel，意为'蜂蜜'。",
+    "derivatives": [
+      "melleous"
+    ],
+    "lookup_count": 0,
+    "meaning": "蜂蜜",
+    "segment": "melli",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:mens": {
+    "deep_origin": "拉丁语 mensus，表示'测量'。",
+    "derivatives": [
+      "dimension",
+      "measure"
+    ],
+    "lookup_count": 0,
+    "meaning": "测量",
+    "segment": "mens",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ment": {
+    "deep_origin": "拉丁语 -mentum，名词后缀，表示动作的结果或手段。",
+    "derivatives": [
+      "environment",
+      "reinforcement"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "ment",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ment_suffix": {
+    "deep_origin": "名词后缀。",
+    "derivatives": [
+      "momentum"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "ment",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:merg": {
+    "deep_origin": "源自拉丁语 \"mergere\"，意为“沉入、浸入”。",
+    "derivatives": [
+      "merge",
+      "submerge",
+      "emerge"
+    ],
+    "lookup_count": 0,
+    "meaning": "沉入；浸入",
+    "segment": "merg",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:meter": {
+    "deep_origin": "希腊语 metron，表示'测量、度量'。",
+    "derivatives": [
+      "centimeter",
+      "thermometer"
+    ],
+    "lookup_count": 0,
+    "meaning": "测量",
+    "segment": "meter",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:metr": {
+    "deep_origin": "希腊语 metron，表示'测量、度量'。",
+    "derivatives": [
+      "metric",
+      "meter",
+      "geometry"
+    ],
+    "lookup_count": 0,
+    "meaning": "测量",
+    "segment": "metr",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:metu": {
+    "deep_origin": "来自拉丁语 metus，意为'恐惧'。",
+    "derivatives": [
+      "metus"
+    ],
+    "lookup_count": 0,
+    "meaning": "恐惧",
+    "segment": "metu",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:micro": {
+    "deep_origin": "源自希腊语 \"mikros\"，意为“微小的”。代表了半导体技术中微缩化的趋势。",
+    "derivatives": [
+      "microscope",
+      "microwave",
+      "microchip"
+    ],
+    "lookup_count": 0,
+    "meaning": "微小的",
+    "segment": "micro",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:miss": {
+    "deep_origin": "来自拉丁语 mittere（发送、放出）。permission 中 miss 表示'放行'，submit 中的 mit 同根，都是'送出去'的意思。",
+    "derivatives": [
+      "permission",
+      "submit",
+      "mission",
+      "dismiss",
+      "emit"
+    ],
+    "lookup_count": 0,
+    "meaning": "发送；放出",
+    "segment": "miss",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:mit": {
+    "deep_origin": "来自拉丁语 mittere，表示'送'、'发'。",
+    "derivatives": [
+      "mission",
+      "admit",
+      "transmit"
+    ],
+    "lookup_count": 0,
+    "meaning": "送；发",
+    "segment": "mit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:mo": {
+    "deep_origin": "拉丁语 movere，意为'移动'。",
+    "derivatives": [
+      "motion",
+      "momentum"
+    ],
+    "lookup_count": 0,
+    "meaning": "移动",
+    "segment": "mo",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:mod": {
+    "deep_origin": "拉丁语 modus，表示'方式、模式'。",
+    "derivatives": [
+      "mode",
+      "multimodal"
+    ],
+    "lookup_count": 0,
+    "meaning": "模式",
+    "segment": "mod",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:modul": {
+    "deep_origin": "来自拉丁语 modulus，表示'度量、标准、单位'。",
+    "derivatives": [
+      "module",
+      "modular"
+    ],
+    "lookup_count": 0,
+    "meaning": "单位；度量",
+    "segment": "modul",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:morph": {
+    "deep_origin": "来自希腊语 morphē，表示'形状、形式'。",
+    "derivatives": [
+      "morphology",
+      "amorphous",
+      "metamorphosis"
+    ],
+    "lookup_count": 0,
+    "meaning": "形状；形式",
+    "segment": "morph",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:mount_root": {
+    "deep_origin": "来自拉丁语 mons/montis（山），引申为'登上、装上'。mount 在 Linux 中指把文件系统'挂载'到目录树上，就像把一座山接到地图上。",
+    "derivatives": [
+      "mount",
+      "mountain",
+      "dismount",
+      "unmount"
+    ],
+    "lookup_count": 0,
+    "meaning": "山；登上；挂载",
+    "segment": "mount",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:mpt": {
+    "deep_origin": "拉丁语 emere 的完成分词 emptus，表示'拿、取'。",
+    "derivatives": [
+      "prompt",
+      "exempt"
+    ],
+    "lookup_count": 0,
+    "meaning": "拿取",
+    "segment": "mpt",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:multi": {
+    "deep_origin": "拉丁语 multus，表示'许多、多'。",
+    "derivatives": [
+      "multiple",
+      "multimodal"
+    ],
+    "lookup_count": 0,
+    "meaning": "多",
+    "segment": "multi",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:mut": {
+    "deep_origin": "来自拉丁语 mutare，表示'改变'。",
+    "derivatives": [
+      "mutation",
+      "mutable",
+      "immutable"
+    ],
+    "lookup_count": 0,
+    "meaning": "改变",
+    "segment": "mut",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:name": {
+    "deep_origin": "源自古英语 nama，表示'名称'。",
+    "derivatives": [
+      "name"
+    ],
+    "lookup_count": 0,
+    "meaning": "名称",
+    "segment": "name",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:nation": {
+    "deep_origin": "来自拉丁语 nasci，意为'出生'，引申为'民族/国家'。",
+    "derivatives": [
+      "national",
+      "native",
+      "nationwide"
+    ],
+    "lookup_count": 0,
+    "meaning": "国家；民族",
+    "segment": "nation",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:neck": {
+    "deep_origin": "古英语 hnecca，表示'脖子'。",
+    "derivatives": [
+      "bottleneck"
+    ],
+    "lookup_count": 0,
+    "meaning": "脖子",
+    "segment": "neck",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:nect": {
+    "deep_origin": "来自拉丁语 nectere，表示'捆绑、连接'。",
+    "derivatives": [
+      "connect",
+      "disconnect",
+      "annex"
+    ],
+    "lookup_count": 0,
+    "meaning": "连接",
+    "segment": "nect",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:net": {
+    "deep_origin": "来自古英语 nett（网），源自印欧语系词根 ned-（捆绑、编织）。网络就是无数节点'编织'在一起的结构，network 直接取义于'像网一样的工作结构'。",
+    "derivatives": [
+      "network",
+      "internet",
+      "subnet",
+      "netstat"
+    ],
+    "lookup_count": 0,
+    "meaning": "网；编织",
+    "segment": "net",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:nic": {
+    "deep_origin": "来自拉丁语 neces，意为'死亡'或'灾难'。",
+    "derivatives": [
+      "obnoxious"
+    ],
+    "lookup_count": 0,
+    "meaning": "死亡/有害",
+    "segment": "nic",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:node": {
+    "deep_origin": "源自拉丁语 nodus，表示'结、节点'。",
+    "derivatives": [
+      "nodal"
+    ],
+    "lookup_count": 0,
+    "meaning": "节点；结",
+    "segment": "node",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:nom": {
+    "deep_origin": "希腊语 nomos，表示'法律、规则、管理'。",
+    "derivatives": [
+      "economy",
+      "astronomy",
+      "autonomy"
+    ],
+    "lookup_count": 0,
+    "meaning": "规则；管理",
+    "segment": "nom",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:norm": {
+    "deep_origin": "拉丁语 norma，表示'木匠的矩尺、规范、标准'。",
+    "derivatives": [
+      "normal",
+      "enormous",
+      "abnormal"
+    ],
+    "lookup_count": 0,
+    "meaning": "规范；标准",
+    "segment": "norm",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:numer": {
+    "deep_origin": "来自拉丁语 numerus，表示'数字'。",
+    "derivatives": [
+      "number",
+      "numerous"
+    ],
+    "lookup_count": 0,
+    "meaning": "数字",
+    "segment": "numer",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ob": {
+    "deep_origin": "来自拉丁语 ob，表示'朝着'、'面对'或'在……之后'。",
+    "derivatives": [
+      "obstacle",
+      "obvious"
+    ],
+    "lookup_count": 0,
+    "meaning": "朝着/在后",
+    "segment": "ob",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:och": {
+    "deep_origin": "希腊语 echein，表示'持有、停留'。",
+    "derivatives": [
+      "epoch"
+    ],
+    "lookup_count": 0,
+    "meaning": "停留",
+    "segment": "och",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:oid": {
+    "deep_origin": "希腊语 eidos，意为'形状、类似...的'。",
+    "derivatives": [
+      "sigmoid",
+      "android"
+    ],
+    "lookup_count": 0,
+    "meaning": "类似...形状的",
+    "segment": "oid",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:old": {
+    "deep_origin": "古英语 wald，意为'控制、状态'（与hold同源）。",
+    "derivatives": [
+      "threshold"
+    ],
+    "lookup_count": 0,
+    "meaning": "保持",
+    "segment": "old",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ology": {
+    "deep_origin": "希腊语后缀，表示'学说'、'学科'。",
+    "derivatives": [
+      "biology",
+      "psychology"
+    ],
+    "lookup_count": 0,
+    "meaning": "学科；学说",
+    "segment": "ology",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:omni": {
+    "deep_origin": "来自拉丁语 omnis，意为'全部'或'所有'。",
+    "derivatives": [
+      "omnipotent",
+      "omnibus"
+    ],
+    "lookup_count": 0,
+    "meaning": "全部；所有",
+    "segment": "omni",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:opt": {
+    "deep_origin": "来自拉丁语 optare（选择、希望）。option、optional、opt-in 都源于此——Linux 命令行里的 option 就是'你可以选择加上或不加上的参数'。",
+    "derivatives": [
+      "option",
+      "optional",
+      "opt",
+      "adopt"
+    ],
+    "lookup_count": 0,
+    "meaning": "选择；希望",
+    "segment": "opt",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:optim": {
+    "deep_origin": "拉丁语 optimus，意为'最好的'（good 的最高级）。",
+    "derivatives": [
+      "optimal",
+      "optimism"
+    ],
+    "lookup_count": 0,
+    "meaning": "最好",
+    "segment": "optim",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:or": {
+    "deep_origin": "名词后缀。",
+    "derivatives": [
+      "vector"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "or",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ortho": {
+    "deep_origin": "希腊语 orthos，表示'直的、正确的、正规的'。",
+    "derivatives": [
+      "orthodox",
+      "orthogonal"
+    ],
+    "lookup_count": 0,
+    "meaning": "正；直",
+    "segment": "ortho",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:ory": {
+    "deep_origin": "来自拉丁语 -orium/-oria，表示'进行某活动的场所'。laboratory（实验室）、directory（目录）都用这个后缀表示'地方'。",
+    "derivatives": [
+      "directory",
+      "laboratory",
+      "territory",
+      "dormitory"
+    ],
+    "lookup_count": 0,
+    "meaning": "……的地方；场所（名词后缀）",
+    "segment": "ory",
+    "type": "后缀",
+    "updated_at": 1779355503688
+  },
+  "R:ous": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "famous"
+    ],
+    "lookup_count": 0,
+    "meaning": "充满……的",
+    "segment": "ous",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:out": {
+    "deep_origin": "古英语 ut，意为'向外、出'。",
+    "derivatives": [
+      "dropout",
+      "output"
+    ],
+    "lookup_count": 0,
+    "meaning": "出",
+    "segment": "out",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:over": {
+    "deep_origin": "古英语 ofer，表示'在...之上、过度'。",
+    "derivatives": [
+      "overfit",
+      "overload",
+      "override"
+    ],
+    "lookup_count": 0,
+    "meaning": "过度；在...之上",
+    "segment": "over",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:own": {
+    "deep_origin": "来自古英语 āgnian（拥有、占有），源自 āgen（自己的）。owner 在 Linux 中指文件的'拥有者'——ls -l 第三列显示的用户名就是该文件的 owner。",
+    "derivatives": [
+      "owner",
+      "own",
+      "ownership",
+      "owned"
+    ],
+    "lookup_count": 0,
+    "meaning": "拥有；自己的",
+    "segment": "own",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:pack": {
+    "deep_origin": "源自古英语 pacchen，表示'捆绑、打包'。",
+    "derivatives": [
+      "packet",
+      "package"
+    ],
+    "lookup_count": 0,
+    "meaning": "打包；捆绑",
+    "segment": "pack",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pad": {
+    "deep_origin": "可能源自日耳曼语族，意为'软垫'。",
+    "derivatives": [
+      "padding",
+      "pad"
+    ],
+    "lookup_count": 0,
+    "meaning": "软垫",
+    "segment": "pad",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pag": {
+    "deep_origin": "拉丁语 pangere 的词根，表示'固定、扎根、连接'。",
+    "derivatives": [
+      "page",
+      "propagate",
+      "pact"
+    ],
+    "lookup_count": 0,
+    "meaning": "固定；扎根",
+    "segment": "pag",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pand": {
+    "deep_origin": "来自拉丁语 pandere，意为'展开'。",
+    "derivatives": [
+      "expand",
+      "expandable"
+    ],
+    "lookup_count": 0,
+    "meaning": "展开",
+    "segment": "pand",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:para": {
+    "deep_origin": "希腊语 para-，表示'在旁边、超出、辅助'。",
+    "derivatives": [
+      "parallel",
+      "paragraph"
+    ],
+    "lookup_count": 0,
+    "meaning": "辅助；旁边",
+    "segment": "para",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:pars": {
+    "deep_origin": "拉丁语 pars，意为'部分'。",
+    "derivatives": [
+      "parse",
+      "part",
+      "partial"
+    ],
+    "lookup_count": 0,
+    "meaning": "部分",
+    "segment": "pars",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:part": {
+    "deep_origin": "来自拉丁语 pars/partis（部分、份额）。partition 就是'划分出去的一份'，department（分出去的部门）、apart（分开）也含此根。",
+    "derivatives": [
+      "partition",
+      "part",
+      "department",
+      "apart",
+      "partial"
+    ],
+    "lookup_count": 0,
+    "meaning": "部分；划分",
+    "segment": "part",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:pass": {
+    "deep_origin": "来自拉丁语 passus（步伐、通过），源自 pandere（展开、通过）。password 中 pass 指'通过验证'的动作——持有正确密码才能'走过'门卫。",
+    "derivatives": [
+      "password",
+      "pass",
+      "passport",
+      "bypass"
+    ],
+    "lookup_count": 0,
+    "meaning": "通过；经过",
+    "segment": "pass",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:pat": {
+    "deep_origin": "源自拉丁语 pati，表示'承受、忍受'。",
+    "derivatives": [
+      "patient",
+      "passion"
+    ],
+    "lookup_count": 0,
+    "meaning": "承受；忍受",
+    "segment": "pat",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:path": {
+    "deep_origin": "来自希腊语 pathos，表示'感情'、'痛苦'。",
+    "derivatives": [
+      "sympathy",
+      "empathy",
+      "pathology"
+    ],
+    "lookup_count": 0,
+    "meaning": "感情；痛苦",
+    "segment": "path",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:path_root": {
+    "deep_origin": "来自古英语 pæþ（小路、踩出来的道），源自原始日耳曼语 patha-。Linux 的路径就是文件系统里'踩出来的一条路'——从根目录 / 到目标文件的一串目录名。",
+    "derivatives": [
+      "path",
+      "pathname",
+      "filepath",
+      "classpath"
+    ],
+    "lookup_count": 0,
+    "meaning": "路；路径",
+    "segment": "path",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:pen": {
+    "deep_origin": "拉丁语 poena，意为'惩罚、痛苦'。",
+    "derivatives": [
+      "penalty",
+      "penal"
+    ],
+    "lookup_count": 0,
+    "meaning": "惩罚",
+    "segment": "pen",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pend": {
+    "deep_origin": "来自拉丁语 pendere，表示'悬挂、依赖'。",
+    "derivatives": [
+      "depend",
+      "append",
+      "suspend"
+    ],
+    "lookup_count": 0,
+    "meaning": "悬挂；依赖",
+    "segment": "pend",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pens": {
+    "deep_origin": "来自拉丁语 pendere，意为'称重'或'支付'。",
+    "derivatives": [
+      "expense",
+      "pension",
+      "suspense"
+    ],
+    "lookup_count": 0,
+    "meaning": "称重；支付",
+    "segment": "pens",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:per": {
+    "deep_origin": "表示'彻底地'或'穿过'。",
+    "derivatives": [
+      "perfect"
+    ],
+    "lookup_count": 0,
+    "meaning": "彻底地",
+    "segment": "per",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:phan": {
+    "deep_origin": "来自希腊语 phainein，意为'显示'或'出现'。",
+    "derivatives": [
+      "phantom",
+      "phenomenon"
+    ],
+    "lookup_count": 0,
+    "meaning": "显示/出现",
+    "segment": "phan",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:phem": {
+    "deep_origin": "来自希腊语 phēmē，意为'说话'或'言语'。",
+    "derivatives": [
+      "eponym"
+    ],
+    "lookup_count": 0,
+    "meaning": "说话/言语",
+    "segment": "phem",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:phore": {
+    "deep_origin": "来自希腊语 pherein，表示'携带、搬运'。",
+    "derivatives": [
+      "metaphor",
+      "phosphorus"
+    ],
+    "lookup_count": 0,
+    "meaning": "携带者",
+    "segment": "phore",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pil": {
+    "deep_origin": "来自拉丁语 pilare，表示'堆积、收集'。",
+    "derivatives": [
+      "pile",
+      "compile"
+    ],
+    "lookup_count": 0,
+    "meaning": "堆；收集",
+    "segment": "pil",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pile": {
+    "deep_origin": "拉丁语 pilare，表示'紧压、堆积'。",
+    "derivatives": [
+      "compile",
+      "pile"
+    ],
+    "lookup_count": 0,
+    "meaning": "堆积",
+    "segment": "pile",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pipe": {
+    "deep_origin": "通俗拉丁语 pipare，模仿鸟叫的声音，引申为芦苇管、管子。",
+    "derivatives": [
+      "pipeline",
+      "pipe"
+    ],
+    "lookup_count": 0,
+    "meaning": "管子",
+    "segment": "pipe",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pipe_root": {
+    "deep_origin": "来自拉丁语 pipa（管子、笛子），源自 pipare（吱吱叫）。管道就像一根'会传递声音的管子'——Linux 的 pipe 把一个命令的输出直接'灌入'下一个命令的输入。",
+    "derivatives": [
+      "pipe",
+      "pipeline",
+      "piped"
+    ],
+    "lookup_count": 0,
+    "meaning": "管；管道",
+    "segment": "pipe",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:plac": {
+    "deep_origin": "来自拉丁语 placere，意为'使人高兴'或'安抚'。",
+    "derivatives": [
+      "placebo",
+      "placate"
+    ],
+    "lookup_count": 0,
+    "meaning": "使高兴/安抚",
+    "segment": "plac",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:plane": {
+    "deep_origin": "拉丁语 planus，表示'平坦的'。",
+    "derivatives": [
+      "plane",
+      "hyperplane"
+    ],
+    "lookup_count": 0,
+    "meaning": "平面",
+    "segment": "plane",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:plar": {
+    "deep_origin": "来自拉丁语 exemplar (范本)。",
+    "derivatives": [
+      "example"
+    ],
+    "lookup_count": 0,
+    "meaning": "范本",
+    "segment": "plar",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ple": {
+    "deep_origin": "来自拉丁语 plere，意为'填满'。",
+    "derivatives": [
+      "complete",
+      "supply",
+      "replete"
+    ],
+    "lookup_count": 0,
+    "meaning": "填满",
+    "segment": "ple",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:plex": {
+    "deep_origin": "拉丁语 plectere 的完成分词 plexus，表示'编织、缠绕'。",
+    "derivatives": [
+      "perplexity",
+      "complex"
+    ],
+    "lookup_count": 0,
+    "meaning": "缠绕；复杂",
+    "segment": "plex",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ploit": {
+    "deep_origin": "拉丁语 plicare，意为'折叠'，引申为使用、利用（与deploy同源）。",
+    "derivatives": [
+      "exploit"
+    ],
+    "lookup_count": 0,
+    "meaning": "利用",
+    "segment": "ploit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:plor": {
+    "deep_origin": "拉丁语 plorare，意为'呼喊'（早期指大声喊叫探路）。",
+    "derivatives": [
+      "explore",
+      "deplore"
+    ],
+    "lookup_count": 0,
+    "meaning": "呼喊；探测",
+    "segment": "plor",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ploy": {
+    "deep_origin": "拉丁语 plicare，意为'折叠'，引申为打开、布置。",
+    "derivatives": [
+      "deploy",
+      "employ"
+    ],
+    "lookup_count": 0,
+    "meaning": "折叠",
+    "segment": "ploy",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pol": {
+    "deep_origin": "希腊语 polis，意为'城市、国家'，引申为管理方式。",
+    "derivatives": [
+      "policy",
+      "politics",
+      "police"
+    ],
+    "lookup_count": 0,
+    "meaning": "城市；管理",
+    "segment": "pol",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:poly": {
+    "deep_origin": "来自希腊语 poly，表示'许多、多'。",
+    "derivatives": [
+      "polygon",
+      "polyglot",
+      "polymer"
+    ],
+    "lookup_count": 0,
+    "meaning": "多；许多",
+    "segment": "poly",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:pon": {
+    "deep_origin": "来自拉丁语 ponere，表示'放置'。",
+    "derivatives": [
+      "postpone",
+      "component"
+    ],
+    "lookup_count": 0,
+    "meaning": "放置",
+    "segment": "pon",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pool": {
+    "deep_origin": "古英语 pōl，意为'小水坑'，引申为汇总、集中池。",
+    "derivatives": [
+      "pooling"
+    ],
+    "lookup_count": 0,
+    "meaning": "池",
+    "segment": "pool",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:port": {
+    "deep_origin": "源自拉丁语 \"portare\"，意为“携带、搬运”。",
+    "derivatives": [
+      "import",
+      "export",
+      "transport"
+    ],
+    "lookup_count": 0,
+    "meaning": "携带；搬运",
+    "segment": "port",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:port_root": {
+    "deep_origin": "来自拉丁语 porta（门、港口），源自 portare（携带、运送）。port 原指'船只进出的门'——网络中的 port（端口）是数据包进出计算机的'逻辑之门'，每个服务守在各自的门口。",
+    "derivatives": [
+      "port",
+      "portal",
+      "transport",
+      "import",
+      "export"
+    ],
+    "lookup_count": 0,
+    "meaning": "门；港口；入口",
+    "segment": "port",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:pos": {
+    "deep_origin": "拉丁语 ponere 的过去分词 positus，意为'放置'。",
+    "derivatives": [
+      "transpose",
+      "position"
+    ],
+    "lookup_count": 0,
+    "meaning": "放置",
+    "segment": "pos",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:prag": {
+    "deep_origin": "来自希腊语 pragmatikos，意为'行动'或'事务'。",
+    "derivatives": [
+      "pragmatism"
+    ],
+    "lookup_count": 0,
+    "meaning": "行动；事务",
+    "segment": "prag",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pre": {
+    "deep_origin": "来自拉丁语 pre-，表示'在……之前'。",
+    "derivatives": [
+      "prepare",
+      "prefix",
+      "prelude"
+    ],
+    "lookup_count": 0,
+    "meaning": "在……之前",
+    "segment": "pre",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:present": {
+    "deep_origin": "拉丁语 praesentare，意为'展示、出席'。",
+    "derivatives": [
+      "represent",
+      "present"
+    ],
+    "lookup_count": 0,
+    "meaning": "展示",
+    "segment": "present",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:press": {
+    "deep_origin": "来自拉丁语 premere，表示'压、挤'。",
+    "derivatives": [
+      "pressure",
+      "impress"
+    ],
+    "lookup_count": 0,
+    "meaning": "压；挤",
+    "segment": "press",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pret": {
+    "deep_origin": "来自拉丁语 pretium，意为'价格'或'价值'。",
+    "derivatives": [
+      "pretense",
+      "apprehend"
+    ],
+    "lookup_count": 0,
+    "meaning": "价值",
+    "segment": "pret",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:prim": {
+    "deep_origin": "来自拉丁语 primus，表示'第一'。",
+    "derivatives": [
+      "primary",
+      "prime"
+    ],
+    "lookup_count": 0,
+    "meaning": "第一；最初",
+    "segment": "prim",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:pro": {
+    "deep_origin": "拉丁语 pro-，表示'向前、提出'。",
+    "derivatives": [
+      "prompt",
+      "provide",
+      "predict"
+    ],
+    "lookup_count": 0,
+    "meaning": "向前",
+    "segment": "pro",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:prob": {
+    "deep_origin": "源自拉丁语 probare（证明、检验）。",
+    "derivatives": [
+      "probe",
+      "probable",
+      "probability"
+    ],
+    "lookup_count": 0,
+    "meaning": "证明；测试",
+    "segment": "prob",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:process": {
+    "deep_origin": "来自拉丁语 procedere，表示'前进'。",
+    "derivatives": [
+      "process"
+    ],
+    "lookup_count": 0,
+    "meaning": "前进；过程",
+    "segment": "process",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:prop": {
+    "deep_origin": "来自拉丁语 proprius，表示'自己的、恰当的'。",
+    "derivatives": [
+      "proper",
+      "property"
+    ],
+    "lookup_count": 0,
+    "meaning": "自己的；恰当的",
+    "segment": "prop",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:proto": {
+    "deep_origin": "来自希腊语 protos（第一、最初）。protocol 原指'最初写在纸卷头部的摘要'，引申为'规定双方交互规则的文件'，即协议。TCP/IP 就是网络通信的 protocol。",
+    "derivatives": [
+      "protocol",
+      "prototype",
+      "proton",
+      "protagonist"
+    ],
+    "lookup_count": 0,
+    "meaning": "最初；第一",
+    "segment": "proto",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:prud": {
+    "deep_origin": "来自拉丁语 prudens，意为'明智的'或'预见的'。",
+    "derivatives": [
+      "prudence"
+    ],
+    "lookup_count": 0,
+    "meaning": "明智/预见",
+    "segment": "prud",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:put": {
+    "deep_origin": "来自古英语 putian（推、放置）。put 是'放'的动作，input 是放进去，output 是放出来，throughput 是穿过去。",
+    "derivatives": [
+      "output",
+      "input",
+      "throughput",
+      "put"
+    ],
+    "lookup_count": 0,
+    "meaning": "放；推",
+    "segment": "put",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:pute": {
+    "deep_origin": "来自拉丁语 putare，意为'修剪'，引申为'清理思路、思考、计算'。",
+    "derivatives": [
+      "dispute",
+      "reputation"
+    ],
+    "lookup_count": 0,
+    "meaning": "计算；思考",
+    "segment": "pute",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:quer": {
+    "deep_origin": "拉丁语 quaerere，表示'寻求、询问'。",
+    "derivatives": [
+      "query",
+      "question",
+      "require"
+    ],
+    "lookup_count": 0,
+    "meaning": "寻求",
+    "segment": "quer",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:quit": {
+    "deep_origin": "来自拉丁语 ubiquitas，引申为'无处不在'。",
+    "derivatives": [],
+    "lookup_count": 0,
+    "meaning": "存在/到处",
+    "segment": "quit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:rate": {
+    "deep_origin": "动词后缀，表示'使...'。",
+    "derivatives": [
+      "activate"
+    ],
+    "lookup_count": 0,
+    "meaning": "使...",
+    "segment": "rate",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:re": {
+    "deep_origin": "再次；向后。",
+    "derivatives": [
+      "return"
+    ],
+    "lookup_count": 0,
+    "meaning": "再次",
+    "segment": "re",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:re_ward": {
+    "deep_origin": "古法语 reguarder，意为'注意、看顾'，后演变为给予报酬。",
+    "derivatives": [
+      "reward",
+      "award"
+    ],
+    "lookup_count": 0,
+    "meaning": "回看；报酬",
+    "segment": "re",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:rect": {
+    "deep_origin": "来自拉丁语 regere（引导、使直），rect 是其过去分词词干。redirect（重新引导）、correct（纠正引导）、direct（直接引导）都含此根。",
+    "derivatives": [
+      "redirect",
+      "correct",
+      "direct",
+      "erect"
+    ],
+    "lookup_count": 0,
+    "meaning": "引导；使直",
+    "segment": "rect",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:reg": {
+    "deep_origin": "来自拉丁语 regere，表示'指导'、'统治'。",
+    "derivatives": [
+      "regent",
+      "regime",
+      "regular"
+    ],
+    "lookup_count": 0,
+    "meaning": "统治；指导",
+    "segment": "reg",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:regul": {
+    "deep_origin": "拉丁语 regula，表示'直木条、尺子、规则'。",
+    "derivatives": [
+      "regular",
+      "regulate"
+    ],
+    "lookup_count": 0,
+    "meaning": "规则",
+    "segment": "regul",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:reposit": {
+    "deep_origin": "来自拉丁语 reponere（重新放置、储存），re-（回）+ ponere（放置）。repository 就是'把东西放回去储存的地方'，Linux 的软件仓库和 Git 仓库都是这个概念。",
+    "derivatives": [
+      "repository",
+      "deposit",
+      "reposition",
+      "compose"
+    ],
+    "lookup_count": 0,
+    "meaning": "重新放置；储存",
+    "segment": "reposit",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:retic": {
+    "deep_origin": "来自拉丁语 reticere，意为'保持沉默'。",
+    "derivatives": [
+      "reticence"
+    ],
+    "lookup_count": 0,
+    "meaning": "沉默",
+    "segment": "retic",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:rithm": {
+    "deep_origin": "来自希腊语 rhythmos，表示'节奏、流动的规律'。",
+    "derivatives": [
+      "rhythm"
+    ],
+    "lookup_count": 0,
+    "meaning": "规律；节奏",
+    "segment": "rithm",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:riv": {
+    "deep_origin": "拉丁语 rivus，表示'溪流、河'，引申为从源头流出、派生。",
+    "derivatives": [
+      "derivative",
+      "river",
+      "derive"
+    ],
+    "lookup_count": 0,
+    "meaning": "河流",
+    "segment": "riv",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:rob": {
+    "deep_origin": "拉丁语 robur，意为'橡木、坚固的力量'。",
+    "derivatives": [
+      "robust"
+    ],
+    "lookup_count": 0,
+    "meaning": "强壮",
+    "segment": "rob",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:root_word": {
+    "deep_origin": "来自古北欧语 rot（树根），源自印欧语系词根 wrad-（根）。root 在 Linux 中是整个文件系统树的'根'，同时也是权限最高的超级用户——整棵树从这里长出来。",
+    "derivatives": [
+      "root",
+      "uproot",
+      "rootfs",
+      "rooted"
+    ],
+    "lookup_count": 0,
+    "meaning": "根；根源",
+    "segment": "root",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:ru": {
+    "deep_origin": "来自拉丁语 rura，意为'农村/土地'，引申为'他人/他处'。",
+    "derivatives": [
+      "rural"
+    ],
+    "lookup_count": 0,
+    "meaning": "他人/土地",
+    "segment": "ru",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:rupt": {
+    "deep_origin": "源自拉丁语 \"rumpere\"，意为“断裂、打破”。在计算机中指代进程的中断或中断请求。",
+    "derivatives": [
+      "rupture",
+      "interrupt",
+      "erupt"
+    ],
+    "lookup_count": 0,
+    "meaning": "断裂；打破",
+    "segment": "rupt",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sate": {
+    "deep_origin": "动词后缀，用于构成动词。",
+    "derivatives": [
+      "activate",
+      "create",
+      "simulate"
+    ],
+    "lookup_count": 0,
+    "meaning": "使……（动词后缀）",
+    "segment": "sate",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:scal": {
+    "deep_origin": "拉丁语 scala，表示'梯子、阶梯'，引申为刻度。",
+    "derivatives": [
+      "scalar",
+      "scale"
+    ],
+    "lookup_count": 0,
+    "meaning": "梯子；刻度",
+    "segment": "scal",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:scent": {
+    "deep_origin": "源自 scandere 的演变，表示'爬'。",
+    "derivatives": [
+      "descent",
+      "ascent"
+    ],
+    "lookup_count": 0,
+    "meaning": "爬；走",
+    "segment": "scent",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:schem": {
+    "deep_origin": "希腊语 skhēma，表示'形式、形状、方案'。",
+    "derivatives": [
+      "schema",
+      "scheme"
+    ],
+    "lookup_count": 0,
+    "meaning": "形状；方案",
+    "segment": "schem",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sci": {
+    "deep_origin": "意为'知道'。",
+    "derivatives": [
+      "science"
+    ],
+    "lookup_count": 0,
+    "meaning": "知道",
+    "segment": "sci",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:scrib": {
+    "deep_origin": "来自拉丁语 scribere，表示'写'。",
+    "derivatives": [
+      "describe",
+      "scribe"
+    ],
+    "lookup_count": 0,
+    "meaning": "写",
+    "segment": "scrib",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:script": {
+    "deep_origin": "来自拉丁语 scribere，表示'写'。",
+    "derivatives": [
+      "script",
+      "description"
+    ],
+    "lookup_count": 0,
+    "meaning": "写",
+    "segment": "script",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:script_root": {
+    "deep_origin": "来自拉丁语 scribere（书写）的过去分词词干 script。描述、抄本、处方都含这个'写下来'的核心，Linux 的 shell script 就是'写下来的一系列指令'。",
+    "derivatives": [
+      "script",
+      "describe",
+      "prescribe",
+      "manuscript"
+    ],
+    "lookup_count": 0,
+    "meaning": "写；刻",
+    "segment": "script",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:scrut": {
+    "deep_origin": "来自拉丁语 scrutari，意为'搜寻'或'检查'。",
+    "derivatives": [
+      "scrutiny",
+      "scrutinize"
+    ],
+    "lookup_count": 0,
+    "meaning": "检查；搜寻",
+    "segment": "scrut",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:seg": {
+    "deep_origin": "来自拉丁语 secare，表示'切、切开'。",
+    "derivatives": [
+      "segment",
+      "segregate"
+    ],
+    "lookup_count": 0,
+    "meaning": "切；切断",
+    "segment": "seg",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:segment": {
+    "deep_origin": "拉丁语 secare 的衍生名词 segmentum，表示'切下的一块、分段'。",
+    "derivatives": [
+      "segmentation",
+      "segment"
+    ],
+    "lookup_count": 0,
+    "meaning": "切块；分段",
+    "segment": "segment",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sem": {
+    "deep_origin": "来自希腊语 semainō，表示'信号、迹象'。",
+    "derivatives": [
+      "semiotic"
+    ],
+    "lookup_count": 0,
+    "meaning": "信号；迹象",
+    "segment": "sem",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:semant": {
+    "deep_origin": "希腊语 semainein，表示'显示、用记号表示'，引申为意义。",
+    "derivatives": [
+      "semantic",
+      "semantics"
+    ],
+    "lookup_count": 0,
+    "meaning": "记号；意义",
+    "segment": "semant",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:semi": {
+    "deep_origin": "拉丁语前缀，表示'一半、部分'。",
+    "derivatives": [
+      "semicircle",
+      "semiannual"
+    ],
+    "lookup_count": 0,
+    "meaning": "半；部分",
+    "segment": "semi",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:sequ": {
+    "deep_origin": "意为'跟随'。",
+    "derivatives": [
+      "sequence",
+      "consequence"
+    ],
+    "lookup_count": 0,
+    "meaning": "跟随",
+    "segment": "sequ",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ser": {
+    "deep_origin": "来自拉丁语 series，表示'序列、顺序'。",
+    "derivatives": [
+      "series",
+      "serial"
+    ],
+    "lookup_count": 0,
+    "meaning": "序列；顺序",
+    "segment": "ser",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:seri": {
+    "deep_origin": "源自拉丁语 series，表示'序列、顺序'。",
+    "derivatives": [
+      "serial",
+      "series"
+    ],
+    "lookup_count": 0,
+    "meaning": "序列；顺序",
+    "segment": "seri",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:serv": {
+    "deep_origin": "来自拉丁语 servire（服务、侍奉），词根 serv 含有'为他人服务'的核心意义。server（服务器）、service（服务）、serve（提供）都源于此，在 Linux 中 service 指后台运行并响应请求的程序。",
+    "derivatives": [
+      "service",
+      "server",
+      "serve",
+      "reserve"
+    ],
+    "lookup_count": 0,
+    "meaning": "服务；侍奉",
+    "segment": "serv",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:sess": {
+    "deep_origin": "来自拉丁语 sedere（坐），过去分词词干 sess/sid。session 原指'坐下来开会的一段时间'，在 Linux/网络中引申为'一次连接的持续期间'——从 login 到 logout 就是一个 session。",
+    "derivatives": [
+      "session",
+      "obsession",
+      "possess",
+      "president"
+    ],
+    "lookup_count": 0,
+    "meaning": "坐；停留",
+    "segment": "sess",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:set": {
+    "deep_origin": "古英语 settan，意为'放置、安排好的一组'。",
+    "derivatives": [
+      "dataset",
+      "setup"
+    ],
+    "lookup_count": 0,
+    "meaning": "集合",
+    "segment": "set",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:shape": {
+    "deep_origin": "古英语 sceap，意为'形态、创造'。",
+    "derivatives": [
+      "reshape",
+      "shape"
+    ],
+    "lookup_count": 0,
+    "meaning": "形状",
+    "segment": "shape",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sid": {
+    "deep_origin": "拉丁语 sedere，表示'坐下、留下'。",
+    "derivatives": [
+      "residual",
+      "reside"
+    ],
+    "lookup_count": 0,
+    "meaning": "坐",
+    "segment": "sid",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sigm": {
+    "deep_origin": "希腊字母 Sigma (S)，其形状弯曲。",
+    "derivatives": [
+      "sigmoid"
+    ],
+    "lookup_count": 0,
+    "meaning": "S形；弯曲",
+    "segment": "sigm",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sign": {
+    "deep_origin": "来自拉丁语 signum（标志、记号、信号）。signal、sign、signature 都源于此，核心是'传递信息的标记'。Linux 中 signal 是内核向进程发送的'通知标志'。",
+    "derivatives": [
+      "signal",
+      "sign",
+      "signature",
+      "assign"
+    ],
+    "lookup_count": 0,
+    "meaning": "标志；记号；信号",
+    "segment": "sign",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:sili": {
+    "deep_origin": "来自拉丁语 salire，意为'跳跃'。",
+    "derivatives": [
+      "salient"
+    ],
+    "lookup_count": 0,
+    "meaning": "跳跃",
+    "segment": "sili",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sist": {
+    "deep_origin": "来自拉丁语 stare，表示'站立'。",
+    "derivatives": [
+      "assist",
+      "resist"
+    ],
+    "lookup_count": 0,
+    "meaning": "站立",
+    "segment": "sist",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sock": {
+    "deep_origin": "来自古英语 socc（短袜、鞋底），源自拉丁语 soccus（轻便鞋）。插头插进插座就像脚踩进鞋里——socket 由此引申为'插孔、接口'。在 Linux 中，socket 是进程间通信的端点。",
+    "derivatives": [
+      "socket",
+      "sock"
+    ],
+    "lookup_count": 0,
+    "meaning": "插孔；窝；接口",
+    "segment": "sock",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:soft": {
+    "deep_origin": "古英语 softe，意为'柔和的、平缓的'。",
+    "derivatives": [
+      "softmax",
+      "software"
+    ],
+    "lookup_count": 0,
+    "meaning": "柔软；平滑",
+    "segment": "soft",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:solu": {
+    "deep_origin": "来自拉丁语 solvere，表示'松开、解开'。",
+    "derivatives": [
+      "solution",
+      "solve"
+    ],
+    "lookup_count": 0,
+    "meaning": "松开；解开",
+    "segment": "solu",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:space": {
+    "deep_origin": "拉丁语 spatium，表示'空间、范围'。",
+    "derivatives": [
+      "space"
+    ],
+    "lookup_count": 0,
+    "meaning": "空间；范围",
+    "segment": "space",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:spars": {
+    "deep_origin": "拉丁语 spargere 的完成分词 sparsus，意为'撒开、散布'。",
+    "derivatives": [
+      "sparse",
+      "sparsity"
+    ],
+    "lookup_count": 0,
+    "meaning": "稀疏",
+    "segment": "spars",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:spati": {
+    "deep_origin": "拉丁语 spatium，表示'空间、距离'。",
+    "derivatives": [
+      "space",
+      "spatial"
+    ],
+    "lookup_count": 0,
+    "meaning": "空间",
+    "segment": "spati",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:spect": {
+    "deep_origin": "来自拉丁语 specere，表示'看'。",
+    "derivatives": [
+      "spectacle",
+      "inspect",
+      "respect"
+    ],
+    "lookup_count": 0,
+    "meaning": "看",
+    "segment": "spect",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:spic": {
+    "deep_origin": "来自拉丁语 specere，意为'看'。",
+    "derivatives": [
+      "inspect",
+      "spectacle"
+    ],
+    "lookup_count": 0,
+    "meaning": "看",
+    "segment": "spic",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:squeez": {
+    "deep_origin": "源自中古英语 squisen，意为'挤压'。",
+    "derivatives": [
+      "squeeze"
+    ],
+    "lookup_count": 0,
+    "meaning": "压榨；挤压",
+    "segment": "squeez",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:sta": {
+    "deep_origin": "来自拉丁语 stare，表示'站立'、'保持'。",
+    "derivatives": [
+      "stable",
+      "constant",
+      "status"
+    ],
+    "lookup_count": 0,
+    "meaning": "站立；保持",
+    "segment": "sta",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:stack": {
+    "deep_origin": "源自古英语 stæcc，表示'堆、一叠'。",
+    "derivatives": [
+      "stackable"
+    ],
+    "lookup_count": 0,
+    "meaning": "堆；栈",
+    "segment": "stack",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:stagn": {
+    "deep_origin": "源自拉丁语 stagnare，表示'停滞'、'不动'。",
+    "derivatives": [
+      "stagnant",
+      "stagnation"
+    ],
+    "lookup_count": 0,
+    "meaning": "停滞；不动",
+    "segment": "stagn",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:stanc": {
+    "deep_origin": "拉丁语 stare，表示'站立、存在'。",
+    "derivatives": [
+      "instance",
+      "stand",
+      "distance"
+    ],
+    "lookup_count": 0,
+    "meaning": "站立",
+    "segment": "stanc",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:stant": {
+    "deep_origin": "来自拉丁语 stare，意为'站立'。",
+    "derivatives": [
+      "constant",
+      "distance",
+      "instance"
+    ],
+    "lookup_count": 0,
+    "meaning": "站立",
+    "segment": "stant",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:stat": {
+    "deep_origin": "拉丁语 stare 的完成分词 status，意为'站立、状态'。",
+    "derivatives": [
+      "state",
+      "status",
+      "station"
+    ],
+    "lookup_count": 0,
+    "meaning": "站立；状态",
+    "segment": "stat",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:std": {
+    "deep_origin": "standard（标准）的缩写，来自古法语 estandart（旗帜、集合标志），引申为'统一的基准'。Linux 继承自 Unix 的 std 三剑客（stdin/stdout/stderr）是所有程序通信的标准通道。",
+    "derivatives": [
+      "stdout",
+      "stdin",
+      "stderr",
+      "standard"
+    ],
+    "lookup_count": 0,
+    "meaning": "标准（standard 的缩写）",
+    "segment": "std",
+    "type": "前缀",
+    "updated_at": 1779355503688
+  },
+  "R:stochast": {
+    "deep_origin": "希腊语 stokhastis，表示'猜测者'，源自 stochos（目标、瞄准）。引申为带有随机性和概率性的。",
+    "derivatives": [
+      "stochastic"
+    ],
+    "lookup_count": 0,
+    "meaning": "猜测；随机",
+    "segment": "stochast",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:strid": {
+    "deep_origin": "古英语 strīdan，意为'大步走、跨过'。",
+    "derivatives": [
+      "stride"
+    ],
+    "lookup_count": 0,
+    "meaning": "跨步",
+    "segment": "strid",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:struct": {
+    "deep_origin": "来自拉丁语 struere，表示'建造、排列'。",
+    "derivatives": [
+      "structure"
+    ],
+    "lookup_count": 0,
+    "meaning": "建造；结构",
+    "segment": "struct",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:su": {
+    "deep_origin": "来自拉丁语 sub-（在……之下、代替）或 super-（在……之上）的缩写，sudo 中 su 取 substitute user（替代用户）之意，允许以其他用户的身份执行命令。",
+    "derivatives": [
+      "sudo",
+      "su",
+      "superuser"
+    ],
+    "lookup_count": 0,
+    "meaning": "替代用户；超级（缩写）",
+    "segment": "su",
+    "type": "前缀",
+    "updated_at": 1779355503688
+  },
+  "R:sub": {
+    "deep_origin": "拉丁语前缀，表示'在下面'。",
+    "derivatives": [
+      "subject"
+    ],
+    "lookup_count": 0,
+    "meaning": "在下面",
+    "segment": "sub",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:sulat": {
+    "deep_origin": "动词后缀。",
+    "derivatives": [
+      "encapsulate"
+    ],
+    "lookup_count": 0,
+    "meaning": "（动词后缀）",
+    "segment": "sulat",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:super": {
+    "deep_origin": "表示'在上面'或'过度'。",
+    "derivatives": [
+      "superior"
+    ],
+    "lookup_count": 0,
+    "meaning": "过度/在上面",
+    "segment": "super",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:sus": {
+    "deep_origin": "来自拉丁语 tenere，意为'持有'、'维持'。",
+    "derivatives": [
+      "retain",
+      "contain",
+      "sustain"
+    ],
+    "lookup_count": 0,
+    "meaning": "维持；持有",
+    "segment": "sus",
+    "type": "前缀/词根",
+    "updated_at": 1779329486131
+  },
+  "R:sym": {
+    "deep_origin": "来自希腊语前缀 syn-/sym-，意为'共同、相同、一起'。symlink（符号链接）中 sym 表示'指向同一目标'，symmetric、symbol 也含此意。",
+    "derivatives": [
+      "symlink",
+      "symbol",
+      "symmetric",
+      "syntax"
+    ],
+    "lookup_count": 0,
+    "meaning": "共同；相同；一起",
+    "segment": "sym",
+    "type": "前缀",
+    "updated_at": 1779355503688
+  },
+  "R:syn": {
+    "deep_origin": "希腊语 syn-，表示'共同、相同、一起'。",
+    "derivatives": [
+      "synthetic",
+      "synergy",
+      "synchronize"
+    ],
+    "lookup_count": 0,
+    "meaning": "共同；一起",
+    "segment": "syn",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:syn_tax": {
+    "deep_origin": "希腊语 syn- (共同) + tassein (排列) → syntaxxis，排列规则。",
+    "derivatives": [
+      "syntax"
+    ],
+    "lookup_count": 0,
+    "meaning": "排列；语法",
+    "segment": "syntax",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:system": {
+    "deep_origin": "来自希腊语 systēma，表示'组合在一起的东西'。",
+    "derivatives": [
+      "systematic"
+    ],
+    "lookup_count": 0,
+    "meaning": "系统；体系",
+    "segment": "system",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:t": {
+    "deep_origin": "名词后缀，常加在动词后。",
+    "derivatives": [
+      "weight",
+      "height"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "t",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:tacit": {
+    "deep_origin": "来自拉丁语 tacere，意为'保持沉默'。",
+    "derivatives": [
+      "tacitly"
+    ],
+    "lookup_count": 0,
+    "meaning": "默契的；沉默的",
+    "segment": "tacit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tain": {
+    "deep_origin": "来自拉丁语 tenere，表示'握住'。",
+    "derivatives": [
+      "maintain",
+      "obtain",
+      "detain"
+    ],
+    "lookup_count": 0,
+    "meaning": "握住；保持",
+    "segment": "tain",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tax": {
+    "deep_origin": "来自希腊语 taxis，表示'排列、顺序'。",
+    "derivatives": [
+      "taxonomy"
+    ],
+    "lookup_count": 0,
+    "meaning": "排列；顺序",
+    "segment": "tax",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:techn": {
+    "deep_origin": "来自希腊语 techne，意为'艺术'、'技能'或'工艺'。",
+    "derivatives": [
+      "technique",
+      "technical",
+      "technology"
+    ],
+    "lookup_count": 0,
+    "meaning": "技术；工艺",
+    "segment": "techn",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tect": {
+    "deep_origin": "希腊语 tektōn，表示'木匠、建造者'。",
+    "derivatives": [
+      "architecture",
+      "architect"
+    ],
+    "lookup_count": 0,
+    "meaning": "建造",
+    "segment": "tect",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tempor": {
+    "deep_origin": "拉丁语 tempus 的词干 tempor-，表示'时间'。",
+    "derivatives": [
+      "temporary",
+      "contemporary"
+    ],
+    "lookup_count": 0,
+    "meaning": "时间",
+    "segment": "tempor",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ten": {
+    "deep_origin": "来自拉丁语 tenere，表示'持有'、'握住'。",
+    "derivatives": [
+      "tenacity",
+      "tenant",
+      "retain"
+    ],
+    "lookup_count": 0,
+    "meaning": "持有；握住",
+    "segment": "ten",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tens": {
+    "deep_origin": "拉丁语 tendere，表示'伸展、拉紧'。",
+    "derivatives": [
+      "tension",
+      "intense"
+    ],
+    "lookup_count": 0,
+    "meaning": "伸展；拉伸",
+    "segment": "tens",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tent": {
+    "deep_origin": "拉丁语 tendere 的完成分词 tentus，表示'伸展、拉紧'。",
+    "derivatives": [
+      "extent",
+      "intent",
+      "attention"
+    ],
+    "lookup_count": 0,
+    "meaning": "伸展；倾向",
+    "segment": "tent",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tenu": {
+    "deep_origin": "来自拉丁语 tenuis，意为'薄'或'细'。",
+    "derivatives": [
+      "tenuous"
+    ],
+    "lookup_count": 0,
+    "meaning": "薄/细",
+    "segment": "tenu",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ter": {
+    "deep_origin": "来自希腊语 terrē，意为'干的'或'土地'，引申为知识的深处。",
+    "derivatives": [
+      "terrain"
+    ],
+    "lookup_count": 0,
+    "meaning": "深处/土地",
+    "segment": "ter",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:termin": {
+    "deep_origin": "来自拉丁语 terminus（边界、终点）。古罗马人用 terminus 指边界石碑，后来演化为'终点'的意思。Linux 的 terminal 就是人机交互的'终端'边界。",
+    "derivatives": [
+      "terminal",
+      "terminate",
+      "determination",
+      "term"
+    ],
+    "lookup_count": 0,
+    "meaning": "边界；终点",
+    "segment": "termin",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:text": {
+    "deep_origin": "拉丁语 texere 的完成分词 textus，表示'编织'，引申为文本。",
+    "derivatives": [
+      "context",
+      "text",
+      "texture"
+    ],
+    "lookup_count": 0,
+    "meaning": "编织；文本",
+    "segment": "text",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:thet": {
+    "deep_origin": "希腊语 tithenai（放置）的词干 thet-。",
+    "derivatives": [
+      "synthetic",
+      "hypothesis"
+    ],
+    "lookup_count": 0,
+    "meaning": "放置",
+    "segment": "thet",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:thread": {
+    "deep_origin": "古英语 thræd，意为'丝线'。",
+    "derivatives": [
+      "thread"
+    ],
+    "lookup_count": 0,
+    "meaning": "线",
+    "segment": "thread",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:thresh": {
+    "deep_origin": "古英语 þerscan，意为'踩踏、脱粒'。",
+    "derivatives": [
+      "threshold"
+    ],
+    "lookup_count": 0,
+    "meaning": "踩踏",
+    "segment": "thresh",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tic": {
+    "deep_origin": "形容词后缀，表示“关于……的”或“具有……特征的”。",
+    "derivatives": [
+      "static",
+      "magnetic",
+      "automatic"
+    ],
+    "lookup_count": 0,
+    "meaning": "……的 (特征)",
+    "segment": "tic",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:tin": {
+    "deep_origin": "拉丁语 tenere，表示'握住、保持'。",
+    "derivatives": [
+      "continuous",
+      "retain",
+      "contain"
+    ],
+    "lookup_count": 0,
+    "meaning": "保持；握住",
+    "segment": "tin",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tion": {
+    "deep_origin": "拉丁语 -tio，构名词后缀，表示状态或动作。",
+    "derivatives": [
+      "action",
+      "option",
+      "function"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "tion",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:tok": {
+    "deep_origin": "古英语 tacen，意为'记号、标志'。",
+    "derivatives": [
+      "token",
+      "tokenizer"
+    ],
+    "lookup_count": 0,
+    "meaning": "记号",
+    "segment": "tok",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:top": {
+    "deep_origin": "希腊语 topos，表示'地方、位置'。",
+    "derivatives": [
+      "topology",
+      "topic"
+    ],
+    "lookup_count": 0,
+    "meaning": "地方；位置",
+    "segment": "top",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tract": {
+    "deep_origin": "拉丁语 trahere 的完成分词 tractus，表示'拉、拖'。",
+    "derivatives": [
+      "extract",
+      "contract",
+      "abstract"
+    ],
+    "lookup_count": 0,
+    "meaning": "拉；拖",
+    "segment": "tract",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:train": {
+    "deep_origin": "古法语 trahiner，意为'拉、拖'，引申为牵引、训练。",
+    "derivatives": [
+      "train",
+      "pretrain"
+    ],
+    "lookup_count": 0,
+    "meaning": "训练",
+    "segment": "train",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:trans": {
+    "deep_origin": "来自拉丁语，表示'穿过'、'转变'。",
+    "derivatives": [
+      "transfer",
+      "translate",
+      "transport"
+    ],
+    "lookup_count": 0,
+    "meaning": "转移；穿过",
+    "segment": "trans",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:trib": {
+    "deep_origin": "来自拉丁语 tribuere，表示'给予、分配'。",
+    "derivatives": [
+      "tribute",
+      "contribute"
+    ],
+    "lookup_count": 0,
+    "meaning": "给；分配",
+    "segment": "trib",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tribut": {
+    "deep_origin": "来自拉丁语 tributus，意为'分配'、'给予'。",
+    "derivatives": [
+      "distribute",
+      "tribute",
+      "contribution"
+    ],
+    "lookup_count": 0,
+    "meaning": "分配；给予",
+    "segment": "tribut",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:trop": {
+    "deep_origin": "希腊语 tropos，表示'转向、方式、变化'。",
+    "derivatives": [
+      "entropy",
+      "tropical"
+    ],
+    "lookup_count": 0,
+    "meaning": "转向；变化",
+    "segment": "trop",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:tune": {
+    "deep_origin": "古法语 ton，意为'音调'，引申为调校。",
+    "derivatives": [
+      "tune",
+      "finetune"
+    ],
+    "lookup_count": 0,
+    "meaning": "调整",
+    "segment": "tune",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ual": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "residual",
+      "visual"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词后缀）",
+    "segment": "ual",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:uber": {
+    "deep_origin": "来自拉丁语 uberus，意为'丰裕'或'多产'。",
+    "derivatives": [
+      "uber"
+    ],
+    "lookup_count": 0,
+    "meaning": "丰裕/多产",
+    "segment": "uber",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ubi": {
+    "deep_origin": "来自拉丁语 ubi，意为'在哪里'。",
+    "derivatives": [
+      "ubiquity"
+    ],
+    "lookup_count": 0,
+    "meaning": "在哪里",
+    "segment": "ubi",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:uit": {
+    "deep_origin": "来自拉丁语 opportunus，意为'恰当的'。",
+    "derivatives": [
+      "opportunity"
+    ],
+    "lookup_count": 0,
+    "meaning": "恰当",
+    "segment": "uit",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ule": {
+    "deep_origin": "拉丁语 -ulus，表示小东西的后缀。",
+    "derivatives": [
+      "module",
+      "capsule"
+    ],
+    "lookup_count": 0,
+    "meaning": "（小后缀）",
+    "segment": "ule",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ulous": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "tremulous",
+      "incredulous"
+    ],
+    "lookup_count": 0,
+    "meaning": "（后缀）形容词后缀",
+    "segment": "ulous",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:um": {
+    "deep_origin": "拉丁语中性名词后缀。",
+    "derivatives": [
+      "momentum",
+      "stadium"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "um",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:un": {
+    "deep_origin": "前缀，表示'不'、'相反'。",
+    "derivatives": [
+      "unhappy",
+      "unusual",
+      "undo"
+    ],
+    "lookup_count": 0,
+    "meaning": "不",
+    "segment": "un",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:under": {
+    "deep_origin": "古英语 under，表示'在...之下、不足'。",
+    "derivatives": [
+      "underfit",
+      "underground",
+      "understand"
+    ],
+    "lookup_count": 0,
+    "meaning": "在...之下；不足",
+    "segment": "under",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:uni": {
+    "deep_origin": "来自拉丁语 unus，表示'一'。",
+    "derivatives": [
+      "unit"
+    ],
+    "lookup_count": 0,
+    "meaning": "一",
+    "segment": "uni",
+    "type": "前缀",
+    "updated_at": 1779329486131
+  },
+  "R:uous": {
+    "deep_origin": "复合形容词后缀。",
+    "derivatives": [
+      "continuous"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词后缀）",
+    "segment": "uous",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ur": {
+    "deep_origin": "名词后缀，用于将动词变为名词，表示'行为或状态'。",
+    "derivatives": [
+      "nature",
+      "failure"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态；行为",
+    "segment": "ur",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ure": {
+    "deep_origin": "抽象名词后缀。",
+    "derivatives": [
+      "feature",
+      "architecture",
+      "structure"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "ure",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:us": {
+    "deep_origin": "拉丁语名词词尾 -us。",
+    "derivatives": [
+      "corpus",
+      "focus"
+    ],
+    "lookup_count": 0,
+    "meaning": "（名词后缀）",
+    "segment": "us",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:use": {
+    "deep_origin": "来自拉丁语 usus（使用、习惯），源自 uti（使用）。user 就是'使用系统的人'，Linux 的多用户架构让每个 user 拥有独立的身份和权限空间。",
+    "derivatives": [
+      "user",
+      "use",
+      "useful",
+      "reuse",
+      "usage"
+    ],
+    "lookup_count": 0,
+    "meaning": "使用",
+    "segment": "use",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:ust": {
+    "deep_origin": "形容词后缀。",
+    "derivatives": [
+      "robust"
+    ],
+    "lookup_count": 0,
+    "meaning": "（形容词后缀）",
+    "segment": "ust",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:ute": {
+    "deep_origin": "名词后缀，用于将动词转为名词。",
+    "derivatives": [
+      "statute"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态；物",
+    "segment": "ute",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:val": {
+    "deep_origin": "拉丁语 valere，表示'强壮、有价值、生效'。",
+    "derivatives": [
+      "valid",
+      "value",
+      "evaluate"
+    ],
+    "lookup_count": 0,
+    "meaning": "价值；生效",
+    "segment": "val",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:valid": {
+    "deep_origin": "源自拉丁语 validus，表示'强壮的、有力的'。",
+    "derivatives": [
+      "validity",
+      "validate"
+    ],
+    "lookup_count": 0,
+    "meaning": "有效的；强壮的",
+    "segment": "valid",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:valu": {
+    "deep_origin": "拉丁语 valere，表示'强壮、有价值'。",
+    "derivatives": [
+      "value",
+      "valuable",
+      "evaluate"
+    ],
+    "lookup_count": 0,
+    "meaning": "价值",
+    "segment": "valu",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:vari": {
+    "deep_origin": "拉丁语 variare，意为'改变、使不同'。",
+    "derivatives": [
+      "variable",
+      "variance",
+      "various"
+    ],
+    "lookup_count": 0,
+    "meaning": "变化",
+    "segment": "vari",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:vary": {
+    "deep_origin": "来自拉丁语 varius，表示'多样化的、变化的'。",
+    "derivatives": [
+      "various",
+      "variety",
+      "variation"
+    ],
+    "lookup_count": 0,
+    "meaning": "变化；改变",
+    "segment": "vary",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:vect": {
+    "deep_origin": "拉丁语 vehere 的完成分词 vectus，意为'携带、传递'。",
+    "derivatives": [
+      "vector",
+      "convection"
+    ],
+    "lookup_count": 0,
+    "meaning": "携带",
+    "segment": "vect",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:verg": {
+    "deep_origin": "拉丁语 vergere，表示'弯曲、倾斜、转向'。",
+    "derivatives": [
+      "converge",
+      "diverge"
+    ],
+    "lookup_count": 0,
+    "meaning": "倾斜；趋向",
+    "segment": "verg",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:vers": {
+    "deep_origin": "拉丁语 vertere，表示'转、翻转'。",
+    "derivatives": [
+      "reverse",
+      "universe",
+      "version"
+    ],
+    "lookup_count": 0,
+    "meaning": "转",
+    "segment": "vers",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:viron": {
+    "deep_origin": "源自拉丁语 virare，表示'转动、围绕'。",
+    "derivatives": [
+      "environment",
+      "environ"
+    ],
+    "lookup_count": 0,
+    "meaning": "围绕；转动",
+    "segment": "viron",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:virt": {
+    "deep_origin": "源自拉丁语 \"virtus\"，意为“力量、效能”。在计算机中演化为‘虚拟’，指以软件模拟硬件效能。",
+    "derivatives": [
+      "virtue",
+      "virtual",
+      "virtually"
+    ],
+    "lookup_count": 0,
+    "meaning": "力量；效能",
+    "segment": "virt",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:vis": {
+    "deep_origin": "来自拉丁语 videre，意为'看'。",
+    "derivatives": [
+      "vision",
+      "visual",
+      "visit"
+    ],
+    "lookup_count": 0,
+    "meaning": "看",
+    "segment": "vis",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:voc": {
+    "deep_origin": "来自拉丁语 vox，意为'声音'。",
+    "derivatives": [
+      "vocal",
+      "vocation"
+    ],
+    "lookup_count": 0,
+    "meaning": "声音",
+    "segment": "voc",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:vol": {
+    "deep_origin": "来自拉丁语 volere，表示'想要'、'意愿'。",
+    "derivatives": [
+      "voluntary",
+      "resolve",
+      "volunteer"
+    ],
+    "lookup_count": 0,
+    "meaning": "意志；想要",
+    "segment": "vol",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:volu": {
+    "deep_origin": "拉丁语 volvere，表示'卷、翻滚'。",
+    "derivatives": [
+      "volume",
+      "evolve",
+      "involve"
+    ],
+    "lookup_count": 0,
+    "meaning": "卷；转动",
+    "segment": "volu",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:ward": {
+    "deep_origin": "古英语 -weard，表示'方向'。",
+    "derivatives": [
+      "forward",
+      "backward",
+      "toward"
+    ],
+    "lookup_count": 0,
+    "meaning": "方向",
+    "segment": "ward",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:weigh": {
+    "deep_origin": "古英语 wegan，意为'搬运、衡量重量'。",
+    "derivatives": [
+      "weight"
+    ],
+    "lookup_count": 0,
+    "meaning": "称重",
+    "segment": "weigh",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:word_pw": {
+    "deep_origin": "来自古英语 word（词语、话语）。password 中 word 指'一个特定的词'——古代守卫要求来者说出'暗语'才放行，password 直译即'通行暗语'。",
+    "derivatives": [
+      "password",
+      "keyword",
+      "watchword"
+    ],
+    "lookup_count": 0,
+    "meaning": "词；话语",
+    "segment": "word",
+    "type": "词根",
+    "updated_at": 1779355503688
+  },
+  "R:work": {
+    "deep_origin": "古英语 weorc，意为'劳动、工作'。",
+    "derivatives": [
+      "framework",
+      "network"
+    ],
+    "lookup_count": 0,
+    "meaning": "工作",
+    "segment": "work",
+    "type": "词根",
+    "updated_at": 1779329486131
+  },
+  "R:y": {
+    "deep_origin": "名词后缀。",
+    "derivatives": [
+      "happy"
+    ],
+    "lookup_count": 0,
+    "meaning": "状态",
+    "segment": "y",
+    "type": "后缀",
+    "updated_at": 1779329486131
+  },
+  "R:yield": {
+    "deep_origin": "古英语 gieldan，意为'支付、产出、屈服'。",
+    "derivatives": [
+      "yield"
+    ],
+    "lookup_count": 0,
+    "meaning": "产出",
+    "segment": "yield",
+    "type": "词根",
+    "updated_at": 1779329486131
+  }
+}
