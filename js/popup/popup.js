@@ -47,6 +47,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.setAttribute('data-theme', res.ui_theme || 'system');
     localStorage.setItem('ui_theme', res.ui_theme || 'system');
     const config = res.app_config || {};
+
+    if (config.contexts && config.contexts.length > 0) {
+      quickContext.innerHTML = '';
+      config.contexts.forEach(ctx => {
+        const opt = document.createElement('option');
+        opt.value = ctx.id;
+        opt.textContent = ctx.name;
+        quickContext.appendChild(opt);
+      });
+    }
+
     quickContext.value = config.promptContext || 'general';
     quickEngine.value  = config.engine || 'custom';
     rootToggleSwitch.checked = (config.rootStrategy || 'keep_old') === 'keep_old';
