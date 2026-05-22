@@ -75,8 +75,21 @@ window.initDataEngine = function() {
                 }
             }
             if (count === 0) return window.showStatus("⚠️ 该范围内无数据可导", "#f59e0b");
+            
+            let filenamePrefix = "全局导出";
+            if (scopeCtx) {
+                const contextSelect = document.getElementById('prompt-context');
+                if (contextSelect && contextSelect.selectedIndex !== -1) {
+                    let rawName = contextSelect.options[contextSelect.selectedIndex].text;
+                    // 移除 emoji 和两端的空格/标点，保留纯文本名称
+                    filenamePrefix = rawName.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, '').trim();
+                } else {
+                    filenamePrefix = scopeCtx;
+                }
+            }
+            
             const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'}); const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `ai_roots_export_${scopeCtx || 'global'}_${type}_${count}.json`; a.click(); URL.revokeObjectURL(url);
+            const a = document.createElement('a'); a.href = url; a.download = `${filenamePrefix}_export_${scopeCtx || 'global'}_${type}_${count}.json`; a.click(); URL.revokeObjectURL(url);
         });
     }
 
