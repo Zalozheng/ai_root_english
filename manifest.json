@@ -2,15 +2,22 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "__MSG_extShortName__",
-  "version": "26.0.3",
+  "version": "26.0.4",
   "default_locale": "zh_CN",
   "description": "__MSG_extDescription__",
   "icons": {
-    "16": "icons/ui_16.png",
-    "24": "icons/ui_24.png",
-    "32": "icons/ui_32.png",
-    "64": "icons/ui_64.png",
+    "16": "icons/ui_128.png",
+    "48": "icons/ui_128.png",
     "128": "icons/ui_128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "__MSG_extShortName__",
+    "default_icon": {
+      "16": "icons/ui_128.png",
+      "48": "icons/ui_128.png",
+      "128": "icons/ui_128.png"
+    }
   },
   "permissions": [
     "activeTab",
@@ -19,30 +26,18 @@
     "tts",
     "declarativeNetRequest"
   ],
-  "host_permissions": [
-    "http://*/*",
-    "https://*/*"
-  ],
-  "action": {
-    "default_popup": "popup.html",
-    "default_title": "__MSG_extShortName__"
-  },
+  "host_permissions": ["http://*/*", "https://*/*"],
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "js/background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "content.js"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["js/content.js"],
       "run_at": "document_idle"
     }
   ],
@@ -53,17 +48,8 @@
   },
   "web_accessible_resources": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "resources": [
-        "popup.html",
-        "popup.js",
-        "options.html",
-        "icons/*",
-        "js/*"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
+      "resources": ["popup.html", "options.html", "icons/*", "js/*"],
       "use_dynamic_url": false
     }
   ]
