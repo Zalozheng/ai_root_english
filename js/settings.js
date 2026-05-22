@@ -388,6 +388,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctxLabel = document.getElementById('label-action-context');
     const modeToggle = document.getElementById('import-mode');
     const modeLabel = document.getElementById('label-import-mode');
+    
+    const contentToggle = document.getElementById('enable-content-script');
+    const contentLabel = document.getElementById('label-content-script');
+    const autoToggle = document.getElementById('auto-parse');
+    const autoLabel = document.getElementById('label-auto-parse');
 
     function updateLabels() {
         if(ctxToggle && ctxLabel) {
@@ -398,9 +403,19 @@ document.addEventListener('DOMContentLoaded', () => {
             modeLabel.textContent = modeToggle.checked ? "📥 替换模式导入" : "📥 合并模式导入";
             modeLabel.style.color = modeToggle.checked ? "#ef4444" : "#a1a1aa";
         }
+        if(contentToggle && contentLabel) {
+            contentLabel.textContent = contentToggle.checked ? "🌐 网页划词取词已开" : "🌐 网页划词取词已关";
+            contentLabel.style.color = contentToggle.checked ? "#38bdf8" : "#71717a";
+        }
+        if(autoToggle && autoLabel) {
+            autoLabel.textContent = autoToggle.checked ? "⚡ 图标即点即译已开" : "⚡ 图标即点即译已关";
+            autoLabel.style.color = autoToggle.checked ? "#fcd34d" : "#71717a";
+        }
     }
 
     if(ctxToggle) ctxToggle.addEventListener('change', updateLabels);
     if(modeToggle) modeToggle.addEventListener('change', updateLabels);
+    if(contentToggle) contentToggle.addEventListener('change', updateLabels);
+    if(autoToggle) autoToggle.addEventListener('change', updateLabels);
     updateLabels();
 });

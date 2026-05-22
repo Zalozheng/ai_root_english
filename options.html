@@ -66,11 +66,13 @@
 
         <div class="section-box" style="border-left: 4px solid #10b981;">
           <div class="section-title" style="color: #10b981;">🎨 界面设定与历史</div>
-          <div class="split-layout">
+          
+          <!-- 第一行：基础设定 -->
+          <div class="split-layout" style="margin-bottom: 20px;">
             <div class="split-col">
-              <div class="form-group">
-                <label>角色与记忆情景</label>
-                <select id="prompt-context">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label title="选择 AI 解析时的角色身份和知识背景，不同角色会有不同的记忆点">角色与记忆情景</label>
+                <select id="prompt-context" title="切换当前工作的 AI 角色模式">
                   <option value="general">🌍 通用生活 (日常)</option>
                   <option value="civ6">🏛️ 文明6游戏策划</option>
                   <option value="linux_ai">🐧 Linux/AI极客</option>
@@ -78,7 +80,9 @@
                 </select>
                 <input type="text" id="custom-context-input" placeholder="例如：律师日常" style="margin-top: 10px; display: none;">
               </div>
-              <div class="form-group">
+            </div>
+            <div class="split-col">
+              <div class="form-group" style="margin-bottom: 0;">
                 <label title="设置划词弹窗的视觉风格">划词弹窗主题</label>
                 <select id="theme" title="选择深色、浅色或跟随系统外观">
                   <option value="system">跟随系统</option>
@@ -86,27 +90,33 @@
                   <option value="light">明亮 (Light)</option>
                 </select>
               </div>
-              <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
-                <label style="margin: 0; color: #fcd34d;" title="开启后，点击浏览器工具栏图标将直接分析网页中选中的单词">⚡ 图标即点即译</label>
-                <label class="switch blue-switch">
-                  <input type="checkbox" id="auto-parse" checked>
-                  <span class="slider"></span>
-                </label>
-              </div>
+            </div>
+          </div>
+
+          <!-- 第二行：交互开关 -->
+          <div class="split-layout" style="margin-bottom: 25px;">
+            <div class="split-col">
+                <div style="display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启后，在网页中选中文本会弹出搜索小图标。关闭则彻底禁用此功能。">
+                    <label style="margin: 0; font-size: 13px; color: #a1a1aa; font-weight: bold;" id="label-content-script">🌐 网页划词取词已开</label>
+                    <label class="switch blue-switch">
+                      <input type="checkbox" id="enable-content-script" checked>
+                      <span class="slider"></span>
+                    </label>
+                </div>
             </div>
             <div class="split-col">
-              <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                <label style="margin: 0;" title="开启后，在网页中选中文本会弹出搜索小图标。关闭则彻底禁用此功能。">🌐 网页划词取词</label>
-                <label class="switch blue-switch">
-                  <input type="checkbox" id="enable-content-script" checked>
-                  <span class="slider"></span>
-                </label>
-              </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启后，点击浏览器工具栏图标将直接分析网页中选中的单词">
+                    <label style="margin: 0; font-size: 13px; color: #fcd34d; font-weight: bold;" id="label-auto-parse">⚡ 图标即点即译已开</label>
+                    <label class="switch blue-switch">
+                      <input type="checkbox" id="auto-parse" checked>
+                      <span class="slider"></span>
+                    </label>
+                </div>
             </div>
           </div>
           
-          <div class="form-group" style="margin-bottom:20px; border-top: 1px dashed #333; padding-top: 15px;">
-            <label>下拉历史保留上限</label>
+          <div class="form-group" style="margin-bottom:20px; border-top: 1px dashed #333; padding-top: 20px;">
+            <label title="设置历史记录列表中保留的条目数量上限">下拉历史保留上限</label>
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
                 <button id="hist-minus" class="btn-outline" style="padding: 10px 16px; font-weight: bold; font-size: 16px;">-</button>
                 <input type="number" id="history-limit" value="10" min="1" max="100" style="text-align:center; flex:1; font-size: 16px; font-weight: bold;">
