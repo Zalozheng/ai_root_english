@@ -381,7 +381,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(document.getElementById('delete-words-btn')) document.getElementById('delete-words-btn').addEventListener('click', () => handleDelete('words'));
-    if(document.getElementById('delete-roots-btn')) document.getElementById('delete-roots-btn').addEventListener('click', () => handleDelete('roots'));
     if(document.getElementById('delete-all-btn')) document.getElementById('delete-all-btn').addEventListener('click', () => handleDelete('all'));
+
+    // ======= 动态文案更新逻辑 =======
+    const ctxToggle = document.getElementById('data-action-context');
+    const ctxLabel = document.getElementById('label-action-context');
+    const modeToggle = document.getElementById('import-mode');
+    const modeLabel = document.getElementById('label-import-mode');
+
+    function updateLabels() {
+        if(ctxToggle && ctxLabel) {
+            ctxLabel.textContent = ctxToggle.checked ? "🌍 仅限当前情景" : "🌍 全局数据模式";
+            ctxLabel.style.color = ctxToggle.checked ? "#ef4444" : "#a1a1aa";
+        }
+        if(modeToggle && modeLabel) {
+            modeLabel.textContent = modeToggle.checked ? "📥 替换模式导入" : "📥 合并模式导入";
+            modeLabel.style.color = modeToggle.checked ? "#ef4444" : "#a1a1aa";
+        }
+    }
+
+    if(ctxToggle) ctxToggle.addEventListener('change', updateLabels);
+    if(modeToggle) modeToggle.addEventListener('change', updateLabels);
+    updateLabels();
 });

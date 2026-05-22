@@ -79,12 +79,19 @@
                 <input type="text" id="custom-context-input" placeholder="例如：律师日常" style="margin-top: 10px; display: none;">
               </div>
               <div class="form-group">
-                <label>划词弹窗主题</label>
-                <select id="theme">
+                <label title="设置划词弹窗的视觉风格">划词弹窗主题</label>
+                <select id="theme" title="选择深色、浅色或跟随系统外观">
                   <option value="system">跟随系统</option>
                   <option value="dark">黑客深邃 (Dark)</option>
                   <option value="light">明亮 (Light)</option>
                 </select>
+              </div>
+              <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
+                <label style="margin: 0; color: #fcd34d;" title="开启后，点击浏览器工具栏图标将直接分析网页中选中的单词">⚡ 图标即点即译</label>
+                <label class="switch blue-switch">
+                  <input type="checkbox" id="auto-parse" checked>
+                  <span class="slider"></span>
+                </label>
               </div>
             </div>
             <div class="split-col">
@@ -92,14 +99,6 @@
                 <label style="margin: 0;" title="开启后，在网页中选中文本会弹出搜索小图标。关闭则彻底禁用此功能。">🌐 网页划词取词</label>
                 <label class="switch blue-switch">
                   <input type="checkbox" id="enable-content-script" checked>
-                  <span class="slider"></span>
-                </label>
-              </div>
-              <!-- 3号位置的第二个开关已下移至此处 -->
-              <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                <label style="margin: 0; color: #fcd3d; " title="点击插件图标立即翻译选中词。">⚡ 图标点击即翻译</label>
-                <label class="switch blue-switch">
-                  <input type="checkbox" id="auto-parse" checked>
                   <span class="slider"></span>
                 </label>
               </div>
@@ -163,15 +162,15 @@
           
           <div class="action-panel">
             <div style="display: flex; gap: 15px; margin-bottom: 10px;">
-                <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;">
-                    <label style="margin: 0; font-size: 12px; color: #a1a1aa;" title="开启后，操作仅针对当前选择的情景。关闭则针对全局全量数据。">🌍 仅限当前情景</label>
+                <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;" title="开启：仅操作当前情景的数据；关闭：操作全局所有情景的数据">
+                    <label style="margin: 0; font-size: 12px; color: #a1a1aa;" id="label-action-context">🌍 全局数据模式</label>
                     <label class="switch red-switch">
                       <input type="checkbox" id="data-action-context">
                       <span class="slider"></span>
                     </label>
                 </div>
-                <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;">
-                    <label style="margin: 0; font-size: 12px; color: #a1a1aa;" title="开启后，导入将【替换】现有同类数据。关闭则进行【合并】导入。">📥 替换模式导入</label>
+                <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;" title="开启：导入时替换现有数据；关闭：导入时与现有数据合并">
+                    <label style="margin: 0; font-size: 12px; color: #a1a1aa;" id="label-import-mode">📥 合并模式导入</label>
                     <label class="switch red-switch">
                       <input type="checkbox" id="import-mode">
                       <span class="slider"></span>
@@ -183,20 +182,20 @@
 
             <div class="action-grid">
                 <div class="grid-label">📤 导出</div>
-                <button id="export-words-btn" class="btn-action">仅单词</button>
-                <button id="export-roots-btn" class="btn-action">仅词根</button>
-                <button id="export-all-btn" class="btn-action">单词 + 词根</button>
+                <button id="export-words-btn" class="btn-action" title="将所选范围内的单词导出为 JSON 备份文件">仅单词</button>
+                <button id="export-roots-btn" class="btn-action" title="将所选范围内的词根导出为 JSON 备份文件">仅词根</button>
+                <button id="export-all-btn" class="btn-action" title="将所选范围内的所有单词和词根导出为 JSON 备份文件">单词 + 词根</button>
 
                 <div class="grid-label">📥 导入</div>
-                <button id="import-words-btn" class="btn-action btn-import">仅单词</button>
-                <button id="import-roots-btn" class="btn-action btn-import">仅词根</button>
-                <button id="import-all-btn" class="btn-action btn-import">单词 + 词根</button>
+                <button id="import-words-btn" class="btn-action btn-import" title="从 JSON 文件导入单词数据">仅单词</button>
+                <button id="import-roots-btn" class="btn-action btn-import" title="从 JSON 文件导入词根数据">仅词根</button>
+                <button id="import-all-btn" class="btn-action btn-import" title="从 JSON 文件导入所有单词和词根数据">单词 + 词根</button>
                 <input type="file" id="import-file" style="display:none" accept=".json">
 
                 <div class="grid-label" style="color: #ef4444;">🗑️ 清除</div>
-                <button id="delete-words-btn" class="btn-action btn-danger-action">仅单词</button>
-                <button id="delete-roots-btn" class="btn-action btn-danger-action">仅词根</button>
-                <button id="delete-all-btn" class="btn-action btn-danger-action">单词 + 词根</button>
+                <button id="delete-words-btn" class="btn-action btn-danger-action" title="彻底删除所选范围内的所有单词数据">仅单词</button>
+                <button id="delete-roots-btn" class="btn-action btn-danger-action" title="彻底删除所选范围内的所有词根数据">仅词根</button>
+                <button id="delete-all-btn" class="btn-action btn-danger-action" title="彻底删除所选范围内的所有单词和词根数据">单词 + 词根</button>
             </div>
           </div>
         </div>
