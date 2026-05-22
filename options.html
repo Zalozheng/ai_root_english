@@ -14,6 +14,7 @@
       <div class="nav-item" data-target="view-words">📖 单词特训库</div>
       <div class="nav-item" data-target="view-roots">🌱 词源图谱库</div>
       <div class="nav-item" data-target="view-word-tree">🌳 词树图谱</div>
+      <a href="docs.html" target="_blank" class="nav-item" style="text-decoration: none; display: block; margin-top: 10px; border-top: 1px solid #333; padding-top: 20px;">📄 插件使用文档</a>
     </nav>
   </aside>
 
@@ -72,13 +73,15 @@
             <div class="split-col">
               <div class="form-group" style="margin-bottom: 0;">
                 <label title="选择 AI 解析时的角色身份和知识背景，不同角色会有不同的记忆点">角色与记忆情景</label>
-                <select id="prompt-context" title="切换当前工作的 AI 角色模式">
-                  <option value="general">🌍 通用生活 (日常)</option>
-                  <option value="civ6">🏛️ 文明6游戏策划</option>
-                  <option value="linux_ai">🐧 Linux/AI极客</option>
-                  <option value="custom">✍️ 自定义专属角色</option>
-                </select>
-                <input type="text" id="custom-context-input" placeholder="例如：律师日常" style="margin-top: 10px; display: none;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <select id="prompt-context" title="切换当前工作的 AI 角色模式" style="flex: 1;">
+                  </select>
+                  <button id="add-context-btn" class="btn-outline" title="新增自定义情景模式" style="padding: 10px; flex-shrink: 0;">➕ 新增</button>
+                </div>
+                <div id="rename-context-wrapper" style="display: none; margin-top: 10px; display: flex; gap: 8px;">
+                  <input type="text" id="custom-context-input" placeholder="自定义情景名称，例如：律师日常" style="flex: 1; padding: 8px 12px; background: #111;">
+                  <button id="rename-context-btn" class="btn-outline" style="padding: 8px 12px;">💾 重命名</button>
+                </div>
               </div>
             </div>
             <div class="split-col">

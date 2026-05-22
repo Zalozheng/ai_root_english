@@ -57,12 +57,72 @@ document.addEventListener('DOMContentLoaded', () => {
       const customContextInput = document.getElementById('custom-context-input');
       const promptArea = document.getElementById('custom-prompt');
 
-      // 初始化自定义情景名称
-      if (customContextInput) {
-          const customCtx = window.appConfig.contexts.find(c => c.id === 'custom');
-          if (customCtx && customCtx.name && customCtx.name !== '✍️ 自定义专属角色') {
-              customContextInput.value = customCtx.name.replace(/^✍️\s*/, '');
+      function renderContextSelect() {
+          if (!contextSelect) return;
+          contextSelect.innerHTML = '';
+          const wordFilter = document.getElementById('word-context-filter');
+          const rootFilter = document.getElementById('root-context-filter');
+          if(wordFilter) wordFilter.innerHTML = '<option value="all">🌍 全部情景</option>';
+          if(rootFilter) rootFilter.innerHTML = '<option value="all">🌍 全部情景</option>';
+
+          window.appConfig.contexts.forEach(ctx => { 
+              const opt = document.createElement('option'); opt.value = ctx.id; opt.textContent = ctx.name; contextSelect.appendChild(opt); 
+              if(wordFilter) wordFilter.innerHTML += `<option value="${ctx.id}">${ctx.name}</option>`;
+              if(rootFilter) rootFilter.innerHTML += `<option value="${ctx.id}">${ctx.name}</option>`;
+          });
+          contextSelect.value = window.appConfig.promptContext || 'general';
+          checkCustomContextUI();
+      }
+
+      function checkCustomContextUI() {
+          if (!contextSelect) return;
+          const cur = contextSelect.value;
+          const isCustom = cur.startsWith('custom');
+          const wrapper = document.getElementById('rename-context-wrapper');
+          if (wrapper) wrapper.style.display = isCustom ? 'flex' : 'none';
+
+          if (isCustom && customContextInput) {
+              const ctxObj = window.appConfig.contexts.find(c => c.id === cur);
+              if (ctxObj) {
+                  customContextInput.value = ctxObj.name.replace(/^✍️\s*/, '');
+              }
           }
+      }
+
+      if (document.getElementById('add-context-btn')) {
+          document.getElementById('add-context-btn').addEventListener('click', () => {
+              const name = prompt('➕ 请输入新情景的名称（例如：考研英语、医学词汇）：');
+              if (name && name.trim()) {
+                  const newId = 'custom_' + Date.now();
+                  window.appConfig.contexts.push({ id: newId, name: '✍️ ' + name.trim() });
+                  window.appConfig.prompts[newId] = "";
+                  window.appConfig.promptContext = newId;
+                  chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                      renderContextSelect();
+                      updatePromptArea();
+                      window.showStatus('✅ 新情景已创建', '#10b981');
+                  });
+              }
+          });
+      }
+
+      if (document.getElementById('rename-context-btn')) {
+          document.getElementById('rename-context-btn').addEventListener('click', () => {
+              const cur = contextSelect.value;
+              const newName = customContextInput.value.trim();
+              if (cur.startsWith('custom') && newName) {
+                  const ctxObj = window.appConfig.contexts.find(c => c.id === cur);
+                  if (ctxObj) {
+                      ctxObj.name = '✍️ ' + newName;
+                      chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                          renderContextSelect();
+                          window.showStatus('✅ 情景命名已更新', '#10b981');
+                      });
+                  }
+              } else {
+                  window.showStatus('⚠️ 名称不能为空', '#f59e0b');
+              }
+          });
       }
 
       if (contextSelect && !document.getElementById('global-json-card')) {
@@ -89,46 +149,29 @@ document.addEventListener('DOMContentLoaded', () => {
           }
       }
 
-      // 动态同步所有情景下拉框
-      function renderContextSelect() {
-          if (!contextSelect) return;
-          contextSelect.innerHTML = '';
-          const wordFilter = document.getElementById('word-context-filter');
-          const rootFilter = document.getElementById('root-context-filter');
-          if(wordFilter) wordFilter.innerHTML = '<option value="all">🌍 全部情景</option>';
-          if(rootFilter) rootFilter.innerHTML = '<option value="all">🌍 全部情景</option>';
-
-          window.appConfig.contexts.forEach(ctx => { 
-              const opt = document.createElement('option'); opt.value = ctx.id; opt.textContent = ctx.name; contextSelect.appendChild(opt); 
-              if(wordFilter) wordFilter.innerHTML += `<option value="${ctx.id}">${ctx.name}</option>`;
-              if(rootFilter) rootFilter.innerHTML += `<option value="${ctx.id}">${ctx.name}</option>`;
-          });
-          contextSelect.value = window.appConfig.promptContext || 'general';
-          if (customContextInput) customContextInput.style.display = contextSelect.value === 'custom' ? 'block' : 'none';
-      }
-
       if (contextSelect) {
           renderContextSelect();
           if (!document.getElementById('context-controls-wrapper')) {
               const wrapper = document.createElement('div'); wrapper.id = 'context-controls-wrapper'; wrapper.style.cssText = 'display: flex; align-items: center; gap: 8px; width: 100%;';
               contextSelect.parentNode.insertBefore(wrapper, contextSelect); wrapper.appendChild(contextSelect);
-              const delBtn = document.createElement('button'); delBtn.innerHTML = '❌'; delBtn.style.cssText = 'background:transparent; border:none; cursor:pointer; opacity:0.8; padding: 4px;';
+              const delBtn = document.createElement('button'); delBtn.id = 'delete-context-btn'; delBtn.innerHTML = '❌'; delBtn.title = '删除此自定义情景'; delBtn.style.cssText = 'background:transparent; border:none; cursor:pointer; opacity:0.8; padding: 4px; display: none;';
               wrapper.appendChild(delBtn);
+              
               delBtn.addEventListener('click', () => {
                   const currentId = contextSelect.value;
-                  if (currentId === 'general') return window.showStatus('⚠️ 默认模式不可删除', '#f59e0b');
-                  if (confirm('确定彻底删除此模式？')) {
+                  if (!currentId.startsWith('custom')) return window.showStatus('⚠️ 系统预设情景不可删除', '#f59e0b');
+                  if (confirm('确定彻底删除此自定义情景？（注意：这不会删除词库里的数据，只会删除此预设身份）')) {
                       window.appConfig.contexts = window.appConfig.contexts.filter(c => c.id !== currentId);
                       delete window.appConfig.prompts[currentId];
                       window.appConfig.promptContext = 'general';
                       renderContextSelect(); updatePromptArea();
-                      chrome.storage.local.set({ app_config: window.appConfig }, () => window.showStatus('✅ 已删除', '#10b981'));
+                      chrome.storage.local.set({ app_config: window.appConfig }, () => window.showStatus('✅ 已删除该情景', '#10b981'));
                   }
               });
           }
           contextSelect.addEventListener('change', (e) => {
               window.appConfig.promptContext = e.target.value;
-              if (customContextInput) customContextInput.style.display = e.target.value === 'custom' ? 'block' : 'none';
+              checkCustomContextUI();
               updatePromptArea();
           });
       }
