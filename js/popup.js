@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const versionBadge = document.querySelector('.version-badge');
+if (versionBadge) {
+  const v = chrome.runtime.getManifest().version;
+  versionBadge.textContent = `v${v}`;
+  versionBadge.setAttribute('data-tooltip', `Ai词根分析 v${v}`);
+}
   const wordInput = document.getElementById('word-input');
   const searchBtn = document.getElementById('search-btn');
   const regenBtn = document.getElementById('regen-btn');
@@ -62,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ====== 📌 动态图钉交互逻辑（实现开关环路） ======
   if (pinWindowBtn) {
     if (isInPage) {
-        // 如果我们已经在独立的脱离窗口里，把图标变成“取消固定”
+        // 如果我们已经在独立的脱离窗口里，把图标变成"取消固定"
         pinWindowBtn.innerText = '❌';
         pinWindowBtn.setAttribute('data-tooltip', '❌ 取消固定\n关闭当前独立窗口');
     }
