@@ -128,3 +128,9 @@ input:checked + .slider:before { transform: translateX(16px); }
   left: 0; 
   transform: none; 
 }
+/* 禁止初始化过渡动画 */
+.no-transition * { transition: none !important; }
+.no-transition .slider,
+.no-transition .slider:before {
+  transition: none !important;
+}
