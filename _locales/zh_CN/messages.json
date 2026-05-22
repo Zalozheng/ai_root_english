@@ -3,7 +3,7 @@
     "message": "AI词根记忆"
   },
   "extShortName": {
-    "message": "AI词根"
+    "message": "词根"
   },
   "extDescription": {
     "message": "智能英语词汇解析工具：一键拆解词根词缀，结合 AI 生成记忆故事与情景例句，支持 Ollama 本地模型与云端 API 双模式，让每个单词深入脑海。"
