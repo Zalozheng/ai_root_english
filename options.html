@@ -16,6 +16,10 @@
       <div class="nav-item" data-target="view-word-tree">🌳 词树图谱</div>
       <a href="docs.html" target="_blank" class="nav-item" style="text-decoration: none; display: block; margin-top: 10px; border-top: 1px solid #333; padding-top: 20px;">📄 插件使用文档</a>
     </nav>
+    <div style="padding: 20px; font-size: 13px; color: #666; text-align: center; border-top: 1px solid #27272a;">
+      <div style="margin-bottom: 8px;">版本 <span id="plugin-version"></span></div>
+      <a href="https://github.com/Zalozheng/ai_root_english" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: bold;">🔄 检查升级 / GitHub</a>
+    </div>
   </aside>
 
   <main class="main-content">
@@ -81,6 +85,7 @@
                 <div id="rename-context-wrapper" style="display: none; margin-top: 10px; display: flex; gap: 8px;">
                   <input type="text" id="custom-context-input" placeholder="自定义情景名称，例如：律师日常" style="flex: 1; padding: 8px 12px; background: #111;">
                   <button id="rename-context-btn" class="btn-outline" style="padding: 8px 12px;">💾 重命名</button>
+                  <button id="delete-context-btn" class="btn-outline btn-danger-action" style="padding: 8px 12px;" title="删除当前自定义情景">❌ 删除</button>
                 </div>
               </div>
             </div>

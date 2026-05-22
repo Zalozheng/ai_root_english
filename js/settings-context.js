@@ -33,11 +33,6 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
                 customContextInput.value = ctxObj.name.replace(/^✍️\s*/, '');
             }
         }
-        
-        const delBtn = document.getElementById('delete-context-btn');
-        if (delBtn) {
-            delBtn.style.display = isCustom ? 'block' : 'none';
-        }
     }
 
     if (document.getElementById('add-context-btn')) {
@@ -76,6 +71,23 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
         });
     }
 
+    if (document.getElementById('delete-context-btn')) {
+        document.getElementById('delete-context-btn').addEventListener('click', () => {
+            const currentId = contextSelect.value;
+            if (!currentId.startsWith('custom')) return window.showStatus('⚠️ 系统预设情景不可删除', '#f59e0b');
+            if (confirm('确定彻底删除此自定义情景？（注意：这不会删除词库里的数据，只会删除此预设身份）')) {
+                window.appConfig.contexts = window.appConfig.contexts.filter(c => c.id !== currentId);
+                delete window.appConfig.prompts[currentId];
+                window.appConfig.promptContext = 'general';
+                chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                    renderContextSelect(); 
+                    updatePromptArea();
+                    window.showStatus('✅ 已删除该情景', '#10b981');
+                });
+            }
+        });
+    }
+
     if (contextSelect && !document.getElementById('global-json-card')) {
         let card = contextSelect.parentElement;
         while(card && card.tagName !== 'BODY') { if (card.textContent.includes('界面设定与历史')) break; card = card.parentElement; }
@@ -102,25 +114,6 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
 
     if (contextSelect) {
         renderContextSelect();
-        if (!document.getElementById('context-controls-wrapper')) {
-            const wrapper = document.createElement('div'); wrapper.id = 'context-controls-wrapper'; wrapper.style.cssText = 'display: flex; align-items: center; gap: 8px; width: 100%;';
-            contextSelect.parentNode.insertBefore(wrapper, contextSelect); wrapper.appendChild(contextSelect);
-            const delBtn = document.createElement('button'); delBtn.id = 'delete-context-btn'; delBtn.innerHTML = '❌'; delBtn.title = '删除此自定义情景'; delBtn.style.cssText = 'background:transparent; border:none; cursor:pointer; opacity:0.8; padding: 4px; display: none;';
-            wrapper.appendChild(delBtn);
-            
-            delBtn.addEventListener('click', () => {
-                const currentId = contextSelect.value;
-                if (!currentId.startsWith('custom')) return window.showStatus('⚠️ 系统预设情景不可删除', '#f59e0b');
-                if (confirm('确定彻底删除此自定义情景？（注意：这不会删除词库里的数据，只会删除此预设身份）')) {
-                    window.appConfig.contexts = window.appConfig.contexts.filter(c => c.id !== currentId);
-                    delete window.appConfig.prompts[currentId];
-                    window.appConfig.promptContext = 'general';
-                    renderContextSelect(); updatePromptArea();
-                    chrome.storage.local.set({ app_config: window.appConfig }, () => window.showStatus('✅ 已删除该情景', '#10b981'));
-                }
-            });
-            checkCustomContextUI();
-        }
         contextSelect.addEventListener('change', (e) => {
             window.appConfig.promptContext = e.target.value;
             checkCustomContextUI();
