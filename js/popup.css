@@ -27,29 +27,11 @@
 body { width: 420px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; box-sizing: border-box; transition: 0.2s;}
 body::-webkit-scrollbar { width: 6px; } body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-/* ======== 神奇的悬停标题动画 ======== */
-.header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--surface2); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: nowrap; position: relative; z-index: 100;}
-.header-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; color: var(--text); cursor: default; }
+.header { display: flex; justify-content: flex-start; align-items: center; gap: 12px; border-bottom: 2px solid var(--surface2); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: nowrap; position: relative; z-index: 100;}
+.header-title { font-size: 16px; font-weight: 800; display: inline-flex; align-items: center; color: var(--text); cursor: default; }
 .header-title img { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; z-index: 2;}
 
-.title-text-wrap {
-  display: inline-flex;
-  align-items: baseline;
-  max-width: 0;            /* 默认宽度为 0，隐藏文字 */
-  opacity: 0;              /* 默认透明 */
-  overflow: hidden;
-  white-space: nowrap;
-  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* 丝滑弹出曲线 */
-}
-/* 鼠标滑过图标时，抽出文字 */
-.header-title:hover .title-text-wrap {
-  max-width: 150px;
-  opacity: 1;
-  margin-left: 8px;
-}
-.title-version { font-size: 10px; color: var(--text-muted); margin-left: 4px; font-weight: 600;}
-
-.header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0;}
+.header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto;}
 
 .quick-select { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; font-size: 12px; font-weight: 600; outline: none; cursor: pointer; transition: 0.2s;}
 .quick-select:hover { border-color: var(--accent); }
@@ -111,14 +93,13 @@ input:checked + .slider:before { transform: translateX(16px); }
 .line-input { flex:1; background:transparent; border:none; border-bottom:1px dashed transparent; color:var(--text); font-size:14px; line-height:1.6; outline:none; padding:0 2px; width:100%; font-family:inherit; }
 .line-input:focus { border-bottom-color: var(--orange); background: var(--surface2); border-radius: 3px; }
 
-/* ======== 自定义双行悬停提示框 (完美适配主题 & 修复溢出) ======== */
+/* ======== 自定义双行悬停提示框 ======== */
 [data-tooltip] { position: relative; }
 [data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute; 
   top: calc(100% + 8px); 
   left: 50%; transform: translateX(-50%);
-  /* 颜色现在完全跟随你的深浅色主题，不再是难看的黑底白字 */
   background: var(--surface); 
   color: var(--text);
   border: 1px solid var(--border);
@@ -132,7 +113,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 }
 [data-tooltip]:hover::after { opacity: 1; visibility: visible; }
 
-/* 核心修复：把右侧按钮的提示框强制向左延展，绝不超出屏幕右侧边界 */
+/* 右侧按钮 tooltip 向左对齐，不超出右边界 */
 .header-right [data-tooltip]::after,
 #search-btn[data-tooltip]::after,
 #regen-btn[data-tooltip]::after { 
@@ -140,30 +121,10 @@ input:checked + .slider:before { transform: translateX(16px); }
   right: 0; 
   transform: none; 
 }
-/* ======== 对称修复：左侧边缘对齐 ======== */
-/* 当你悬停在 header-right 之外的元素（比如左边的开关）时，
-   如果它靠左太近，我们通过 left: 0 把它强制推回右方一点点
-*/
-.header .switch-wrap[data-tooltip]::after {
+
+/* 左侧元素 tooltip 向右对齐，不超出左边界 */
+.header .switch-wrap[data-tooltip]::after,
+#app-logo[data-tooltip]::after {
   left: 0; 
   transform: none; 
-}
-
-/* 如果你有其他在左侧边缘的元素，也可以套用这个逻辑：
-   给那个元素加上一个类名，然后：
-   .你的类名[data-tooltip]::after { left: 0; transform: none; }
-*/
-/* 版本号徽章 */
-.version-badge {
-  font-size: 11px;
-  color: var(--text-muted);
-  align-self: center;
-  cursor: default;
-  opacity: 0.6;
-}
-
-/* tooltip 不超出左边界 */
-.version-badge[data-tooltip]::after {
-  left: 0;
-  transform: none;
 }

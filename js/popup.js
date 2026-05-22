@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const versionBadge = document.querySelector('.version-badge');
-if (versionBadge) {
+  const logoEl = document.getElementById('app-logo');
+if (logoEl) {
   const v = chrome.runtime.getManifest().version;
-  versionBadge.textContent = `v${v}`;
-  versionBadge.setAttribute('data-tooltip', `Ai词根分析 v${v}`);
+  logoEl.setAttribute('data-tooltip', `Ai词根分析 v${v}`);
 }
   const wordInput = document.getElementById('word-input');
   const searchBtn = document.getElementById('search-btn');
