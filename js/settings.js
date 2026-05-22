@@ -247,33 +247,52 @@ document.addEventListener('DOMContentLoaded', () => {
         return isSpecific ? document.getElementById('prompt-context').value : null;
     }
 
+    function getRootsUsedInContext(items, context) {
+        let usedRoots = new Set();
+        for (let k in items) {
+            if (k.startsWith('W:')) {
+                let w = items[k];
+                if (w.memory_lines_map && Object.keys(w.memory_lines_map).some(mk => mk.endsWith(`_${context}`))) {
+                    (w.parts || []).forEach(p => usedRoots.add(p.segment.toLowerCase().replace(/^-|-$/g, '').trim()));
+                }
+            }
+        }
+        return usedRoots;
+    }
+
     // 导出引擎
     function handleExport(type) {
         const scopeCtx = getActionScope();
         chrome.storage.local.get(null, (items) => {
             let exportData = {}; let count = 0;
+            let usedRoots = scopeCtx ? getRootsUsedInContext(items, scopeCtx) : null;
+
             for (let k in items) {
                 let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
                 if (!isWord && !isRoot) continue;
+                if (type === 'words' && !isWord) continue;
+                if (type === 'roots' && !isRoot) continue;
                 
-                // 情景剥离逻辑 (只导当前情景有记忆的词)
-                if (scopeCtx && isWord) {
-                    if (!items[k].memory_lines_map) continue;
-                    let hasCtx = Object.keys(items[k].memory_lines_map).some(key => key.endsWith('_' + scopeCtx));
-                    if (!hasCtx) continue;
-                }
-
-                if ((type === 'words' && isWord) || (type === 'roots' && isRoot) || type === 'all') {
-                    // 脱敏：如果选了特定情景导出，剔除该词在其它情景的记忆，确保纯净
-                    if (scopeCtx && isWord) {
+                if (scopeCtx) {
+                    if (isWord) {
+                        if (!items[k].memory_lines_map) continue;
+                        let hasCtx = Object.keys(items[k].memory_lines_map).some(key => key.endsWith(`_${scopeCtx}`));
+                        if (!hasCtx) continue;
                         let cleanItem = JSON.parse(JSON.stringify(items[k]));
                         Object.keys(cleanItem.memory_lines_map).forEach(key => {
-                            if (!key.endsWith('_' + scopeCtx)) delete cleanItem.memory_lines_map[key];
+                            if (!key.endsWith(`_${scopeCtx}`)) delete cleanItem.memory_lines_map[key];
                         });
                         exportData[k] = cleanItem;
-                    } else {
-                        exportData[k] = items[k];
+                        count++;
+                    } else if (isRoot) {
+                        let rootSeg = (items[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+                        if (usedRoots.has(rootSeg)) {
+                            exportData[k] = items[k];
+                            count++;
+                        }
                     }
+                } else {
+                    exportData[k] = items[k];
                     count++;
                 }
             }
@@ -300,58 +319,89 @@ document.addEventListener('DOMContentLoaded', () => {
     if (importFile) {
         importFile.onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
-            const mode = document.getElementById('import-mode').checked ? "replace" : "merge";
+            const isReplaceMode = document.getElementById('import-mode').checked;
             const scopeCtx = getActionScope();
             
             const reader = new FileReader();
             reader.onload = (ev) => {
                 try {
                     const data = JSON.parse(ev.target.result);
-                    let filteredData = {};
+                    let importedData = {};
                     
-                    // 按需过滤出目标数据
                     for(let k in data) {
                         let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
                         if (pendingImportType === 'words' && !isWord) continue;
                         if (pendingImportType === 'roots' && !isRoot) continue;
                         if (!isWord && !isRoot) continue;
                         
-                        // 若指定了当前情景导入，将外来数据强行打上当前情景的标
                         if (scopeCtx && isWord && data[k].memory_lines_map) {
                            let firstKey = Object.keys(data[k].memory_lines_map)[0];
                            if(firstKey) {
                                let engineSource = firstKey.split('_')[0] || 'remote';
                                let newKey = `${engineSource}_${scopeCtx}`;
                                let linesToTransplant = data[k].memory_lines_map[firstKey];
-                               data[k].memory_lines_map = {}; // 清空原本情景
+                               data[k].memory_lines_map = {}; 
                                data[k].memory_lines_map[newKey] = linesToTransplant;
                            }
                         }
-                        filteredData[k] = data[k];
+                        importedData[k] = data[k];
                     }
 
-                    if (mode === "replace") {
-                        chrome.storage.local.get(null, (all) => {
-                            let keysToRemove = Object.keys(all).filter(k => {
-                                if (pendingImportType === 'words') return k.startsWith("W:");
-                                if (pendingImportType === 'roots') return k.startsWith("R:");
-                                return k.startsWith("W:") || k.startsWith("R:");
-                            });
-                            chrome.storage.local.remove(keysToRemove, () => {
-                                chrome.storage.local.set(filteredData, () => window.showStatus("✅ 替换导入成功", "#10b981"));
-                            });
-                        });
-                    } else {
-                        // 合并导入 (深层覆盖)
-                        chrome.storage.local.get(Object.keys(filteredData), (exist) => {
-                           for(let k in filteredData) {
-                               if (k.startsWith('W:') && exist[k] && exist[k].memory_lines_map) {
-                                   filteredData[k].memory_lines_map = { ...exist[k].memory_lines_map, ...filteredData[k].memory_lines_map };
-                               }
-                           }
-                           chrome.storage.local.set(filteredData, () => window.showStatus("✅ 合并导入成功", "#10b981"));
-                        });
-                    }
+                    chrome.storage.local.get(null, (all) => {
+                        let toSave = {};
+                        let keysToRemove = [];
+                        let usedRoots = scopeCtx ? getRootsUsedInContext(all, scopeCtx) : null;
+
+                        if (isReplaceMode) {
+                            if (!scopeCtx) {
+                                Object.keys(all).forEach(k => {
+                                    if (pendingImportType === 'words' && k.startsWith("W:")) keysToRemove.push(k);
+                                    if (pendingImportType === 'roots' && k.startsWith("R:")) keysToRemove.push(k);
+                                    if (pendingImportType === 'all' && (k.startsWith("W:") || k.startsWith("R:"))) keysToRemove.push(k);
+                                });
+                            } else {
+                                Object.keys(all).forEach(k => {
+                                    let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
+                                    if (isWord && (pendingImportType === 'words' || pendingImportType === 'all') && all[k].memory_lines_map) {
+                                        let map = all[k].memory_lines_map;
+                                        let modified = false;
+                                        Object.keys(map).forEach(mk => {
+                                            if (mk.endsWith(`_${scopeCtx}`)) { delete map[mk]; modified = true; }
+                                        });
+                                        if (modified) {
+                                            if (Object.keys(map).length === 0) keysToRemove.push(k);
+                                            else toSave[k] = all[k]; 
+                                        }
+                                    } else if (isRoot && (pendingImportType === 'roots' || pendingImportType === 'all')) {
+                                        let rootSeg = (all[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+                                        if (usedRoots.has(rootSeg)) keysToRemove.push(k);
+                                    }
+                                });
+                            }
+                        }
+
+                        for (let k in importedData) {
+                            if (all[k] && !keysToRemove.includes(k) && k.startsWith('W:') && importedData[k].memory_lines_map) {
+                                let baseMap = toSave[k] ? toSave[k].memory_lines_map : all[k].memory_lines_map;
+                                importedData[k].memory_lines_map = { ...baseMap, ...importedData[k].memory_lines_map };
+                                importedData[k].lookup_count = all[k].lookup_count || 0;
+                                importedData[k].updated_at = all[k].updated_at || Date.now();
+                            }
+                            toSave[k] = importedData[k];
+                            keysToRemove = keysToRemove.filter(rk => rk !== k);
+                        }
+
+                        let finalize = () => {
+                            if (Object.keys(toSave).length > 0) {
+                                chrome.storage.local.set(toSave, () => window.showStatus(`✅ ${isReplaceMode?'替换':'合并'}导入成功`, "#10b981"));
+                            } else {
+                                window.showStatus(`✅ 操作完成`, "#10b981");
+                            }
+                        };
+
+                        if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove, finalize);
+                        else finalize();
+                    });
                     importFile.value = ''; 
                 } catch (err) { window.showStatus("❌ 解析失败，非标准JSON", "#ef4444"); }
             };
@@ -363,12 +413,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleDelete(type) {
         const scopeCtx = getActionScope();
         const typeName = type === 'words' ? '纯单词' : (type === 'roots' ? '纯词根' : '所有单词和词根');
-        const scopeName = scopeCtx ? `【当前情景】下的` : `【全局全量】的`;
+        const scopeName = scopeCtx ? `【仅限当前情景】下的` : `【全局全量】的`;
         
         if(!confirm(`🗑️ 危险：确定要彻底清除 ${scopeName} ${typeName} 吗？`)) return;
 
         chrome.storage.local.get(null, (items) => {
             let keysToRemove = [];
+            let itemsToUpdate = {};
+            let usedRoots = scopeCtx ? getRootsUsedInContext(items, scopeCtx) : null;
+
             for (let k in items) {
                 let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
                 if (type === 'words' && !isWord) continue;
@@ -377,19 +430,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (!scopeCtx) {
                     keysToRemove.push(k);
-                } else if (isWord && items[k].memory_lines_map) {
-                    // 如果只删当前情景，就去 Map 里剔除对应 Key
-                    let map = items[k].memory_lines_map;
-                    Object.keys(map).forEach(mk => { if (mk.endsWith(`_${scopeCtx}`)) delete map[mk]; });
-                    if (Object.keys(map).length === 0) keysToRemove.push(k); // 如果这词没其他情景记忆了，直接删词
-                    else chrome.storage.local.set({[k]: items[k]}); // 否则保留该词，只保存剔除了该情景的 Map
+                } else {
+                    if (isWord && items[k].memory_lines_map) {
+                        let map = items[k].memory_lines_map;
+                        let hasCtx = Object.keys(map).some(mk => mk.endsWith(`_${scopeCtx}`));
+                        if (hasCtx) {
+                            let cleanItem = JSON.parse(JSON.stringify(items[k]));
+                            Object.keys(cleanItem.memory_lines_map).forEach(mk => { 
+                                if (mk.endsWith(`_${scopeCtx}`)) delete cleanItem.memory_lines_map[mk]; 
+                            });
+                            if (Object.keys(cleanItem.memory_lines_map).length === 0) {
+                                keysToRemove.push(k);
+                            } else {
+                                itemsToUpdate[k] = cleanItem;
+                            }
+                        }
+                    } else if (isRoot) {
+                        let rootSeg = (items[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+                        if (usedRoots.has(rootSeg)) {
+                            keysToRemove.push(k);
+                        }
+                    }
                 }
             }
-            if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove, () => window.showStatus("🗑️ 清除完成", "#10b981"));
-            else window.showStatus("✅ 该范围内已被清空", "#10b981");
+            
+            let finalize = () => window.showStatus("🗑️ 清除完成", "#10b981");
+            let tasks = 0;
+            if (keysToRemove.length > 0) tasks++;
+            if (Object.keys(itemsToUpdate).length > 0) tasks++;
+            
+            if (tasks === 0) return window.showStatus("✅ 该范围内已被清空", "#10b981");
+
+            let done = 0;
+            let checkDone = () => { done++; if (done === tasks) finalize(); };
+
+            if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove, checkDone);
+            if (Object.keys(itemsToUpdate).length > 0) chrome.storage.local.set(itemsToUpdate, checkDone);
         });
     }
 
+    if(document.getElementById('delete-words-btn')) document.getElementById('delete-words-btn').addEventListener('click', () => handleDelete('words'));
+    if(document.getElementById('delete-roots-btn')) document.getElementById('delete-roots-btn').addEventListener('click', () => handleDelete('roots'));
     if(document.getElementById('delete-all-btn')) document.getElementById('delete-all-btn').addEventListener('click', () => handleDelete('all'));
 
     // ======= 动态文案更新逻辑 =======

@@ -52,6 +52,24 @@ const StorageModule = {
         result.sourceTag = matchedSourceTag;
         return callback(result);
       }
+
+      // 【新增】跨情景借用逻辑：如果当前情景没数据，且允许借用，则搜索其他情景
+      if (config.contextFallbackRule !== false) {
+          const allMapKeys = Object.keys(data.memory_lines_map);
+          // 优先找当前引擎在其他情景下的记录
+          let fallbackKey = allMapKeys.find(k => k.startsWith(actualEngine + '_'));
+          // 如果还是没有，找任何引擎的任何情景
+          if (!fallbackKey) fallbackKey = allMapKeys[0];
+
+          if (fallbackKey) {
+              let result = JSON.parse(JSON.stringify(data));
+              result.memory_lines = data.memory_lines_map[fallbackKey];
+              // 标记来源，让用户知道这是借来的
+              result.sourceTag = fallbackKey.split('_')[0]; 
+              return callback(result);
+          }
+      }
+
       callback(null);
     });
   }

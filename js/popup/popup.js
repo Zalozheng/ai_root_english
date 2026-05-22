@@ -125,7 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (initialWord) {
     wordInput.value = initialWord;
     chrome.storage.local.get(['app_config'], (res) => {
-      if ((res.app_config || {}).autoParse !== 'manual') doAnalyze(initialWord);
+      const config = res.app_config || {};
+      const shouldAutoParse = config.autoParse !== false && config.autoParse !== 'manual';
+      if (shouldAutoParse) doAnalyze(initialWord);
     });
   } else if (!isInPage) {
     fetchWordFromPage();
@@ -146,7 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selected) {
               chrome.storage.local.get(['app_config'], (res) => {
                 wordInput.value = selected;
-                if ((res.app_config || {}).autoParse !== 'manual') {
+                const config = res.app_config || {};
+                const shouldAutoParse = config.autoParse !== false && config.autoParse !== 'manual';
+                if (shouldAutoParse) {
                   state.navStack = []; doUpdateBack(); doAnalyze();
                 }
               });

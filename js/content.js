@@ -5,20 +5,17 @@ let contentScriptEnabled = true; // 默认开启
 // 1. 初始化时读取一次配置
 chrome.storage.local.get(['app_config'], (res) => {
   const config = res.app_config || {};
-  if (config.enableContentScript === 'disabled') {
-    contentScriptEnabled = false;
-  }
+  // 兼容布尔值和旧的字符串值
+  contentScriptEnabled = config.enableContentScript !== false && config.enableContentScript !== 'disabled';
 });
 
 // 2. 监听配置动态改变，如果用户刚关掉，立刻清理正在显示的 UI
 chrome.storage.onChanged.addListener((changes) => {
   if (changes.app_config) {
     const newConfig = changes.app_config.newValue || {};
-    if (newConfig.enableContentScript === 'disabled') {
-      contentScriptEnabled = false;
+    contentScriptEnabled = newConfig.enableContentScript !== false && newConfig.enableContentScript !== 'disabled';
+    if (!contentScriptEnabled) {
       removeUI();
-    } else {
-      contentScriptEnabled = true;
     }
   }
 });
