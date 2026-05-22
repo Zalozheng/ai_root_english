@@ -393,23 +393,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentLabel = document.getElementById('label-content-script');
     const autoToggle = document.getElementById('auto-parse');
     const autoLabel = document.getElementById('label-auto-parse');
+    
+    const contextFallbackToggle = document.getElementById('context-fallback-rule');
+    const contextFallbackLabel = document.getElementById('label-context-fallback');
+    const rootStrategyToggle = document.getElementById('root-toggle-switch');
+    const rootStrategyLabel = document.getElementById('label-root-strategy');
+    
+    // 获取 Hint 元素
+    const hints = {
+        actionCtx: document.getElementById('hint-action-context'),
+        importMode: document.getElementById('hint-import-mode'),
+        contentScript: document.getElementById('hint-content-script'),
+        autoParse: document.getElementById('hint-auto-parse'),
+        contextFallback: document.getElementById('hint-context-fallback'),
+        rootStrategy: document.getElementById('hint-root-strategy')
+    };
 
     function updateLabels() {
         if(ctxToggle && ctxLabel) {
             ctxLabel.textContent = ctxToggle.checked ? "🌍 仅限当前情景" : "🌍 全局数据模式";
             ctxLabel.style.color = ctxToggle.checked ? "#ef4444" : "#a1a1aa";
+            if(hints.actionCtx) hints.actionCtx.textContent = ctxToggle.checked ? "操作仅针对当前选择的 AI 情景" : "操作将影响所有情景下的数据";
         }
         if(modeToggle && modeLabel) {
             modeLabel.textContent = modeToggle.checked ? "📥 替换模式导入" : "📥 合并模式导入";
             modeLabel.style.color = modeToggle.checked ? "#ef4444" : "#a1a1aa";
+            if(hints.importMode) hints.importMode.textContent = modeToggle.checked ? "导入时将【覆盖】现有的同类记录" : "将新数据与现有记录进行合并";
         }
         if(contentToggle && contentLabel) {
             contentLabel.textContent = contentToggle.checked ? "🌐 网页划词取词已开" : "🌐 网页划词取词已关";
             contentLabel.style.color = contentToggle.checked ? "#38bdf8" : "#71717a";
+            if(hints.contentScript) hints.contentScript.textContent = contentToggle.checked ? "选中文本后显示搜索小图标" : "已彻底禁用网页划词功能";
         }
         if(autoToggle && autoLabel) {
             autoLabel.textContent = autoToggle.checked ? "⚡ 图标即点即译已开" : "⚡ 图标即点即译已关";
             autoLabel.style.color = autoToggle.checked ? "#fcd34d" : "#71717a";
+            if(hints.autoParse) hints.autoParse.textContent = autoToggle.checked ? "点击插件图标立即翻译选中词" : "图标点击仅打开插件主面板";
+        }
+        if(contextFallbackToggle && contextFallbackLabel) {
+            contextFallbackLabel.textContent = contextFallbackToggle.checked ? "⚡ 跨情景借用已开" : "⚡ 跨情景借用已关";
+            contextFallbackLabel.style.color = contextFallbackToggle.checked ? "#bae6fd" : "#71717a";
+            if(hints.contextFallback) hints.contextFallback.textContent = contextFallbackToggle.checked ? "允许不同角色间共用缓存数据" : "严格隔离不同角色的解析记录";
+        }
+        if(rootStrategyToggle && rootStrategyLabel) {
+            rootStrategyLabel.textContent = rootStrategyToggle.checked ? "🛡️ 保护旧词根已开" : "🛡️ 保护旧词根已关";
+            rootStrategyLabel.style.color = rootStrategyToggle.checked ? "#d1d5db" : "#71717a";
+            if(hints.rootStrategy) hints.rootStrategy.textContent = rootStrategyToggle.checked ? "优先保留手动修改过的词源故事" : "词根故事将由 AI 重新生成";
         }
     }
 
@@ -417,5 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(modeToggle) modeToggle.addEventListener('change', updateLabels);
     if(contentToggle) contentToggle.addEventListener('change', updateLabels);
     if(autoToggle) autoToggle.addEventListener('change', updateLabels);
+    if(contextFallbackToggle) contextFallbackToggle.addEventListener('change', updateLabels);
+    if(rootStrategyToggle) rootStrategyToggle.addEventListener('change', updateLabels);
     updateLabels();
 });

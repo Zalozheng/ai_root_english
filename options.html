@@ -97,7 +97,10 @@
           <div class="split-layout" style="margin-bottom: 25px;">
             <div class="split-col">
                 <div style="display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启后，在网页中选中文本会弹出搜索小图标。关闭则彻底禁用此功能。">
-                    <label style="margin: 0; font-size: 13px; color: #a1a1aa; font-weight: bold;" id="label-content-script">🌐 网页划词取词已开</label>
+                    <div style="flex: 1;">
+                        <label style="margin: 0; font-size: 13px; color: #a1a1aa; font-weight: bold;" id="label-content-script">🌐 网页划词取词已开</label>
+                        <span class="sub-label" id="hint-content-script">选中文本后显示搜索小图标</span>
+                    </div>
                     <label class="switch blue-switch">
                       <input type="checkbox" id="enable-content-script" checked>
                       <span class="slider"></span>
@@ -106,7 +109,10 @@
             </div>
             <div class="split-col">
                 <div style="display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启后，点击浏览器工具栏图标将直接分析网页中选中的单词">
-                    <label style="margin: 0; font-size: 13px; color: #fcd34d; font-weight: bold;" id="label-auto-parse">⚡ 图标即点即译已开</label>
+                    <div style="flex: 1;">
+                        <label style="margin: 0; font-size: 13px; color: #fcd34d; font-weight: bold;" id="label-auto-parse">⚡ 图标即点即译已开</label>
+                        <span class="sub-label" id="hint-auto-parse">点击插件图标立即翻译选中词</span>
+                    </div>
                     <label class="switch blue-switch">
                       <input type="checkbox" id="auto-parse" checked>
                       <span class="slider"></span>
@@ -145,20 +151,24 @@
           </div>
           
           <div class="split-col section-box" style="margin-bottom: 0; border-left: 4px solid #f59e0b;">
-            <div class="section-title" style="color: #f59e0b; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <span>🌱 高级保护规则</span>
-            </div>
+            <div class="section-title" style="color: #f59e0b;">🌱 高级保护规则</div>
             
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                <span style="font-size: 14px; font-weight: bold; color: #bae6fd;" title="切换不同角色(如日常/极客)查词时，若当前角色无缓存，是否直接借用其他角色的数据">⚡ 允许跨情景借用缓存</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px 14px; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px;" title="开启：当当前角色没有单词记录时，会自动借用其他角色的解析记录；关闭：严格按角色隔离，没有记录则重新解析。">
+                <div style="flex: 1;">
+                    <label style="margin: 0; font-size: 13px; color: #bae6fd; font-weight: bold;" id="label-context-fallback">⚡ 跨情景借用已开</label>
+                    <span class="sub-label" id="hint-context-fallback">允许不同角色间共用缓存数据</span>
+                </div>
                 <label class="switch">
                   <input type="checkbox" id="context-fallback-rule" checked>
                   <span class="slider"></span>
                 </label>
             </div>
             
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #444;">
-                <span style="font-size: 14px; font-weight: bold; color: #d1d5db;" title="若拆解新单词时遇到库中已有词根，将保留您的旧词源故事">保护旧词根故事</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启：解析新单词时，如果命中已存在的词根，将优先保留您之前保存的词源故事；关闭：由 AI 重新生成可能略有差异的解释。">
+                <div style="flex: 1;">
+                    <label style="margin: 0; font-size: 13px; color: #d1d5db; font-weight: bold;" id="label-root-strategy">🛡️ 保护旧词根已开</label>
+                    <span class="sub-label" id="hint-root-strategy">优先保留手动修改过的词源故事</span>
+                </div>
                 <label class="switch">
                   <input type="checkbox" id="root-toggle-switch" checked>
                   <span class="slider"></span>
@@ -173,14 +183,20 @@
           <div class="action-panel">
             <div style="display: flex; gap: 15px; margin-bottom: 10px;">
                 <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;" title="开启：仅操作当前情景的数据；关闭：操作全局所有情景的数据">
-                    <label style="margin: 0; font-size: 12px; color: #a1a1aa;" id="label-action-context">🌍 全局数据模式</label>
+                    <div style="flex: 1;">
+                        <label style="margin: 0; font-size: 12px; color: #a1a1aa;" id="label-action-context">🌍 全局数据模式</label>
+                        <span class="sub-label" id="hint-action-context">操作将影响所有情景下的数据</span>
+                    </div>
                     <label class="switch red-switch">
                       <input type="checkbox" id="data-action-context">
                       <span class="slider"></span>
                     </label>
                 </div>
                 <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;" title="开启：导入时替换现有数据；关闭：导入时与现有数据合并">
-                    <label style="margin: 0; font-size: 12px; color: #a1a1aa;" id="label-import-mode">📥 合并模式导入</label>
+                    <div style="flex: 1;">
+                        <label style="margin: 0; font-size: 12px; color: #a1a1aa;" id="label-import-mode">📥 合并模式导入</label>
+                        <span class="sub-label" id="hint-import-mode">将新数据与现有记录进行合并</span>
+                    </div>
                     <label class="switch red-switch">
                       <input type="checkbox" id="import-mode">
                       <span class="slider"></span>

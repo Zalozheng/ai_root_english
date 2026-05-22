@@ -28,6 +28,15 @@ input:checked + .slider:before { transform: translateX(16px); }
 .red-switch input:checked + .slider {
     background-color: #ef4444 !important;
 }
+
+.sub-label {
+    display: block;
+    font-size: 11px;
+    color: #71717a;
+    margin-top: 3px;
+    font-weight: normal;
+    line-height: 1.4;
+}
 /* ------------------ */
 
 .settings-container { background: #1a1a1a; width: 100%; max-width: 900px; border-radius: 16px; border: 1px solid #333; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
