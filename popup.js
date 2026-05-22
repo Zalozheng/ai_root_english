@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const historySelect = document.getElementById('history-select');
   const backArea = document.getElementById('back-area');
   const settingsBtn = document.getElementById('settings-btn');
+  const pinWindowBtn = document.getElementById('pin-window-btn');
   const quickContext = document.getElementById('quick-context');
   const quickEngine = document.getElementById('quick-engine');
   const rootToggleSwitch = document.getElementById('root-toggle-switch');
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let config = res.app_config || {};
         config.rootStrategy = e.target.checked ? 'keep_old' : 'force_new';
         chrome.storage.local.set({ app_config: config }, () => {
-            showToast(e.target.checked ? "🛡️ 护根已开启：保护旧词源数据" : "⚔️ 护根关闭：新解析将覆盖词根");
+            showToast(e.target.checked ? "🛡️ 护根已开启：保护旧笔记" : "⚔️ 护根关闭：新解析将覆盖");
         });
     });
   });
@@ -54,10 +55,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 使用 Chrome 原生机制，智能唤醒设置页，防多开
   settingsBtn.addEventListener('click', () => {
     if (isInPage) window.open(chrome.runtime.getURL('options.html')); else chrome.runtime.openOptionsPage();
   });
+
+  // ====== 📌 动态图钉交互逻辑（实现开关环路） ======
+  if (pinWindowBtn) {
+    if (isInPage) {
+        // 如果我们已经在独立的脱离窗口里，把图标变成“取消固定”
+        pinWindowBtn.innerText = '❌';
+        pinWindowBtn.setAttribute('data-tooltip', '❌ 取消固定\n关闭当前独立窗口');
+    }
+
+    pinWindowBtn.addEventListener('click', () => {
+        if (isInPage) {
+            // 在独立窗口里，点击就是直接关掉
+            window.close();
+        } else {
+            // 在原生脆弱弹窗里，点击就是拔起一个新窗口并自毁原生框
+            const targetWord = wordInput.value.trim();
+            const url = chrome.runtime.getURL(`popup.html?mode=in_page&word=${encodeURIComponent(targetWord)}`);
+            chrome.windows.create({
+                url: url,
+                type: "popup",
+                width: 440,
+                height: 700,
+                focused: true
+            });
+            window.close();
+        }
+    });
+  }
 
   function fetchWordFromPage() {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -188,11 +216,10 @@ document.addEventListener('DOMContentLoaded', () => {
           sourceTabsHtml += `</div>`;
       }
 
-      // ===== 【修改点 1：初始渲染时使用 contenteditable 替代 input】 =====
       container.innerHTML = `
         <div class="word-header">
           <span class="word-breakdown">${escapeHtml(res.display_breakdown || word)}</span>
-          <div class="speaker-icon" id="speak-btn" title="发音">🔊</div>
+          <div class="speaker-icon" id="speak-btn" data-tooltip="🔊 朗读&#10;点击播放美式发音">🔊</div>
           <span class="phonetic">/${escapeHtml(res.phonetic_us || '-')}/</span>
           <span class="primary-meaning">${escapeHtml(res.primary_meaning || '')}</span>
         </div>
@@ -233,7 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
               const source = e.currentTarget.getAttribute('data-source');
               const lines = res.memory_lines_map[`${source}_${contextKey}`] || [];
               
-              // ===== 【修改点 2：标签切换时，也同步使用 contenteditable 渲染】 =====
               document.getElementById('lines-render-area').innerHTML = lines
                 .filter(l => l.trim().length > 0)
                 .map(l => `<div class="memory-line-item" style="display:flex;align-items:flex-start;gap:4px;margin-bottom:6px;">
@@ -256,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
           e.stopPropagation(); analyze(e.currentTarget.getAttribute('data-root'), false, false);
       }));
 
-      // ===== 【修改点 3：直接保存编辑内容，兼容 div.innerText 取值】 =====
       document.getElementById('save-lines-btn').addEventListener('click', () => {
         const newLines = Array.from(document.querySelectorAll('#lines-render-area .line-input'))
           .map(el => (el.value !== undefined ? el.value : el.innerText).trim())
@@ -273,7 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      // ==== 完美方案：利用 Storage 当作跨页面的“通信桥梁” ====
       const treeBtnPopup = container.querySelector('.jump-to-tree-btn');
       if (treeBtnPopup) {
           treeBtnPopup.onmouseover = () => { treeBtnPopup.style.background = '#0ea5e9'; treeBtnPopup.style.color = '#fff'; };
@@ -281,9 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           treeBtnPopup.addEventListener('click', (e) => {
               const targetWord = e.currentTarget.getAttribute('data-word');
-              // 1. 先把暗号（单词）写进本地存储
               chrome.storage.local.set({ pendingTreeWord: targetWord }, () => {
-                  // 2. 呼叫 Chrome 爹级 API：如果有控制台就聚焦，没有就新建，绝不多开！
                   if (isInPage) {
                       window.open(chrome.runtime.getURL('options.html'));
                   } else {
@@ -293,7 +315,6 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }
 
-      // ===== 新增：进入特训库的跳转逻辑 =====
       const libBtnPopup = container.querySelector('.jump-to-lib-btn');
       if (libBtnPopup) {
           libBtnPopup.onmouseover = () => { libBtnPopup.style.background = '#a855f7'; libBtnPopup.style.color = '#fff'; };
@@ -301,7 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
           
           libBtnPopup.addEventListener('click', (e) => {
               const targetWord = e.currentTarget.getAttribute('data-word');
-              // 存入暗号 pendingLibraryWord
               chrome.storage.local.set({ pendingLibraryWord: targetWord }, () => {
                   if (isInPage) {
                       window.open(chrome.runtime.getURL('options.html'));
@@ -317,24 +337,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   searchBtn.addEventListener('click', () => { navStack = []; updateBackBtn(); analyze(null, false, false); });
   regenBtn.addEventListener('click', () => { 
-  const word = wordInput.value.trim().toLowerCase();
-  if (!word) return;
-  
-  navStack = []; 
-  updateBackBtn(); 
-  
-  // 核心修复：在要求 AI 强制刷新前，先去本地存储里把当前单词的“手动编辑锁”给拆了
-  chrome.storage.local.get(['W:' + word], (stored) => {
-    let wordData = stored['W:' + word];
-    if (wordData && wordData.edited_keys) {
-      delete wordData.edited_keys; // 🔓 移除锁定标记
-      chrome.storage.local.set({ ['W:' + word]: wordData }, () => {
+    const word = wordInput.value.trim().toLowerCase();
+    if (!word) return;
+    
+    navStack = []; 
+    updateBackBtn(); 
+    
+    chrome.storage.local.get(['W:' + word], (stored) => {
+      let wordData = stored['W:' + word];
+      if (wordData && wordData.edited_keys) {
+        delete wordData.edited_keys; 
+        chrome.storage.local.set({ ['W:' + word]: wordData }, () => {
+          analyze(null, false, true); 
+        });
+      } else {
         analyze(null, false, true); 
-      });
-    } else {
-      analyze(null, false, true); 
-    }
+      }
+    });
   });
-});
   wordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { navStack = []; updateBackBtn(); analyze(null, false, false); } });
 });

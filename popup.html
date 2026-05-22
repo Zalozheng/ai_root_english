@@ -2,109 +2,18 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <style>
-    /* 基础变量定义 */
-    :root {
-      color-scheme: light;
-      --bg: #ffffff; --surface: #f3f4f6; --surface2: #e5e7eb;
-      --border: #d1d5db; --text: #111827; --text-muted: #4b5563; 
-      --accent: #0ea5e9; --accent-hover: #0284c7; --green: #10b981;
-      --red: #ef4444; --orange: #f59e0b; --shadow: rgba(0,0,0,0.1);
-      --root-bg: #e0f2fe; --root-text: #0369a1; --root-border: #bae6fd;
-    }
-
-    /* 深色模式变量及强制适配 */
-    [data-theme="dark"] {
-      color-scheme: dark; /* 告知浏览器原生组件启用深色 */
-      --bg: #111827; --surface: #1f2937; --surface2: #374151;
-      --border: #4b5563; --text: #f9fafb; --text-muted: #9ca3af;
-      --accent: #38bdf8; --accent-hover: #7dd3fc; --green: #34d399;
-      --shadow: rgba(0,0,0,0.4);
-      --root-bg: #0c4a6e; --root-text: #bae6fd; --root-border: #0369a1;
-    }
-
-    /* 【核心修复】：强制所有 select 和 option 在深色模式下变色 */
-    [data-theme="dark"] select,
-    [data-theme="dark"] option {
-      background-color: #1f2937 !important; /* 强制背景为深灰色 */
-      color: #f9fafb !important;            /* 强制文字为近白色 */
-    }
-
-    body { width: 400px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; box-sizing: border-box; transition: 0.2s;}
-    body::-webkit-scrollbar { width: 6px; } body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    
-    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--surface2); padding-bottom: 12px; margin-bottom: 16px; }
-    .header-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: var(--text); }
-    .header-title img { width: 24px; height: 24px; border-radius: 6px; object-fit: cover;}
-    .header-right { display: flex; align-items: center; gap: 12px; }
-    
-    .quick-select { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: 600; outline: none; cursor: pointer; transition: 0.2s;}
-    .quick-select:hover { border-color: var(--accent); }
-    
-    .switch-wrap { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: bold; color: var(--text-muted); cursor: pointer;}
-    .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .3s; border-radius: 18px; }
-    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--orange); }
-    input:checked + .slider:before { transform: translateX(16px); }
-
-    .icon-btn { background: none; border: none; cursor: pointer; font-size: 18px; opacity: 0.7; transition: 0.2s; padding: 0; display: flex; align-items: center;}
-    .icon-btn:hover { opacity: 1; transform: scale(1.1); }
-    
-    .input-row { display: flex; gap: 8px; margin-bottom: 16px; }
-    .word-input { flex: 1; padding: 12px 14px; background: var(--surface); border: 2px solid transparent; color: var(--text); border-radius: 10px; font-size: 15px; font-weight: 500; outline: none; transition: 0.2s; }
-    .word-input:focus { border-color: var(--accent); background: var(--bg); box-shadow: 0 4px 12px var(--shadow); }
-    
-    .search-btn { width: 44px; height: 44px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
-    .search-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
-
-    #history-container { display: none; align-items: center; gap: 8px; margin-bottom: 16px; background: var(--surface); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);}
-    /* 调整历史记录下拉框的内距，确保它在深色模式下背景色占满 */
-    .history-select { flex: 1; background: transparent; color: var(--text); border: none; outline: none; font-size: 13px; font-weight: 600; cursor: pointer; padding: 2px 0; }
-
-    .loading, .error, .welcome-box { text-align: center; color: var(--text-muted); padding: 30px 20px; line-height: 1.6; background: var(--surface); border-radius: 12px;}
-    .error { color: var(--red); border: 1px solid var(--red); background: rgba(239,68,68,0.1); }
-    
-    .word-header { display: flex; align-items: center; flex-wrap: wrap; margin-bottom: 12px; gap: 10px;}
-    .word-breakdown { font-size: 28px; font-weight: 900; color: var(--text); letter-spacing: 1px; }
-    .speaker-icon { font-size: 18px; cursor: pointer; padding: 6px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); transition: 0.2s; display: flex; align-items: center;}
-    .speaker-icon:hover { background: var(--accent); color: white; border-color: var(--accent); }
-    .phonetic { color: var(--text-muted); font-size: 14px; font-family: monospace; }
-    .primary-meaning { font-size: 18px; font-weight: bold; color: var(--green); margin-left: auto; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 8px;}
-    
-    .core-meaning { font-size: 14px; font-weight: 600; color: var(--red); margin-bottom: 16px; padding: 8px 12px; background: rgba(239,68,68,0.05); border-left: 4px solid var(--red); border-radius: 0 8px 8px 0;}
-
-    .part-row { display: flex; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); transition: 0.2s; }
-    .part-row:hover { border-color: var(--accent); transform: translateX(2px); box-shadow: 0 2px 8px var(--shadow);}
-    .segment-box { flex: 0 0 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--root-bg); border-right: 1px solid var(--root-border); padding: 12px 6px; cursor: pointer; transition: 0.2s;}
-    .segment-box:hover { background: var(--accent); }
-    .segment-text { font-size: 17px; font-weight: 800; color: var(--root-text); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
-    .segment-box:hover .segment-text { color: #fff; }
-    .segment-type { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: var(--bg); color: var(--text-muted); opacity: 0.8;}
-    
-    .detail-box { flex: 1; padding: 12px; display: flex; flex-direction: column; justify-content: center; cursor: pointer;}
-    .meaning { font-weight: bold; color: var(--text); font-size: 14px; }
-    .click-hint { font-size: 11px; color: var(--text-faint); font-weight: normal; margin-left: 6px; }
-    .deep-detail { display: none; margin-top: 10px; font-size: 13px; color: var(--text-muted); border-top: 1px dashed var(--border); padding-top: 10px; line-height: 1.6; }
-    
-    .memory-lines { margin-top: 16px; padding: 16px; background: rgba(245,158,11,0.05); border-radius: 10px; border: 1px solid var(--border); border-left: 4px solid var(--orange); }
-    .memory-title { color: var(--orange); font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;}
-    .source-badge { font-size: 10px; background: var(--orange); color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;}
-    .memory-line-item { margin-bottom: 6px; font-size: 14px; line-height: 1.6; color: var(--text);}
-    
-    .source-tabs { display: flex; gap: 8px; }
-    .source-tab { font-size: 12px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;}
-    .source-tab.active { background: var(--orange); color: #fff; border-color: var(--orange);}
-    .line-input { flex:1; background:transparent; border:none; border-bottom:1px dashed transparent; color:var(--text); font-size:14px; line-height:1.6; outline:none; padding:0 2px; width:100%; font-family:inherit; }
-    .line-input:focus { border-bottom-color: var(--orange); background: var(--surface2); border-radius: 3px; }
-  </style>
+  <link rel="stylesheet" href="js/popup.css">
 </head>
 <body data-theme="system">
   <div class="header">
-    <div class="header-title"><img src="icons/ui_128.png" alt="icon"> 词汇引擎 Pro</div>
+    
+    <div class="header-title">
+      <img src="icons/ui_128.png" alt="icon">
+      <span class="title-text-wrap">词根分析<span class="title-version">v26.0.3</span></span>
+    </div>
+
     <div class="header-right">
-      <label class="switch-wrap" title="开启后防止新解析覆盖您珍贵的旧词根故事">
+      <label class="switch-wrap" data-tooltip="🛡️ 护根模式&#10;防止新解析覆盖您的旧笔记">
         <label class="switch">
           <input type="checkbox" id="root-toggle-switch">
           <span class="slider"></span>
@@ -122,7 +31,8 @@
         <option value="linux_ai">🐧 极客</option>
         <option value="custom">✍️ 自定义</option>
       </select>
-      <button id="settings-btn" class="icon-btn" title="偏好设置">⚙️</button>
+      <button id="pin-window-btn" class="icon-btn" data-tooltip="📌 窗口驻留&#10;分离为独立窗口防误触消失">📌</button>
+      <button id="settings-btn" class="icon-btn" data-tooltip="⚙️ 偏好设置&#10;管理特训库与引擎数据">⚙️</button>
     </div>
   </div>
 
@@ -130,8 +40,8 @@
 
   <div class="input-row">
     <input type="text" id="word-input" class="word-input" placeholder="输入要拆解的单词/词根..." autocomplete="off" spellcheck="false" />
-    <button id="search-btn" class="search-btn" title="智能解析">🔍</button>
-    <button id="regen-btn" class="search-btn" style="background: var(--orange);" title="无视缓存，强制模型重新生成！">🔄</button>
+    <button id="search-btn" class="search-btn" data-tooltip="🔍 智能解析&#10;调用当前 AI 引擎拆解单词">🔍</button>
+    <button id="regen-btn" class="search-btn" style="background: var(--orange);" data-tooltip="🔄 强制重算&#10;无视本地缓存强制生成新解析">🔄</button>
   </div>
   
   <div id="history-container">
