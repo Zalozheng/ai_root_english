@@ -44,35 +44,41 @@ window.sanitizeJumpTarget = function(text) { return text.replace(/（[^）]*）|
 window.jumpToWord = function(rawTargetWord) {
     const cleanTarget = window.sanitizeJumpTarget(rawTargetWord);
     if(!cleanTarget) return;
-
-    const existing = window.globalWords.find(d => (d.word||'').toLowerCase() === cleanTarget);
     window.switchView('view-words');
-    
-    if (existing) {
-        document.querySelectorAll('#word-list .data-item').forEach(el => el.classList.remove('selected'));
-        const listItems = document.querySelectorAll('#word-list .data-item');
-        for(let li of listItems) {
-            if(li.querySelector('.data-item-title').innerText.split('/')[0].trim().toLowerCase() === cleanTarget) {
-                li.classList.add('selected'); li.scrollIntoView({behavior: "smooth", block: "center"}); break;
+
+    // 直接查 storage，不依赖 globalWords 是否已加载
+    chrome.storage.local.get(['W:' + cleanTarget], (res) => {
+        const existing = res['W:' + cleanTarget];
+        if (existing) {
+            // 确保 globalWords 里也有这条，避免列表选中失败
+            if (!window.globalWords.find(d => (d.word||'').toLowerCase() === cleanTarget)) {
+                window.globalWords.push(existing);
             }
+            document.querySelectorAll('#word-list .data-item').forEach(el => el.classList.remove('selected'));
+            const listItems = document.querySelectorAll('#word-list .data-item');
+            for(let li of listItems) {
+                if(li.querySelector('.data-item-title').innerText.split('/')[0].trim().toLowerCase() === cleanTarget) {
+                    li.classList.add('selected'); li.scrollIntoView({behavior: "smooth", block: "center"}); break;
+                }
+            }
+            if(window.renderWordDetail) window.renderWordDetail(existing);
+        } else {
+            const pane = document.getElementById('word-detail');
+            pane.innerHTML = `
+               <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#38bdf8;">
+                  <div style="font-size:40px; animation: spin 1s infinite linear; margin-bottom:20px;">🧠</div>
+                  <div style="font-size:18px; font-weight:bold;">发现新知识盲区，引擎正在现场解析：<span style="color:#fff;">${window.escapeHtml(cleanTarget)}</span></div>
+               </div>
+            `;
+            chrome.runtime.sendMessage({ action: "fetchLLM", word: cleanTarget, forceRefresh: true }, (response) => {
+                if (response && response.success && window.loadWordsLibrary) {
+                    window.loadWordsLibrary(() => window.jumpToWord(cleanTarget)); 
+                } else {
+                    pane.innerHTML = `<div class="error" style="margin:40px;">解析中断：${window.escapeHtml(response?.error || '网络或配置错误')}</div>`;
+                }
+            });
         }
-        if(window.renderWordDetail) window.renderWordDetail(existing);
-    } else {
-        const pane = document.getElementById('word-detail');
-        pane.innerHTML = `
-           <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#38bdf8;">
-              <div style="font-size:40px; animation: spin 1s infinite linear; margin-bottom:20px;">🧠</div>
-              <div style="font-size:18px; font-weight:bold;">发现新知识盲区，引擎正在现场解析：<span style="color:#fff;">${window.escapeHtml(cleanTarget)}</span></div>
-           </div>
-        `;
-        chrome.runtime.sendMessage({ action: "fetchLLM", word: cleanTarget, forceRefresh: true }, (response) => {
-            if (response && response.success && window.loadWordsLibrary) {
-                window.loadWordsLibrary(() => window.jumpToWord(cleanTarget)); 
-            } else {
-                pane.innerHTML = `<div class="error" style="margin:40px;">解析中断：${window.escapeHtml(response?.error || '网络或配置错误')}</div>`;
-            }
-        });
-    }
+    });
 };
 
 window.jumpToRoot = function(rootSegment) {
@@ -96,3 +102,30 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('click', () => window.switchView(item.getAttribute('data-target'))); 
     });
 });
+
+// ==========================================
+// 监听来自 Popup 的特训库跳转指令
+// ==========================================
+chrome.storage.local.get(['pendingLibraryWord'], (res) => { 
+    if (res.pendingLibraryWord) {
+        executeLibraryJump(res.pendingLibraryWord); 
+    }
+});
+
+chrome.storage.onChanged.addListener((changes, namespace) => { 
+    if (namespace === 'local' && changes.pendingLibraryWord && changes.pendingLibraryWord.newValue) {
+        executeLibraryJump(changes.pendingLibraryWord.newValue); 
+    }
+});
+
+function executeLibraryJump(word) { 
+    // 稍微延迟 150ms，确保工作台的基础 DOM 和 global 变量已经加载完毕
+    setTimeout(() => { 
+        if (typeof window.jumpToWord === 'function') {
+            // 直接调用你写好的全局函数，它会自动完成菜单切换和定位渲染
+            window.jumpToWord(word);
+        }
+        // 阅后即焚，防止刷新页面时死循环
+        chrome.storage.local.remove('pendingLibraryWord'); 
+    }, 150); 
+}

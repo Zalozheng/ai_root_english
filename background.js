@@ -217,7 +217,11 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
           let wordData = allData[cleanWordKey] || parsedData;
           if (!wordData.memory_lines_map) wordData.memory_lines_map = {};
           
-          wordData.memory_lines_map[`${sourceTag}_${context}`] = parsedData.memory_lines || [];
+          const newMapKey = `${sourceTag}_${context}`;
+          const editedKeys = wordData.edited_keys || [];
+          if (!editedKeys.includes(newMapKey)) {
+            wordData.memory_lines_map[newMapKey] = parsedData.memory_lines || [];
+          }
           wordData.display_breakdown = parsedData.display_breakdown || wordData.display_breakdown;
           wordData.phonetic_us = parsedData.phonetic_us || wordData.phonetic_us;
           wordData.primary_meaning = parsedData.primary_meaning || wordData.primary_meaning;

@@ -188,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
           sourceTabsHtml += `</div>`;
       }
 
+      // ===== 【修改点 1：初始渲染时使用 contenteditable 替代 input】 =====
       container.innerHTML = `
         <div class="word-header">
           <span class="word-breakdown">${escapeHtml(res.display_breakdown || word)}</span>
@@ -199,12 +200,23 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="margin-top: 16px;">${partsHtml}</div>
         <div class="memory-lines">
           <div class="memory-title"><span>💡 情境联想</span> <span class="source-badge" style="font-size:10px; background:var(--orange); color:white; padding:2px 6px; border-radius:4px;">${sourceTagText}</span></div>
-          <div id="lines-render-area" style="margin-top:8px;">${(res.memory_lines || []).map(l => `<div class="memory-line-item">• ${escapeHtml(l)}</div>`).join("")}</div>
+          <div id="lines-render-area" style="margin-top:8px;">${(res.memory_lines || [])
+            .filter(l => l.trim().length > 0)
+            .map(l => `<div class="memory-line-item" style="display:flex;align-items:flex-start;gap:4px;margin-bottom:6px;">
+                <span style="color:var(--text-muted);margin-top:2px;flex-shrink:0;">•</span>
+                <div class="line-input" contenteditable="true" style="word-break: break-word; white-space: pre-wrap; min-height: 22px;">${escapeHtml(l)}</div>
+              </div>`).join("")}</div>
         </div>
 
-        <div style="margin-top: 25px; display: flex; justify-content: center; padding-bottom: 10px;">
-            <button class="jump-to-tree-btn" data-word="${escapeHtml(res.word || word)}" style="padding: 10px 24px; border-radius: 8px; border: 1px solid #0ea5e9; background: rgba(14,165,233,0.1); color: #38bdf8; font-size: 14px; font-weight:bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;">
+        <div style="margin-top: 25px; display: flex; justify-content: center; gap: 8px; padding-bottom: 10px;">
+            <button class="jump-to-tree-btn" data-word="${escapeHtml(res.word || word)}" style="padding: 8px 14px; border-radius: 8px; border: 1px solid #0ea5e9; background: rgba(14,165,233,0.1); color: #38bdf8; font-size: 13px; font-weight:bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;">
                 🌳 词树图展开
+            </button>
+            <button class="jump-to-lib-btn" data-word="${escapeHtml(res.word || word)}" style="padding: 8px 14px; border-radius: 8px; border: 1px solid #a855f7; background: rgba(168,85,247,0.1); color: #c084fc; font-size: 13px; font-weight:bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;">
+                📝 进特训库
+            </button>
+            <button id="save-lines-btn" style="padding: 8px 14px; border-radius: 8px; border: 1px solid #10b981; background: rgba(16,185,129,0.1); color: #10b981; font-size: 13px; font-weight:bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;">
+                💾 保存
             </button>
         </div>
       `;
@@ -220,7 +232,15 @@ document.addEventListener('DOMContentLoaded', () => {
           el.addEventListener('click', (e) => {
               const source = e.currentTarget.getAttribute('data-source');
               const lines = res.memory_lines_map[`${source}_${contextKey}`] || [];
-              document.getElementById('lines-render-area').innerHTML = lines.map(l => `<div class="memory-line-item">• ${escapeHtml(l)}</div>`).join("") || '无记忆画面';
+              
+              // ===== 【修改点 2：标签切换时，也同步使用 contenteditable 渲染】 =====
+              document.getElementById('lines-render-area').innerHTML = lines
+                .filter(l => l.trim().length > 0)
+                .map(l => `<div class="memory-line-item" style="display:flex;align-items:flex-start;gap:4px;margin-bottom:6px;">
+                    <span style="color:var(--text-muted);margin-top:2px;flex-shrink:0;">•</span>
+                    <div class="line-input" contenteditable="true" style="word-break: break-word; white-space: pre-wrap; min-height: 22px;">${escapeHtml(l)}</div>
+                </div>`).join("") || '<div style="color:var(--text-muted); font-size:14px; padding:4px 0;">无记忆画面</div>';
+              
               container.querySelectorAll('.source-trigger').forEach(t => {
                   if (t.getAttribute('data-source') === source) t.classList.add('active'); else t.classList.remove('active');
               });
@@ -235,6 +255,23 @@ document.addEventListener('DOMContentLoaded', () => {
       container.querySelectorAll('.jump-root-trigger').forEach(btn => btn.addEventListener('click', (e) => {
           e.stopPropagation(); analyze(e.currentTarget.getAttribute('data-root'), false, false);
       }));
+
+      // ===== 【修改点 3：直接保存编辑内容，兼容 div.innerText 取值】 =====
+      document.getElementById('save-lines-btn').addEventListener('click', () => {
+        const newLines = Array.from(document.querySelectorAll('#lines-render-area .line-input'))
+          .map(el => (el.value !== undefined ? el.value : el.innerText).trim())
+          .filter(l => l.length > 0);
+
+        const mapKey = `${res.sourceTag}_${contextKey}`;
+        chrome.storage.local.get(['W:' + word], (stored) => {
+          const wordData = stored['W:' + word] || {};
+          if (!wordData.memory_lines_map) wordData.memory_lines_map = {};
+          wordData.memory_lines_map[mapKey] = newLines;
+          if (!wordData.edited_keys) wordData.edited_keys = [];
+          if (!wordData.edited_keys.includes(mapKey)) wordData.edited_keys.push(mapKey);
+          chrome.storage.local.set({ ['W:' + word]: wordData }, () => showToast('✅ 已保存'));
+        });
+      });
 
       // ==== 完美方案：利用 Storage 当作跨页面的“通信桥梁” ====
       const treeBtnPopup = container.querySelector('.jump-to-tree-btn');
@@ -256,10 +293,48 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }
 
+      // ===== 新增：进入特训库的跳转逻辑 =====
+      const libBtnPopup = container.querySelector('.jump-to-lib-btn');
+      if (libBtnPopup) {
+          libBtnPopup.onmouseover = () => { libBtnPopup.style.background = '#a855f7'; libBtnPopup.style.color = '#fff'; };
+          libBtnPopup.onmouseout = () => { libBtnPopup.style.background = 'rgba(168,85,247,0.1)'; libBtnPopup.style.color = '#c084fc'; };
+          
+          libBtnPopup.addEventListener('click', (e) => {
+              const targetWord = e.currentTarget.getAttribute('data-word');
+              // 存入暗号 pendingLibraryWord
+              chrome.storage.local.set({ pendingLibraryWord: targetWord }, () => {
+                  if (isInPage) {
+                      window.open(chrome.runtime.getURL('options.html'));
+                  } else {
+                      chrome.runtime.openOptionsPage(); 
+                  }
+              });
+          });
+      }
+
     });
   }
 
   searchBtn.addEventListener('click', () => { navStack = []; updateBackBtn(); analyze(null, false, false); });
-  regenBtn.addEventListener('click', () => { navStack = []; updateBackBtn(); analyze(null, false, true); });
+  regenBtn.addEventListener('click', () => { 
+  const word = wordInput.value.trim().toLowerCase();
+  if (!word) return;
+  
+  navStack = []; 
+  updateBackBtn(); 
+  
+  // 核心修复：在要求 AI 强制刷新前，先去本地存储里把当前单词的“手动编辑锁”给拆了
+  chrome.storage.local.get(['W:' + word], (stored) => {
+    let wordData = stored['W:' + word];
+    if (wordData && wordData.edited_keys) {
+      delete wordData.edited_keys; // 🔓 移除锁定标记
+      chrome.storage.local.set({ ['W:' + word]: wordData }, () => {
+        analyze(null, false, true); 
+      });
+    } else {
+      analyze(null, false, true); 
+    }
+  });
+});
   wordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { navStack = []; updateBackBtn(); analyze(null, false, false); } });
 });

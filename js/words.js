@@ -53,16 +53,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const contextKey = document.getElementById('prompt-context') ? document.getElementById('prompt-context').value : 'general';
-        const apiLines = data.memory_lines_map ? data.memory_lines_map[`remote_${contextKey}`] : null;
-        const ollamaLines = data.memory_lines_map ? data.memory_lines_map[`ollama_${contextKey}`] : null;
-        
+
+        // 读取所有可能的 key（custom/remote/ollama），优先用有内容的
+        const map = data.memory_lines_map || {};
+        const customLines = map[`custom_${contextKey}`] || null;
+        const apiLines    = map[`remote_${contextKey}`]  || null;
+        const ollamaLines = map[`ollama_${contextKey}`]  || null;
+
         let mLines = data.memory_lines || []; let activeSource = "默认";
-        if (apiLines && apiLines.length > 0) { mLines = apiLines; activeSource = "remote"; }
+        if      (customLines && customLines.length > 0) { mLines = customLines; activeSource = "custom"; }
+        else if (apiLines    && apiLines.length    > 0) { mLines = apiLines;    activeSource = "remote"; }
         else if (ollamaLines && ollamaLines.length > 0) { mLines = ollamaLines; activeSource = "ollama"; }
 
         let sourceTabsHtml = '';
-        if (apiLines || ollamaLines) {
-            sourceTabsHtml = `<div class="source-tabs">${apiLines ? `<div class="source-tab source-trigger ${activeSource === 'remote' ? 'active' : ''}" data-source="remote">🌐 API</div>` : ''}${ollamaLines ? `<div class="source-tab source-trigger ${activeSource === 'ollama' ? 'active' : ''}" data-source="ollama">🦙 Ollama</div>` : ''}</div>`;
+        if (customLines || apiLines || ollamaLines) {
+            sourceTabsHtml = `<div class="source-tabs">
+              ${customLines ? `<div class="source-tab source-trigger ${activeSource==='custom'?'active':''}" data-source="custom">✏️ 自定义</div>` : ''}
+              ${apiLines    ? `<div class="source-tab source-trigger ${activeSource==='remote'?'active':''}" data-source="remote">🌐 API</div>` : ''}
+              ${ollamaLines ? `<div class="source-tab source-trigger ${activeSource==='ollama'?'active':''}" data-source="ollama">🦙 Ollama</div>` : ''}
+            </div>`;
         }
 
         const partsHtml = (data.parts || []).map(p => `
@@ -87,12 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="margin-top: 25px;">${partsHtml}</div>
           <div class="memory-lines">
             <div class="memory-title"><span>💡 场景联想库</span> ${sourceTabsHtml}</div>
-            <div id="lines-render-area" style="color: #d1d5db; line-height: 1.6; margin-top:10px;">${mLines.map(l => `<div>• ${window.escapeHtml(l)}</div>`).join("") || '无联想画面'}</div>
+            <div id="lines-render-area" style="color: #d1d5db; line-height: 1.6; margin-top:10px;">${mLines.map(l => `<div style="display:flex;align-items:flex-start;gap:4px;margin-bottom:6px;"><span style="color:#9ca3af;margin-top:2px;flex-shrink:0;">•</span><input class="line-input" type="text" value="${window.escapeHtml(l)}" style="flex:1;background:transparent;border:none;border-bottom:1px dashed transparent;color:#d1d5db;font-size:14px;line-height:1.6;outline:none;padding:0 2px;font-family:inherit;" onfocus="this.style.borderBottomColor='#f59e0b';this.style.background='rgba(245,158,11,0.08)'" onblur="this.style.borderBottomColor='transparent';this.style.background='transparent'"></div>`).join("") || '无联想画面'}</div>
           </div>
 
-          <div style="margin-top: 40px; display: flex; justify-content: center; padding-bottom: 30px;">
+          <div style="margin-top: 40px; display: flex; justify-content: center; gap: 10px; padding-bottom: 30px;">
               <button class="jump-to-tree-btn" data-word="${window.escapeHtml(data.word)}" style="padding: 12px 30px; border-radius: 10px; border: 1px solid #0ea5e9; background: rgba(14,165,233,0.1); color: #38bdf8; font-size: 15px; font-weight:bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;">
                   🌳 在【词树图谱】中探索全貌
+              </button>
+              <button id="save-lines-btn" style="padding: 12px 30px; border-radius: 10px; border: 1px solid #10b981; background: rgba(16,185,129,0.1); color: #10b981; font-size: 15px; font-weight:bold; cursor: pointer; transition: 0.2s;">
+                  💾 保存
               </button>
           </div>
         `;
@@ -101,10 +113,33 @@ document.addEventListener('DOMContentLoaded', () => {
             el.addEventListener('click', (e) => {
                 const source = e.currentTarget.getAttribute('data-source');
                 const lines = data.memory_lines_map[`${source}_${contextKey}`] || [];
-                document.getElementById('lines-render-area').innerHTML = lines.map(l => `<div>• ${window.escapeHtml(l)}</div>`).join("") || '无记忆画面';
+                document.getElementById('lines-render-area').innerHTML = lines.map(l => `<div style="display:flex;align-items:flex-start;gap:4px;margin-bottom:6px;"><span style="color:#9ca3af;margin-top:2px;flex-shrink:0;">•</span><input class="line-input" type="text" value="${window.escapeHtml(l)}" style="flex:1;background:transparent;border:none;border-bottom:1px dashed transparent;color:#d1d5db;font-size:14px;line-height:1.6;outline:none;padding:0 2px;font-family:inherit;" onfocus="this.style.borderBottomColor='#f59e0b';this.style.background='rgba(245,158,11,0.08)'" onblur="this.style.borderBottomColor='transparent';this.style.background='transparent'"></div>`).join("") || '无记忆画面';
                 pane.querySelectorAll('.source-trigger').forEach(t => { if (t.getAttribute('data-source') === source) t.classList.add('active'); else t.classList.remove('active'); });
             });
         });
+
+        // ===== 直接保存编辑内容到 custom_context key =====
+        const saveBtn = pane.querySelector('#save-lines-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                const newLines = Array.from(pane.querySelectorAll('#lines-render-area .line-input'))
+                    .map(el => el.value.trim()).filter(l => l.length > 0);
+                const wordKey = 'W:' + (data.word || '').toLowerCase().trim();
+                const mapKey = `custom_${contextKey}`;
+                chrome.storage.local.get([wordKey], (stored) => {
+                    const wordData = stored[wordKey] || {};
+                    if (!wordData.memory_lines_map) wordData.memory_lines_map = {};
+                    wordData.memory_lines_map[mapKey] = newLines;
+                    if (!wordData.edited_keys) wordData.edited_keys = [];
+                    if (!wordData.edited_keys.includes(mapKey)) wordData.edited_keys.push(mapKey);
+                    chrome.storage.local.set({ [wordKey]: wordData }, () => {
+                        const toast = document.createElement('div');
+                        toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111827;color:#f9fafb;padding:10px 20px;border-radius:30px;font-size:14px;font-weight:bold;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.4);';
+                        toast.textContent = '✅ 已保存'; document.body.appendChild(toast); setTimeout(() => toast.remove(), 2000);
+                    });
+                });
+            });
+        }
 
         pane.querySelectorAll('.jump-root-trigger').forEach(el => el.addEventListener('click', () => window.jumpToRoot(el.getAttribute('data-root'))));
         
