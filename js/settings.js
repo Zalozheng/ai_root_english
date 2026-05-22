@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (count === 0) return window.showStatus("⚠️ 该范围内无数据可导", "#f59e0b");
             const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'}); const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `备份_${scopeCtx||'全量'}_${type}_(${count}条).json`; a.click(); URL.revokeObjectURL(url);
+            const a = document.createElement('a'); a.href = url; a.download = `ai_roots_export_${scopeCtx || 'global'}_${type}_${count}.json`; a.click(); URL.revokeObjectURL(url);
         });
     }
 
@@ -327,24 +327,65 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const data = JSON.parse(ev.target.result);
                     let importedData = {};
+                    let extractedRoots = {};
                     
                     for(let k in data) {
                         let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
-                        if (pendingImportType === 'words' && !isWord) continue;
-                        if (pendingImportType === 'roots' && !isRoot) continue;
                         if (!isWord && !isRoot) continue;
                         
-                        if (scopeCtx && isWord && data[k].memory_lines_map) {
-                           let firstKey = Object.keys(data[k].memory_lines_map)[0];
-                           if(firstKey) {
-                               let engineSource = firstKey.split('_')[0] || 'remote';
-                               let newKey = `${engineSource}_${scopeCtx}`;
-                               let linesToTransplant = data[k].memory_lines_map[firstKey];
-                               data[k].memory_lines_map = {}; 
-                               data[k].memory_lines_map[newKey] = linesToTransplant;
-                           }
+                        if (isWord) {
+                            if (scopeCtx && data[k].memory_lines_map) {
+                               let firstKey = Object.keys(data[k].memory_lines_map)[0];
+                               if(firstKey) {
+                                   let engineSource = firstKey.split('_')[0] || 'remote';
+                                   let newKey = `${engineSource}_${scopeCtx}`;
+                                   let linesToTransplant = data[k].memory_lines_map[firstKey];
+                                   data[k].memory_lines_map = {}; 
+                                   data[k].memory_lines_map[newKey] = linesToTransplant;
+                               }
+                            }
+                            if (pendingImportType === 'words' || pendingImportType === 'all') {
+                                importedData[k] = data[k];
+                            }
+                            if (pendingImportType === 'roots' || pendingImportType === 'all') {
+                                (data[k].parts || []).forEach(p => {
+                                    if (!p.segment) return;
+                                    const cleanRoot = p.segment.toLowerCase().replace(/^-|-$/g, '').trim();
+                                    const rootKey = "R:" + cleanRoot;
+                                    const cleanDerivs = (p.derivatives || []).map(d => d.replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim()).filter(Boolean);
+                                    if (!extractedRoots[rootKey]) {
+                                        extractedRoots[rootKey] = {
+                                            segment: p.segment.toLowerCase().trim(),
+                                            type: p.type || '词根',
+                                            meaning: p.meaning || '',
+                                            deep_origin: p.deep_origin || '',
+                                            derivatives: cleanDerivs,
+                                            lookup_count: 0,
+                                            updated_at: Date.now()
+                                        };
+                                    } else {
+                                        extractedRoots[rootKey].derivatives = [...new Set([...extractedRoots[rootKey].derivatives, ...cleanDerivs])];
+                                    }
+                                });
+                            }
                         }
-                        importedData[k] = data[k];
+                        
+                        if (isRoot) {
+                            if (pendingImportType === 'roots' || pendingImportType === 'all') {
+                                importedData[k] = data[k];
+                            }
+                        }
+                    }
+
+                    for (let rk in extractedRoots) {
+                        if (!importedData[rk]) importedData[rk] = extractedRoots[rk];
+                        else importedData[rk].derivatives = [...new Set([...(importedData[rk].derivatives || []), ...extractedRoots[rk].derivatives])];
+                    }
+
+                    if (Object.keys(importedData).length === 0) {
+                        window.showStatus("⚠️ JSON中没有符合条件的数据", "#f59e0b");
+                        importFile.value = '';
+                        return;
                     }
 
                     chrome.storage.local.get(null, (all) => {
@@ -381,11 +422,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                         for (let k in importedData) {
-                            if (all[k] && !keysToRemove.includes(k) && k.startsWith('W:') && importedData[k].memory_lines_map) {
+                            if (all[k] && !keysToRemove.includes(k) && k.startsWith('W:')) {
                                 let baseMap = toSave[k] ? toSave[k].memory_lines_map : all[k].memory_lines_map;
-                                importedData[k].memory_lines_map = { ...baseMap, ...importedData[k].memory_lines_map };
+                                importedData[k].memory_lines_map = { ...(baseMap||{}), ...(importedData[k].memory_lines_map||{}) };
                                 importedData[k].lookup_count = all[k].lookup_count || 0;
                                 importedData[k].updated_at = all[k].updated_at || Date.now();
+                            }
+                            if (all[k] && !keysToRemove.includes(k) && k.startsWith('R:')) {
+                                let existingRoot = all[k];
+                                importedData[k].lookup_count = existingRoot.lookup_count || 0;
+                                importedData[k].updated_at = existingRoot.updated_at || Date.now();
+                                
+                                const rootStrategy = document.getElementById('root-toggle-switch').checked ? 'keep_old' : 'force_new';
+                                if (rootStrategy === 'keep_old') {
+                                    importedData[k].meaning = existingRoot.meaning;
+                                    importedData[k].deep_origin = existingRoot.deep_origin;
+                                    importedData[k].manual_category = existingRoot.manual_category || importedData[k].manual_category;
+                                }
+                                let newDerivs = importedData[k].derivatives || [];
+                                let oldDerivs = existingRoot.derivatives || [];
+                                importedData[k].derivatives = [...new Set([...oldDerivs, ...newDerivs])];
                             }
                             toSave[k] = importedData[k];
                             keysToRemove = keysToRemove.filter(rk => rk !== k);
@@ -402,8 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove, finalize);
                         else finalize();
                     });
-                    importFile.value = ''; 
                 } catch (err) { window.showStatus("❌ 解析失败，非标准JSON", "#ef4444"); }
+                finally { importFile.value = ''; }
             };
             reader.readAsText(file);
         };
