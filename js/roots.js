@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.loadRootsLibrary = function(callback) {
         chrome.storage.local.get(null, (items) => {
             window.globalRoots = Object.keys(items).filter(k => k.startsWith('R:')).map(k => items[k]);
+            window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
             triggerRootFilter();
             if (callback) callback();
         });
@@ -14,10 +15,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortType = document.getElementById('root-sort').value;
         const typeFilterEl = document.getElementById('root-type-filter');
         const targetType = typeFilterEl ? typeFilterEl.value : 'all';
+        const contextFilter = document.getElementById('root-context-filter') ? document.getElementById('root-context-filter').value : 'all';
 
         let filtered = window.globalRoots.filter(d => {
             const matchSearch = (d.segment || '').toLowerCase().includes(q) || (d.meaning || '').includes(q);
             if (!matchSearch) return false;
+
+            // 情景过滤逻辑：检查是否有属于该情景的单词使用了此词根
+            if (contextFilter !== 'all' && window.globalWords && window.globalWords.length > 0) {
+                const rootSeg = (d.segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+                const isUsedInContext = window.globalWords.some(w => {
+                    const hasCtx = w.memory_lines_map && Object.keys(w.memory_lines_map).some(k => k.endsWith(`_${contextFilter}`));
+                    if (!hasCtx) return false;
+                    return (w.parts || []).some(p => p.segment.toLowerCase().replace(/^-|-$/g, '').trim() === rootSeg);
+                });
+                if (!isUsedInContext) return false;
+            }
+
             if (targetType === 'all') return true;
             if (d.manual_category) return d.manual_category === targetType;
             
@@ -39,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(document.getElementById('root-search')) {
         document.getElementById('root-search').addEventListener('input', triggerRootFilter);
         document.getElementById('root-sort').addEventListener('change', triggerRootFilter);
+        if(document.getElementById('root-context-filter')) {
+            document.getElementById('root-context-filter').addEventListener('change', triggerRootFilter);
+        }
 
         const rootSort = document.getElementById('root-sort');
         if (rootSort && !document.getElementById('root-type-filter')) {

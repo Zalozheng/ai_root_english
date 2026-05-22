@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.loadWordsLibrary = function(callback) {
         chrome.storage.local.get(null, (items) => {
             window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
+            window.globalRoots = Object.keys(items).filter(k => k.startsWith('R:')).map(k => items[k]);
             triggerWordFilter();
             if (callback) callback();
         });
@@ -12,13 +13,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!searchEl) return;
         const q = searchEl.value.toLowerCase();
         const sortType = document.getElementById('word-sort').value;
-        let filtered = window.globalWords.filter(d => (d.word || '').toLowerCase().includes(q) || (d.primary_meaning || '').includes(q));
+        const contextFilter = document.getElementById('word-context-filter') ? document.getElementById('word-context-filter').value : 'all';
+
+        let filtered = window.globalWords.filter(d => {
+            const matchSearch = (d.word || '').toLowerCase().includes(q) || (d.primary_meaning || '').includes(q);
+            if (!matchSearch) return false;
+            
+            if (contextFilter === 'all') return true;
+            
+            // 检查该词在所选情景下是否有记忆记录
+            const map = d.memory_lines_map || {};
+            return Object.keys(map).some(k => k.endsWith(`_${contextFilter}`));
+        });
         renderWordList(window.sortData(filtered, sortType));
     }
 
     if(document.getElementById('word-search')) {
         document.getElementById('word-search').addEventListener('input', triggerWordFilter);
         document.getElementById('word-sort').addEventListener('change', triggerWordFilter);
+        if(document.getElementById('word-context-filter')) {
+            document.getElementById('word-context-filter').addEventListener('change', triggerWordFilter);
+        }
     }
 
     function renderWordList(words) {
