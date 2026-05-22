@@ -24,11 +24,12 @@ if (logoEl) {
 
   chrome.storage.local.get(['app_config', 'ui_theme'], (res) => {
     document.body.setAttribute('data-theme', res.ui_theme || 'system');
+    localStorage.setItem('ui_theme', res.ui_theme || 'system'); // 加这行
     let config = res.app_config || {};
     quickContext.value = config.promptContext || 'general';
     quickEngine.value = config.engine || 'custom';
     rootToggleSwitch.checked = (config.rootStrategy || 'keep_old') === 'keep_old';
-  });
+});
 
   rootToggleSwitch.addEventListener('change', (e) => {
     chrome.storage.local.get(['app_config'], (res) => {
