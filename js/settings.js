@@ -334,15 +334,30 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (!isWord && !isRoot) continue;
                         
                         if (isWord) {
-                            if (scopeCtx && data[k].memory_lines_map) {
-                               let firstKey = Object.keys(data[k].memory_lines_map)[0];
-                               if(firstKey) {
-                                   let engineSource = firstKey.split('_')[0] || 'remote';
-                                   let newKey = `${engineSource}_${scopeCtx}`;
-                                   let linesToTransplant = data[k].memory_lines_map[firstKey];
-                                   data[k].memory_lines_map = {}; 
-                                   data[k].memory_lines_map[newKey] = linesToTransplant;
+                            if (scopeCtx) {
+                               if (!data[k].memory_lines_map) data[k].memory_lines_map = {};
+                               let map = data[k].memory_lines_map;
+                               let targetLines = [];
+                               let engineSource = 'remote';
+                               
+                               let existingTargetKey = Object.keys(map).find(mk => mk.endsWith(`_${scopeCtx}`));
+                               if (existingTargetKey) {
+                                   targetLines = map[existingTargetKey] || [];
+                                   engineSource = existingTargetKey.split('_')[0];
+                               } else {
+                                   Object.keys(map).forEach(mk => {
+                                       if (Array.isArray(map[mk])) targetLines.push(...map[mk]);
+                                   });
+                                   if (targetLines.length === 0 && Array.isArray(data[k].memory_lines)) {
+                                       targetLines.push(...data[k].memory_lines);
+                                   }
+                                   targetLines = [...new Set(targetLines)]; 
+                                   let firstKey = Object.keys(map)[0];
+                                   if (firstKey) engineSource = firstKey.split('_')[0];
                                }
+                               
+                               data[k].memory_lines_map = {}; 
+                               data[k].memory_lines_map[`${engineSource}_${scopeCtx}`] = targetLines;
                             }
                             if (pendingImportType === 'words' || pendingImportType === 'all') {
                                 importedData[k] = data[k];
@@ -469,7 +484,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleDelete(type) {
         const scopeCtx = getActionScope();
         const typeName = type === 'words' ? '纯单词' : (type === 'roots' ? '纯词根' : '所有单词和词根');
-        const scopeName = scopeCtx ? `【仅限当前情景】下的` : `【全局全量】的`;
+        
+        let scopeName = '【全局全量】的';
+        if (scopeCtx) {
+            const contextSelect = document.getElementById('prompt-context');
+            const contextText = contextSelect.options[contextSelect.selectedIndex].text;
+            scopeName = `【仅限当前情景: ${contextText}】下的`;
+        }
         
         if(!confirm(`🗑️ 危险：确定要彻底清除 ${scopeName} ${typeName} 吗？`)) return;
 
