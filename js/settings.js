@@ -162,13 +162,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if(document.getElementById('theme')) document.getElementById('theme').value = res.ui_theme || 'system';
       if(tempSlider) { tempSlider.value = window.appConfig.temperature !== undefined ? window.appConfig.temperature : 0.2; tempVal.textContent = tempSlider.value; }
       
-      // 读取新开关
-      if(document.getElementById('auto-parse')) document.getElementById('auto-parse').value = window.appConfig.autoParse || 'auto';
-      if(document.getElementById('enable-content-script')) document.getElementById('enable-content-script').value = window.appConfig.enableContentScript || 'enabled';
+      // 读取开关状态 (使用 .checked 替换 .value)
+      if(document.getElementById('auto-parse')) document.getElementById('auto-parse').checked = window.appConfig.autoParse === true;
+      if(document.getElementById('enable-content-script')) document.getElementById('enable-content-script').checked = window.appConfig.enableContentScript !== false;
       if(document.getElementById('history-limit')) document.getElementById('history-limit').value = window.appConfig.historyLimit || '10';
       if(document.getElementById('data-fallback-rule')) document.getElementById('data-fallback-rule').value = window.appConfig.dataFallbackRule || 'cross';
-      if(document.getElementById('context-fallback-rule')) document.getElementById('context-fallback-rule').value = window.appConfig.contextFallbackRule || 'cross';
+      if(document.getElementById('context-fallback-rule')) document.getElementById('context-fallback-rule').checked = window.appConfig.contextFallbackRule !== false;
       
+      // 数据操作面板持久化
+      if(document.getElementById('data-action-context')) document.getElementById('data-action-context').checked = window.appConfig.dataActionContext === true;
+      if(document.getElementById('import-mode')) document.getElementById('import-mode').checked = window.appConfig.importMode === true;
+
       if(document.getElementById('api-base')) document.getElementById('api-base').value = window.appConfig.apiBase || '';
       if(document.getElementById('api-key')) document.getElementById('api-key').value = window.appConfig.apiKey || '';
       if(document.getElementById('api-model')) document.getElementById('api-model').value = window.appConfig.model || '';
@@ -176,6 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if(window.appConfig.ollamaModel && document.getElementById('ollama-model-select')) document.getElementById('ollama-model-select').innerHTML = `<option value="${window.appConfig.ollamaModel}">${window.appConfig.ollamaModel}</option>`;
       if(document.getElementById('offline-source')) document.getElementById('offline-source').value = window.appConfig.offlineSource || 'remote';
       if(rootToggleSwitch) rootToggleSwitch.checked = (window.appConfig.rootStrategy || 'keep_old') === 'keep_old';
+
+      // 状态回显后，同步更新一遍所有 Label 文案
+      if (typeof updateLabels === 'function') updateLabels();
     });
 
     // Ollama 接口绑定
@@ -205,13 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 ollamaBase: document.getElementById('ollama-base').value.trim(), ollamaModel: document.getElementById('ollama-model-select').value, 
                 promptContext: curCtx, customPrompt: document.getElementById('custom-prompt').value.trim(), 
                 temperature: parseFloat(tempSlider ? tempSlider.value : 0.2), 
-                autoParse: document.getElementById('auto-parse').value, 
-                enableContentScript: document.getElementById('enable-content-script').value,
+                autoParse: document.getElementById('auto-parse').checked, 
+                enableContentScript: document.getElementById('enable-content-script').checked,
                 historyLimit: document.getElementById('history-limit').value, 
                 dataFallbackRule: document.getElementById('data-fallback-rule').value, 
-                contextFallbackRule: document.getElementById('context-fallback-rule').value,
+                contextFallbackRule: document.getElementById('context-fallback-rule').checked,
                 offlineSource: document.getElementById('offline-source').value, 
-                rootStrategy: rootToggleSwitch.checked ? 'keep_old' : 'force_new'
+                rootStrategy: rootToggleSwitch.checked ? 'keep_old' : 'force_new',
+                dataActionContext: document.getElementById('data-action-context').checked,
+                importMode: document.getElementById('import-mode').checked
             };
             chrome.storage.local.set({ app_config: mergedConfig, ui_theme: document.getElementById('theme').value }, () => window.showStatus('💾 引擎设置已保存！', '#38bdf8'));
         });
