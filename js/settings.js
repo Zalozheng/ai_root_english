@@ -253,11 +253,31 @@ document.addEventListener('DOMContentLoaded', () => {
             if (k.startsWith('W:')) {
                 let w = items[k];
                 if (w.memory_lines_map && Object.keys(w.memory_lines_map).some(mk => mk.endsWith(`_${context}`))) {
-                    (w.parts || []).forEach(p => usedRoots.add(p.segment.toLowerCase().replace(/^-|-$/g, '').trim()));
+                    (w.parts || []).forEach(p => {
+                        if (p && p.segment) usedRoots.add(p.segment.toLowerCase().replace(/^-|-$/g, '').trim());
+                    });
                 }
             }
         }
         return usedRoots;
+    }
+
+    function getRootsUsedInOtherContexts(items, context) {
+        let otherRoots = new Set();
+        for (let k in items) {
+            if (k.startsWith('W:')) {
+                let w = items[k];
+                if (w.memory_lines_map) {
+                    let usedInOther = Object.keys(w.memory_lines_map).some(mk => !mk.endsWith(`_${context}`));
+                    if (usedInOther) {
+                        (w.parts || []).forEach(p => {
+                            if (p && p.segment) otherRoots.add(p.segment.toLowerCase().replace(/^-|-$/g, '').trim());
+                        });
+                    }
+                }
+            }
+        }
+        return otherRoots;
     }
 
     // 导出引擎
@@ -497,7 +517,13 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.storage.local.get(null, (items) => {
             let keysToRemove = [];
             let itemsToUpdate = {};
-            let usedRoots = scopeCtx ? getRootsUsedInContext(items, scopeCtx) : null;
+            let usedRoots = null;
+            let otherRoots = null;
+            
+            if (scopeCtx) {
+                usedRoots = getRootsUsedInContext(items, scopeCtx);
+                otherRoots = getRootsUsedInOtherContexts(items, scopeCtx);
+            }
 
             for (let k in items) {
                 let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
@@ -524,7 +550,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     } else if (isRoot) {
                         let rootSeg = (items[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
-                        if (usedRoots.has(rootSeg)) {
+                        // 安全验证：仅当词根在这个情景被使用，且【没有】在其他情景被使用时，才彻底删除
+                        if (usedRoots.has(rootSeg) && !otherRoots.has(rootSeg)) {
                             keysToRemove.push(k);
                         }
                     }
