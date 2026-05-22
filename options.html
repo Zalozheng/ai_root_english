@@ -90,14 +90,15 @@
             <div class="split-col">
               <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
                 <label style="margin: 0;" title="开启后，在网页中选中文本会弹出搜索小图标。关闭则彻底禁用此功能。">🌐 网页划词取词</label>
-                <label class="switch">
+                <label class="switch blue-switch">
                   <input type="checkbox" id="enable-content-script" checked>
                   <span class="slider"></span>
                 </label>
               </div>
+              <!-- 3号位置的第二个开关已下移至此处 -->
               <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                <label style="margin: 0; color: #fcd34d;" title="开启：点击插件图标立即翻译选中词。关闭：仅打开弹窗手动查。">⚡ 图标点击即翻译</label>
-                <label class="switch">
+                <label style="margin: 0; color: #fcd3d; " title="点击插件图标立即翻译选中词。">⚡ 图标点击即翻译</label>
+                <label class="switch blue-switch">
                   <input type="checkbox" id="auto-parse" checked>
                   <span class="slider"></span>
                 </label>
@@ -164,17 +165,13 @@
             <div style="display: flex; gap: 15px; margin-bottom: 5px;">
                 <div style="flex: 1;">
                     <label style="font-size: 12px; color: #a1a1aa; display: block; margin-bottom: 8px;">🌍 作用域 (情景)</label>
-                    <select id="data-action-context" class="context-selector">
-                        <option value="all">所有情景模式 (全量数据)</option>
-                        <option value="current">仅上方选定的当前情景</option>
-                    </select>
+                    <!-- 1号位置：改为红色滑块 -->
+                    <input type="range" id="data-action-context" class="red-slider" min="0" max="1" step="1">
                 </div>
                 <div style="flex: 1;">
                     <label style="font-size: 12px; color: #a1a1aa; display: block; margin-bottom: 8px;">📥 导入模式设定</label>
-                    <select id="import-mode" class="context-selector" style="border-color: #f59e0b; color: #fcd34d;">
-                        <option value="merge">合并导入 (遇重名覆盖更新)</option>
-                        <option value="replace">替换导入 (先清空再导入)</option>
-                    </select>
+                    <!-- 2号位置：改为红色滑块 -->
+                    <input type="range" id="import-mode" class="red-slider" min="0" max="1" step="1">
                 </div>
             </div>
 
@@ -205,6 +202,7 @@
       </div>
     </div>
 
+    <!-- 其他 view-section 保持不变 -->
     <div id="view-words" class="view-section">
       <div class="learning-container">
         <div class="list-pane">
