@@ -57,6 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const customContextInput = document.getElementById('custom-context-input');
       const promptArea = document.getElementById('custom-prompt');
 
+      // 初始化自定义情景名称
+      if (customContextInput) {
+          const customCtx = window.appConfig.contexts.find(c => c.id === 'custom');
+          if (customCtx && customCtx.name && customCtx.name !== '✍️ 自定义专属角色') {
+              customContextInput.value = customCtx.name.replace(/^✍️\s*/, '');
+          }
+      }
+
       if (contextSelect && !document.getElementById('global-json-card')) {
           let card = contextSelect.parentElement;
           while(card && card.tagName !== 'BODY') { if (card.textContent.includes('界面设定与历史')) break; card = card.parentElement; }
@@ -206,6 +214,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const globalJsonEl = document.getElementById('global-json-prompt');
             if (globalJsonEl) window.appConfig.globalJsonTemplate = globalJsonEl.value.trim();
 
+            const customNameInput = document.getElementById('custom-context-input');
+            if (curCtx === 'custom' && customNameInput && customNameInput.value.trim()) {
+                const customCtxObj = window.appConfig.contexts.find(c => c.id === 'custom');
+                if (customCtxObj) {
+                    customCtxObj.name = `✍️ ${customNameInput.value.trim()}`;
+                }
+            }
+
             const mergedConfig = {
                 ...window.appConfig, engine: selectedEngine, 
                 apiBase: document.getElementById('api-base').value.trim(), apiKey: document.getElementById('api-key').value.trim(), model: document.getElementById('api-model').value.trim(), 
@@ -222,7 +238,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 dataActionContext: document.getElementById('data-action-context').checked,
                 importMode: document.getElementById('import-mode').checked
             };
-            chrome.storage.local.set({ app_config: mergedConfig, ui_theme: document.getElementById('theme').value }, () => window.showStatus('💾 引擎设置已保存！', '#38bdf8'));
+            chrome.storage.local.set({ app_config: mergedConfig, ui_theme: document.getElementById('theme').value }, () => {
+                window.showStatus('💾 引擎设置已保存！', '#38bdf8');
+                // 刷新下拉框文本
+                const contextSelect = document.getElementById('prompt-context');
+                if (contextSelect) {
+                    const customOpt = Array.from(contextSelect.options).find(opt => opt.value === 'custom');
+                    const customCtxObj = mergedConfig.contexts.find(c => c.id === 'custom');
+                    if (customOpt && customCtxObj) {
+                        customOpt.textContent = customCtxObj.name;
+                    }
+                }
+            });
         });
     }
 
@@ -238,6 +265,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('hist-plus').addEventListener('click', () => {
             let val = parseInt(histInput.value) || 10;
             if (val < 999) histInput.value = val + 1;
+        });
+    }
+    if(document.getElementById('clear-history-btn')) {
+        document.getElementById('clear-history-btn').addEventListener('click', () => {
+            if(confirm('🗑️ 确定要清空搜索历史下拉列表吗？（这不会删除词库数据）')) {
+                chrome.storage.local.remove(['history_list'], () => {
+                    window.showStatus('🧹 历史列表已清空', '#10b981');
+                });
+            }
         });
     }
 
