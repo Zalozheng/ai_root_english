@@ -1,21 +1,3 @@
-function createIconImageData(size) {
-  const canvas = new OffscreenCanvas(size, size);
-  const ctx = canvas.getContext('2d');
-  const r = size / 2;
-  ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(r, r, r, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = size * 0.1; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(r, size * 0.75); ctx.lineTo(r, size * 0.45); ctx.lineTo(size * 0.25, size * 0.25); ctx.moveTo(r, size * 0.45); ctx.lineTo(size * 0.75, size * 0.25); ctx.stroke();
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath(); ctx.arc(r, size * 0.45, size*0.12, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(size * 0.25, size * 0.25, size*0.12, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(size * 0.75, size * 0.25, size*0.12, 0, Math.PI*2); ctx.fill();
-  return ctx.getImageData(0, 0, size, size);
-}
-
-chrome.runtime.onInstalled.addListener(() => {
-  try { chrome.action.setIcon({ imageData: { '16': createIconImageData(16), '48': createIconImageData(48), '128': createIconImageData(128) } }); } catch (e) {}
-});
-
 function updateOllamaCorsRule(ollamaUrl) {
   try {
     const url = new URL(ollamaUrl || 'http://127.0.0.1:11434');
