@@ -88,23 +88,33 @@
               </div>
             </div>
             <div class="split-col">
-              <div class="form-group">
-                <label>扩展图标交互开关</label>
-                <select id="auto-parse" style="margin-bottom:8px; border-color:#f59e0b; color:#fcd34d; background:#2a2010;">
-                  <option value="auto">⚡ 点击扩展图标：立即翻译选中的词</option>
-                  <option value="manual">⏸️ 点击扩展图标：填入输入框，手动翻译</option>
-                </select>
+              <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <label style="margin: 0;" title="开启后，在网页中选中文本会弹出搜索小图标。关闭则彻底禁用此功能。">🌐 网页划词取词</label>
+                <label class="switch">
+                  <input type="checkbox" id="enable-content-script" checked>
+                  <span class="slider"></span>
+                </label>
               </div>
-              <div class="form-group">
-                <label>下拉历史保留上限</label>
-                <select id="history-limit" style="margin-bottom:8px;">
-                  <option value="10">保留最近 10 条</option>
-                  <option value="50">保留最近 50 条</option>
-                </select>
-                <button id="clear-history-btn" class="btn-outline btn-danger" style="width:100%;">🧹 仅清空历史列表</button>
+              <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <label style="margin: 0; color: #fcd34d;" title="开启：点击插件图标立即翻译选中词。关闭：仅打开弹窗手动查。">⚡ 图标点击即翻译</label>
+                <label class="switch">
+                  <input type="checkbox" id="auto-parse" checked>
+                  <span class="slider"></span>
+                </label>
               </div>
             </div>
           </div>
+          
+          <div class="form-group" style="margin-bottom:20px; border-top: 1px dashed #333; padding-top: 15px;">
+            <label>下拉历史保留上限</label>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <button id="hist-minus" class="btn-outline" style="padding: 10px 16px; font-weight: bold; font-size: 16px;">-</button>
+                <input type="number" id="history-limit" value="10" min="1" max="100" style="text-align:center; flex:1; font-size: 16px; font-weight: bold;">
+                <button id="hist-plus" class="btn-outline" style="padding: 10px 16px; font-weight: bold; font-size: 16px;">+</button>
+                <button id="clear-history-btn" class="btn-outline btn-danger" style="margin-left: 10px; padding: 10px 20px;">🧹 仅清空列表</button>
+            </div>
+          </div>
+          
           <div class="form-group" style="margin-bottom:0; border-top: 1px dashed #333; padding-top: 15px;">
             <label>System Prompt <button id="restore-prompt-btn" class="btn-outline" style="padding: 2px 6px; font-size: 11px; margin-left: 10px;">恢复默认</button></label>
             <textarea id="custom-prompt" rows="3" placeholder="非专业人员请勿修改此处内容..."></textarea>
@@ -129,17 +139,18 @@
                 <span>🌱 高级保护规则</span>
             </div>
             
-            <div style="margin-bottom: 15px;">
-              <select id="context-fallback-rule" style="border-color:#38bdf8; background: #0c4a6e; color: #bae6fd;" title="切换不同角色(如日常/极客)查词时，若当前角色无缓存，是否直接借用其他角色的数据">
-                <option value="cross">⚡ 允许跨情景借用 (免重跑)</option>
-                <option value="strict">🔒 强制当前情景 (无缓存必重跑)</option>
-              </select>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <span style="font-size: 14px; font-weight: bold; color: #bae6fd;" title="切换不同角色(如日常/极客)查词时，若当前角色无缓存，是否直接借用其他角色的数据">⚡ 允许跨情景借用缓存</span>
+                <label class="switch">
+                  <input type="checkbox" id="context-fallback-rule" checked>
+                  <span class="slider"></span>
+                </label>
             </div>
             
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #444;">
                 <span style="font-size: 14px; font-weight: bold; color: #d1d5db;" title="若拆解新单词时遇到库中已有词根，将保留您的旧词源故事">保护旧词根故事</span>
                 <label class="switch">
-                  <input type="checkbox" id="root-toggle-switch">
+                  <input type="checkbox" id="root-toggle-switch" checked>
                   <span class="slider"></span>
                 </label>
             </div>

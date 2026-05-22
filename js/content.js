@@ -1,5 +1,27 @@
 let floatingBtn = null;
 let popupIframe = null;
+let contentScriptEnabled = true; // 默认开启
+
+// 1. 初始化时读取一次配置
+chrome.storage.local.get(['app_config'], (res) => {
+  const config = res.app_config || {};
+  if (config.enableContentScript === 'disabled') {
+    contentScriptEnabled = false;
+  }
+});
+
+// 2. 监听配置动态改变，如果用户刚关掉，立刻清理正在显示的 UI
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.app_config) {
+    const newConfig = changes.app_config.newValue || {};
+    if (newConfig.enableContentScript === 'disabled') {
+      contentScriptEnabled = false;
+      removeUI();
+    } else {
+      contentScriptEnabled = true;
+    }
+  }
+});
 
 function removeUI() {
   if (floatingBtn) { floatingBtn.remove(); floatingBtn = null; }
@@ -12,6 +34,9 @@ document.addEventListener('mousedown', (e) => {
 });
 
 document.addEventListener('mouseup', (e) => {
+  // 如果开关没开，直接退出
+  if (!contentScriptEnabled) return;
+
   if (popupIframe && popupIframe.contains(e.target)) return;
   if (floatingBtn && floatingBtn.contains(e.target)) return;
 

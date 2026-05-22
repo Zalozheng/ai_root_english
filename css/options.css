@@ -27,8 +27,13 @@ h2.settings-title img { width: 32px; height: 32px; border-radius: 6px; object-fi
 .form-group { margin-bottom: 20px; }
 label { display: block; font-size: 14px; color: #d1d5db; margin-bottom: 10px; font-weight: 600; }
 .hint { font-size: 12px; color: #888; margin-top: 8px; line-height: 1.5; }
-input[type="text"], input[type="password"], select, textarea { width: 100%; background: #121212; border: 1px solid #3f3f46; color: #fff; padding: 12px 14px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; box-sizing: border-box; }
+input[type="text"], input[type="password"], input[type="number"], select, textarea { width: 100%; background: #121212; border: 1px solid #3f3f46; color: #fff; padding: 12px 14px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; box-sizing: border-box; }
 input:focus, select:focus, textarea:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+
+/* 隐藏数字输入框默认的上下箭头 */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
 .split-layout { display: flex; gap: 20px; }
 .split-col { flex: 1; }
 .engine-tabs { display: flex; gap: 10px; margin-bottom: 20px; background: #121212; padding: 6px; border-radius: 10px; border: 1px solid #333; }
@@ -45,6 +50,11 @@ input:focus, select:focus, textarea:focus { border-color: #38bdf8; box-shadow: 0
 .flex-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .status { margin-top: 20px; color: #34d399; text-align: center; font-size: 15px; font-weight: bold; }
 .log-box { display: none; margin-top: 15px; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; font-family: monospace; font-size: 12px; color: #9ca3af; max-height: 150px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+
+/* 恢复 global-json-card 相关样式，确保文本框满宽 */
+#global-json-card textarea { width:100%; box-sizing: border-box; font-family:monospace; font-size:12px; resize:vertical; outline:none; line-height:1.5; background:#0f0f11; color:#e5e7eb; border:1px solid #3f3f46; border-radius:8px; padding:12px;}
+#global-json-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
+#global-json-card .json-title { font-weight:bold; color:#38bdf8; font-size: 15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
 
 /* 📖 学习模块 */
 .learning-container { width: 100%; max-width: 1300px; display: flex; gap: 24px; height: calc(100vh - 80px); }
