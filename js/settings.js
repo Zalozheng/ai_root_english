@@ -234,8 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ======= 数据矩阵导入/导出/删除引擎 =======
     function getActionScope() {
-        const scope = document.getElementById('data-action-context').value;
-        return scope === 'all' ? null : document.getElementById('prompt-context').value;
+        const isSpecific = document.getElementById('data-action-context').checked;
+        return isSpecific ? document.getElementById('prompt-context').value : null;
     }
 
     // 导出引擎
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (importFile) {
         importFile.onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
-            const mode = document.getElementById('import-mode').value;
+            const mode = document.getElementById('import-mode').checked ? "replace" : "merge";
             const scopeCtx = getActionScope();
             
             const reader = new FileReader();

@@ -162,16 +162,20 @@
           <div class="section-title" style="color: #ef4444;">🗄️ 数据导入 / 导出</div>
           
           <div class="action-panel">
-            <div style="display: flex; gap: 15px; margin-bottom: 5px;">
-                <div style="flex: 1;">
-                    <label style="font-size: 12px; color: #a1a1aa; display: block; margin-bottom: 8px;">🌍 作用域 (情景)</label>
-                    <!-- 1号位置：改为红色滑块 -->
-                    <input type="range" id="data-action-context" class="red-slider" min="0" max="1" step="1">
+            <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;">
+                    <label style="margin: 0; font-size: 12px; color: #a1a1aa;" title="开启后，操作仅针对当前选择的情景。关闭则针对全局全量数据。">🌍 仅限当前情景</label>
+                    <label class="switch red-switch">
+                      <input type="checkbox" id="data-action-context">
+                      <span class="slider"></span>
+                    </label>
                 </div>
-                <div style="flex: 1;">
-                    <label style="font-size: 12px; color: #a1a1aa; display: block; margin-bottom: 8px;">📥 导入模式设定</label>
-                    <!-- 2号位置：改为红色滑块 -->
-                    <input type="range" id="import-mode" class="red-slider" min="0" max="1" step="1">
+                <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;">
+                    <label style="margin: 0; font-size: 12px; color: #a1a1aa;" title="开启后，导入将【替换】现有同类数据。关闭则进行【合并】导入。">📥 替换模式导入</label>
+                    <label class="switch red-switch">
+                      <input type="checkbox" id="import-mode">
+                      <span class="slider"></span>
+                    </label>
                 </div>
             </div>
 
