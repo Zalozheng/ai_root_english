@@ -47,6 +47,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.setAttribute('data-theme', res.ui_theme || 'system');
     localStorage.setItem('ui_theme', res.ui_theme || 'system');
     const config = res.app_config || {};
+
+    if (config.contexts && config.contexts.length > 0) {
+      quickContext.innerHTML = '';
+      config.contexts.forEach(ctx => {
+        const opt = document.createElement('option');
+        opt.value = ctx.id;
+        opt.textContent = ctx.name;
+        quickContext.appendChild(opt);
+      });
+    }
+
     quickContext.value = config.promptContext || 'general';
     quickEngine.value  = config.engine || 'custom';
     rootToggleSwitch.checked = (config.rootStrategy || 'keep_old') === 'keep_old';
@@ -125,7 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (initialWord) {
     wordInput.value = initialWord;
     chrome.storage.local.get(['app_config'], (res) => {
-      if ((res.app_config || {}).autoParse !== 'manual') doAnalyze(initialWord);
+      const config = res.app_config || {};
+      const shouldAutoParse = config.autoParse !== false && config.autoParse !== 'manual';
+      if (shouldAutoParse) doAnalyze(initialWord);
     });
   } else if (!isInPage) {
     fetchWordFromPage();
@@ -146,7 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selected) {
               chrome.storage.local.get(['app_config'], (res) => {
                 wordInput.value = selected;
-                if ((res.app_config || {}).autoParse !== 'manual') {
+                const config = res.app_config || {};
+                const shouldAutoParse = config.autoParse !== false && config.autoParse !== 'manual';
+                if (shouldAutoParse) {
                   state.navStack = []; doUpdateBack(); doAnalyze();
                 }
               });

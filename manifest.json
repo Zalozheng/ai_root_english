@@ -49,7 +49,7 @@
   "web_accessible_resources": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "resources": ["popup.html", "icons/ui_128.png", "options.html", "js/*", "js/popup/*"],
+      "resources": ["popup.html", "icons/ui_128.png", "options.html", "js/*","css/*", "js/popup/*"],
       "use_dynamic_url": false
     }
   ]

@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     engineTabs.forEach(tab => { tab.addEventListener('click', (e) => updateEngineTabs(e.target.dataset.engine)); });
 
+    // 显示版本号
+    const versionEl = document.getElementById('plugin-version');
+    if (versionEl) {
+        const manifest = chrome.runtime.getManifest();
+        versionEl.textContent = manifest.version || '未知';
+    }
+
     chrome.storage.local.get(['app_config', 'ui_theme'], (res) => {
       window.appConfig = res.app_config || {};
       updateEngineTabs(window.appConfig.engine || 'custom');
@@ -53,115 +60,39 @@ document.addEventListener('DOMContentLoaded', () => {
       if (needsImmediateSave) chrome.storage.local.set({ app_config: window.appConfig });
       if (window.appConfig.customPrompt && !window.appConfig.prompts['general']) window.appConfig.prompts['general'] = window.appConfig.customPrompt;
 
-      const contextSelect = document.getElementById('prompt-context');
-      const customContextInput = document.getElementById('custom-context-input');
-      const promptArea = document.getElementById('custom-prompt');
-
-      if (contextSelect && !document.getElementById('global-json-card')) {
-          let card = contextSelect.parentElement;
-          while(card && card.tagName !== 'BODY') { if (card.textContent.includes('界面设定与历史')) break; card = card.parentElement; }
-          if (card && card.tagName !== 'BODY') {
-              const globalCard = document.createElement('div');
-              globalCard.id = 'global-json-card';
-              globalCard.style.cssText = 'background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 20px;';
-              globalCard.innerHTML = `
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                      <span style="font-weight:bold; color:var(--text); font-size: 15px;">🧩 全局底层 JSON 结构约束</span>
-                      <button id="reset-global-json-btn" style="padding: 4px 10px; font-size: 12px; cursor: pointer; border-radius: 4px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); transition: 0.2s;">🔄 恢复默认结构</button>
-                  </div>
-                  <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">无论下方切换什么情景，解析时都会自动套用此处数据格式。</div>
-                  <textarea id="global-json-prompt" spellcheck="false" style="width:100%; height:260px; box-sizing: border-box; background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:12px; font-family:monospace; font-size:12px; resize:vertical; outline:none; line-height:1.5;"></textarea>
-              `;
-              card.parentNode.insertBefore(globalCard, card);
-              const jsonTextarea = document.getElementById('global-json-prompt');
-              jsonTextarea.value = window.appConfig.globalJsonTemplate;
-              jsonTextarea.addEventListener('input', (e) => window.appConfig.globalJsonTemplate = e.target.value);
-              document.getElementById('reset-global-json-btn').addEventListener('click', () => {
-                  jsonTextarea.value = defaultGlobalJson; window.appConfig.globalJsonTemplate = defaultGlobalJson; window.showStatus('🔄 已恢复默认', '#10b981');
-              });
-          }
-      }
-
-      function renderContextSelect() {
-          if (!contextSelect) return;
-          contextSelect.innerHTML = '';
-          window.appConfig.contexts.forEach(ctx => { const opt = document.createElement('option'); opt.value = ctx.id; opt.textContent = ctx.name; contextSelect.appendChild(opt); });
-          contextSelect.value = window.appConfig.promptContext || 'general';
-          if (customContextInput) customContextInput.style.display = contextSelect.value === 'custom' ? 'block' : 'none';
-      }
-
-      if (contextSelect) {
-          renderContextSelect();
-          if (!document.getElementById('context-controls-wrapper')) {
-              const wrapper = document.createElement('div'); wrapper.id = 'context-controls-wrapper'; wrapper.style.cssText = 'display: flex; align-items: center; gap: 8px; width: 100%;';
-              contextSelect.parentNode.insertBefore(wrapper, contextSelect); wrapper.appendChild(contextSelect);
-              const delBtn = document.createElement('button'); delBtn.innerHTML = '❌'; delBtn.style.cssText = 'background:transparent; border:none; cursor:pointer; opacity:0.8; padding: 4px;';
-              wrapper.appendChild(delBtn);
-              delBtn.addEventListener('click', () => {
-                  const currentId = contextSelect.value;
-                  if (currentId === 'general') return window.showStatus('⚠️ 默认模式不可删除', '#f59e0b');
-                  if (confirm('确定彻底删除此模式？')) {
-                      window.appConfig.contexts = window.appConfig.contexts.filter(c => c.id !== currentId);
-                      delete window.appConfig.prompts[currentId];
-                      window.appConfig.promptContext = 'general';
-                      renderContextSelect(); updatePromptArea();
-                      chrome.storage.local.set({ app_config: window.appConfig }, () => window.showStatus('✅ 已删除', '#10b981'));
-                  }
-              });
-          }
-          contextSelect.addEventListener('change', (e) => {
-              window.appConfig.promptContext = e.target.value;
-              if (customContextInput) customContextInput.style.display = e.target.value === 'custom' ? 'block' : 'none';
-              updatePromptArea();
-          });
-      }
-
-      if (!window.appConfig.customDefaults) window.appConfig.customDefaults = {};
-      function updatePromptArea() {
-          if (!promptArea) return;
-          const currentId = window.appConfig.promptContext || 'general';
-          promptArea.value = window.appConfig.prompts[currentId] !== undefined ? window.appConfig.prompts[currentId] : (window.appConfig.customDefaults[currentId] || initialPrompts[currentId] || "");
-      }
-      updatePromptArea();
-
-      if (promptArea) promptArea.addEventListener('input', (e) => window.appConfig.prompts[window.appConfig.promptContext || 'general'] = e.target.value);
-
-      const restoreBtn = document.getElementById('restore-prompt-btn');
-      if (restoreBtn) {
-          const newRestoreBtn = restoreBtn.cloneNode(true); restoreBtn.parentNode.replaceChild(newRestoreBtn, restoreBtn);
-          newRestoreBtn.textContent = '🔄 重置'; newRestoreBtn.style.cssText = 'padding: 4px 10px; font-size: 12px; cursor: pointer; border-radius: 4px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);';
-          
-          if (!document.getElementById('set-default-template-btn')) {
-              const setDefBtn = document.createElement('button'); setDefBtn.id = 'set-default-template-btn';
-              setDefBtn.style.cssText = 'margin-left: 10px; padding: 4px 10px; font-size: 12px; cursor: pointer; border-radius: 4px; border: 1px solid var(--accent); background: rgba(14,165,233,0.1); color: var(--accent);';
-              setDefBtn.textContent = '💾 设为专属默认模板';
-              newRestoreBtn.parentNode.insertBefore(setDefBtn, newRestoreBtn.nextSibling);
-              setDefBtn.addEventListener('click', () => {
-                  const currentId = window.appConfig.promptContext || 'general';
-                  window.appConfig.customDefaults[currentId] = promptArea.value;
-                  chrome.storage.local.set({ app_config: window.appConfig }, () => window.showStatus('✅ 已设为默认模板！', '#10b981'));
-              });
-          }
-          newRestoreBtn.addEventListener('click', () => {
-              const currentId = window.appConfig.promptContext || 'general';
-              const defaultText = window.appConfig.customDefaults[currentId] || initialPrompts[currentId] || "";
-              promptArea.value = defaultText; window.appConfig.prompts[currentId] = defaultText; window.showStatus('🔄 已重置', '#10b981');
-          });
-      }
-
       // 表单回显初始化
       if(document.getElementById('theme')) document.getElementById('theme').value = res.ui_theme || 'system';
       if(tempSlider) { tempSlider.value = window.appConfig.temperature !== undefined ? window.appConfig.temperature : 0.2; tempVal.textContent = tempSlider.value; }
-      if(document.getElementById('auto-parse')) document.getElementById('auto-parse').value = window.appConfig.autoParse || 'auto';
+      
+      // 读取开关状态 (使用 .checked 替换 .value)
+      if(document.getElementById('auto-parse')) document.getElementById('auto-parse').checked = window.appConfig.autoParse === true;
+      if(document.getElementById('enable-content-script')) document.getElementById('enable-content-script').checked = window.appConfig.enableContentScript !== false;
       if(document.getElementById('history-limit')) document.getElementById('history-limit').value = window.appConfig.historyLimit || '10';
+      if(document.getElementById('data-fallback-rule')) document.getElementById('data-fallback-rule').value = window.appConfig.dataFallbackRule || 'cross';
+      if(document.getElementById('context-fallback-rule')) document.getElementById('context-fallback-rule').checked = window.appConfig.contextFallbackRule !== false;
+      
+      // 数据操作面板持久化
+      if(document.getElementById('data-action-context')) document.getElementById('data-action-context').checked = window.appConfig.dataActionContext === true;
+      if(document.getElementById('import-mode')) document.getElementById('import-mode').checked = window.appConfig.importMode === true;
+
       if(document.getElementById('api-base')) document.getElementById('api-base').value = window.appConfig.apiBase || '';
       if(document.getElementById('api-key')) document.getElementById('api-key').value = window.appConfig.apiKey || '';
       if(document.getElementById('api-model')) document.getElementById('api-model').value = window.appConfig.model || '';
       if(document.getElementById('ollama-base')) document.getElementById('ollama-base').value = window.appConfig.ollamaBase || 'http://127.0.0.1:11434';
       if(window.appConfig.ollamaModel && document.getElementById('ollama-model-select')) document.getElementById('ollama-model-select').innerHTML = `<option value="${window.appConfig.ollamaModel}">${window.appConfig.ollamaModel}</option>`;
       if(document.getElementById('offline-source')) document.getElementById('offline-source').value = window.appConfig.offlineSource || 'remote';
-      if(document.getElementById('data-fallback-rule')) document.getElementById('data-fallback-rule').value = window.appConfig.dataFallbackRule || 'cross';
       if(rootToggleSwitch) rootToggleSwitch.checked = (window.appConfig.rootStrategy || 'keep_old') === 'keep_old';
+
+      // 状态回显后，同步更新一遍所有 Label 文案
+      if (typeof updateLabels === 'function') updateLabels();
+
+      // 初始化外部模块 (必须在获取到初始配置变量后调用)
+      if (typeof window.initContextManager === 'function') {
+          window.initContextManager(initialPrompts, defaultGlobalJson);
+      }
+      if (typeof window.initDataEngine === 'function') {
+          window.initDataEngine();
+      }
     });
 
     // Ollama 接口绑定
@@ -177,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 保存全局配置
     if(document.getElementById('save-btn')) {
         document.getElementById('save-btn').addEventListener('click', () => {
             const curCtx = document.getElementById('prompt-context').value;
@@ -184,78 +116,133 @@ document.addEventListener('DOMContentLoaded', () => {
             const globalJsonEl = document.getElementById('global-json-prompt');
             if (globalJsonEl) window.appConfig.globalJsonTemplate = globalJsonEl.value.trim();
 
+            const customNameInput = document.getElementById('custom-context-input');
+            if (curCtx === 'custom' && customNameInput && customNameInput.value.trim()) {
+                const customCtxObj = window.appConfig.contexts.find(c => c.id === 'custom');
+                if (customCtxObj) {
+                    customCtxObj.name = `✍️ ${customNameInput.value.trim()}`;
+                }
+            }
+
             const mergedConfig = {
                 ...window.appConfig, engine: selectedEngine, 
                 apiBase: document.getElementById('api-base').value.trim(), apiKey: document.getElementById('api-key').value.trim(), model: document.getElementById('api-model').value.trim(), 
                 ollamaBase: document.getElementById('ollama-base').value.trim(), ollamaModel: document.getElementById('ollama-model-select').value, 
                 promptContext: curCtx, customPrompt: document.getElementById('custom-prompt').value.trim(), 
-                temperature: parseFloat(tempSlider ? tempSlider.value : 0.2), autoParse: document.getElementById('auto-parse').value, 
-                historyLimit: document.getElementById('history-limit').value, dataFallbackRule: document.getElementById('data-fallback-rule').value, 
-                offlineSource: document.getElementById('offline-source').value, rootStrategy: rootToggleSwitch.checked ? 'keep_old' : 'force_new'
+                temperature: parseFloat(tempSlider ? tempSlider.value : 0.2), 
+                autoParse: document.getElementById('auto-parse').checked, 
+                enableContentScript: document.getElementById('enable-content-script').checked,
+                historyLimit: document.getElementById('history-limit').value, 
+                dataFallbackRule: document.getElementById('data-fallback-rule').value, 
+                contextFallbackRule: document.getElementById('context-fallback-rule').checked,
+                offlineSource: document.getElementById('offline-source').value, 
+                rootStrategy: rootToggleSwitch.checked ? 'keep_old' : 'force_new',
+                dataActionContext: document.getElementById('data-action-context').checked,
+                importMode: document.getElementById('import-mode').checked
             };
-            chrome.storage.local.set({ app_config: mergedConfig, ui_theme: document.getElementById('theme').value }, () => window.showStatus('💾 引擎设置已保存！', '#38bdf8'));
-        });
-    }
-
-    // 导入导出与数据清理
-    if(document.getElementById('export-btn')) {
-        document.getElementById('export-btn').addEventListener('click', () => { 
-            const scope = document.getElementById('export-scope').value;
-            chrome.storage.local.get(null, (items) => {
-              let exportData = {}; let count = 0;
-              for (let k in items) { if ((scope === 'only_roots' && k.startsWith('R:')) || (scope === 'all' && (k.startsWith('R:') || k.startsWith('W:')))) { exportData[k] = items[k]; count++; } }
-              if (count === 0) return window.showStatus("⚠️ 数据库为空", "#f59e0b");
-              const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'}); const url = URL.createObjectURL(blob);
-              const a = document.createElement('a'); a.href = url; a.download = `备份_${scope}_(${count}条).json`; a.click(); URL.revokeObjectURL(url);
+            chrome.storage.local.set({ app_config: mergedConfig, ui_theme: document.getElementById('theme').value }, () => {
+                window.showStatus('💾 引擎设置已保存！', '#38bdf8');
+                // 刷新下拉框文本
+                const contextSelect = document.getElementById('prompt-context');
+                if (contextSelect) {
+                    const customOpt = Array.from(contextSelect.options).find(opt => opt.value === 'custom');
+                    const customCtxObj = mergedConfig.contexts.find(c => c.id === 'custom');
+                    if (customOpt && customCtxObj) {
+                        customOpt.textContent = customCtxObj.name;
+                    }
+                }
             });
         });
     }
 
-    // 【新增：导入逻辑补全】
-    const importBtn = document.getElementById('import-btn');
-    const importFile = document.getElementById('import-file');
-    const importTarget = document.getElementById('import-target');
-
-    if (importBtn && importFile) {
-        // 1. 解决没弹窗问题
-        importBtn.onclick = () => importFile.click();
-        // 2. 解决导入逻辑问题
-        importFile.onchange = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                try {
-                    const data = JSON.parse(ev.target.result);
-                    if (importTarget.value === "replace") {
-                        // 彻底清除并替换
-                        chrome.storage.local.get(null, (all) => {
-                            const keysToRemove = Object.keys(all).filter(k => k.startsWith("W:") || k.startsWith("R:"));
-                            chrome.storage.local.remove(keysToRemove, () => {
-                                chrome.storage.local.set(data, () => window.showStatus("✅ 替换成功", "#10b981"));
-                            });
-                        });
-                    } else {
-                        // 无损合并
-                        chrome.storage.local.set(data, () => window.showStatus("✅ 合并成功", "#10b981"));
-                    }
-                    importFile.value = ''; // 清空 input
-                } catch (err) {
-                    window.showStatus("❌ 导入失败：JSON 格式错误", "#ef4444");
-                }
-            };
-            reader.readAsText(file);
-        };
-    }
-
-    if(document.getElementById('clear-all-data-btn')) {
-        document.getElementById('clear-all-data-btn').addEventListener('click', () => {
-          if(confirm("确定清空本地所有单词和词根故事吗？")) {
-             chrome.storage.local.get(null, (items) => {
-               const keys = Object.keys(items).filter(k => k.startsWith('W:') || k.startsWith('R:') || k === 'history_list');
-               chrome.storage.local.remove(keys, () => window.showStatus(`🗑️ 已清空 ${keys.length} 条数据`, '#10b981'));
-             });
-          }
+    // ======= 历史记录限制加减逻辑 =======
+    const histInput = document.getElementById('history-limit');
+    if(document.getElementById('hist-minus')) {
+        document.getElementById('hist-minus').addEventListener('click', () => {
+            let val = parseInt(histInput.value) || 10;
+            if (val > 1) histInput.value = val - 1;
         });
     }
+    if(document.getElementById('hist-plus')) {
+        document.getElementById('hist-plus').addEventListener('click', () => {
+            let val = parseInt(histInput.value) || 10;
+            if (val < 999) histInput.value = val + 1;
+        });
+    }
+    if(document.getElementById('clear-history-btn')) {
+        document.getElementById('clear-history-btn').addEventListener('click', () => {
+            if(confirm('🗑️ 确定要清空搜索历史下拉列表吗？（这不会删除词库数据）')) {
+                chrome.storage.local.remove(['history_list'], () => {
+                    window.showStatus('🧹 历史列表已清空', '#10b981');
+                });
+            }
+        });
+    }
+
+    // ======= 动态文案更新逻辑 =======
+    const ctxToggle = document.getElementById('data-action-context');
+    const ctxLabel = document.getElementById('label-action-context');
+    const modeToggle = document.getElementById('import-mode');
+    const modeLabel = document.getElementById('label-import-mode');
+    
+    const contentToggle = document.getElementById('enable-content-script');
+    const contentLabel = document.getElementById('label-content-script');
+    const autoToggle = document.getElementById('auto-parse');
+    const autoLabel = document.getElementById('label-auto-parse');
+    
+    const contextFallbackToggle = document.getElementById('context-fallback-rule');
+    const contextFallbackLabel = document.getElementById('label-context-fallback');
+    const rootStrategyToggle = document.getElementById('root-toggle-switch');
+    const rootStrategyLabel = document.getElementById('label-root-strategy');
+    
+    // 获取 Hint 元素
+    const hints = {
+        actionCtx: document.getElementById('hint-action-context'),
+        importMode: document.getElementById('hint-import-mode'),
+        contentScript: document.getElementById('hint-content-script'),
+        autoParse: document.getElementById('hint-auto-parse'),
+        contextFallback: document.getElementById('hint-context-fallback'),
+        rootStrategy: document.getElementById('hint-root-strategy')
+    };
+
+    function updateLabels() {
+        if(ctxToggle && ctxLabel) {
+            ctxLabel.textContent = ctxToggle.checked ? "🌍 仅限当前情景" : "🌍 全局数据模式";
+            ctxLabel.style.color = ctxToggle.checked ? "#ef4444" : "#a1a1aa";
+            if(hints.actionCtx) hints.actionCtx.textContent = ctxToggle.checked ? "操作仅针对当前选择的 AI 情景" : "操作将影响所有情景下的数据";
+        }
+        if(modeToggle && modeLabel) {
+            modeLabel.textContent = modeToggle.checked ? "📥 替换模式导入" : "📥 合并模式导入";
+            modeLabel.style.color = modeToggle.checked ? "#ef4444" : "#a1a1aa";
+            if(hints.importMode) hints.importMode.textContent = modeToggle.checked ? "导入时将【覆盖】现有的同类记录" : "将新数据与现有记录进行合并";
+        }
+        if(contentToggle && contentLabel) {
+            contentLabel.textContent = contentToggle.checked ? "🌐 网页划词取词已开" : "🌐 网页划词取词已关";
+            contentLabel.style.color = contentToggle.checked ? "#38bdf8" : "#71717a";
+            if(hints.contentScript) hints.contentScript.textContent = contentToggle.checked ? "选中文本后显示搜索小图标" : "已彻底禁用网页划词功能";
+        }
+        if(autoToggle && autoLabel) {
+            autoLabel.textContent = autoToggle.checked ? "⚡ 图标即点即译已开" : "⚡ 图标即点即译已关";
+            autoLabel.style.color = autoToggle.checked ? "#fcd34d" : "#71717a";
+            if(hints.autoParse) hints.autoParse.textContent = autoToggle.checked ? "点击插件图标立即翻译选中词" : "图标点击仅打开插件主面板";
+        }
+        if(contextFallbackToggle && contextFallbackLabel) {
+            contextFallbackLabel.textContent = contextFallbackToggle.checked ? "⚡ 跨情景借用已开" : "⚡ 跨情景借用已关";
+            contextFallbackLabel.style.color = contextFallbackToggle.checked ? "#bae6fd" : "#71717a";
+            if(hints.contextFallback) hints.contextFallback.textContent = contextFallbackToggle.checked ? "允许不同角色间共用缓存数据" : "严格隔离不同角色的解析记录";
+        }
+        if(rootStrategyToggle && rootStrategyLabel) {
+            rootStrategyLabel.textContent = rootStrategyToggle.checked ? "🛡️ 保护旧词根已开" : "🛡️ 保护旧词根已关";
+            rootStrategyLabel.style.color = rootStrategyToggle.checked ? "#d1d5db" : "#71717a";
+            if(hints.rootStrategy) hints.rootStrategy.textContent = rootStrategyToggle.checked ? "优先保留手动修改过的词源故事" : "词根故事将由 AI 重新生成";
+        }
+    }
+
+    if(ctxToggle) ctxToggle.addEventListener('change', updateLabels);
+    if(modeToggle) modeToggle.addEventListener('change', updateLabels);
+    if(contentToggle) contentToggle.addEventListener('change', updateLabels);
+    if(autoToggle) autoToggle.addEventListener('change', updateLabels);
+    if(contextFallbackToggle) contextFallbackToggle.addEventListener('change', updateLabels);
+    if(rootStrategyToggle) rootStrategyToggle.addEventListener('change', updateLabels);
+    updateLabels();
 });
