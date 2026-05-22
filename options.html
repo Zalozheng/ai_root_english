@@ -3,105 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>控制台 - 词汇引擎 Pro</title>
-  <style>
-    body { background-color: #0f0f11; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-    .sidebar { width: 240px; background: #18181b; border-right: 1px solid #27272a; display: flex; flex-direction: column; }
-    .sidebar-header { padding: 24px 20px; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #27272a; color: #fff;}
-    .sidebar-header img { width: 28px; height: 28px; border-radius: 6px; object-fit: cover;}
-    .nav-menu { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 8px; }
-    .nav-item { padding: 14px 16px; border-radius: 8px; cursor: pointer; color: #a1a1aa; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 15px;}
-    .nav-item.active { background: #1e293b; color: #38bdf8; box-shadow: inset 4px 0 0 #38bdf8;}
-    .nav-item:hover:not(.active) { background: #27272a; color: #fff; }
-    
-    .main-content { flex: 1; overflow-y: auto; position: relative; background: #0f0f11;}
-    .view-section { display: none; padding: 40px; justify-content: center; }
-    .view-section.active { display: flex; }
-
-    .switch-wrap { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; color: #888; cursor: pointer; padding: 6px 12px; background: #111; border-radius: 8px; border: 1px solid #333;}
-    .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4b5563; transition: .3s; border-radius: 20px; }
-    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: #f59e0b; }
-    input:checked + .slider:before { transform: translateX(16px); }
-
-    .settings-container { background: #1a1a1a; width: 100%; max-width: 900px; border-radius: 16px; border: 1px solid #333; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-    h2.settings-title { font-size: 24px; font-weight: 800; margin: 0 0 30px 0; padding-bottom: 20px; border-bottom: 1px solid #333; color: #fff; display: flex; align-items: center; gap: 10px;}
-    h2.settings-title img { width: 32px; height: 32px; border-radius: 6px; object-fit: cover;}
-    .section-box { background: #222222; padding: 25px; border-radius: 12px; border: 1px solid #333; margin-bottom: 30px; }
-    .section-title { font-size: 15px; font-weight: 700; color: #38bdf8; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.05em; display:flex; align-items:center; gap:8px;}
-    .form-group { margin-bottom: 20px; }
-    label { display: block; font-size: 14px; color: #d1d5db; margin-bottom: 10px; font-weight: 600; }
-    .hint { font-size: 12px; color: #888; margin-top: 8px; line-height: 1.5; }
-    input[type="text"], input[type="password"], select, textarea { width: 100%; background: #121212; border: 1px solid #3f3f46; color: #fff; padding: 12px 14px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; box-sizing: border-box; }
-    input:focus, select:focus, textarea:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
-    .split-layout { display: flex; gap: 20px; }
-    .split-col { flex: 1; }
-    .engine-tabs { display: flex; gap: 10px; margin-bottom: 20px; background: #121212; padding: 6px; border-radius: 10px; border: 1px solid #333; }
-    .engine-tab { flex: 1; text-align: center; padding: 14px; border-radius: 6px; cursor: pointer; color: #888; font-size: 15px; font-weight: bold; transition: 0.2s; border: 1px solid transparent; }
-    .engine-tab.active { background: #1e293b; color: #38bdf8; border-color: #38bdf8; }
-    .engine-panel { display: none; background: #18181b; border: 1px solid #333; padding: 20px; border-radius: 10px; }
-    .engine-panel.active { display: block; }
-    .btn-save { background: #0ea5e9; color: #fff; border: none; padding: 16px 24px; border-radius: 10px; font-size: 16px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; margin-top: 10px; }
-    .btn-save:hover { background: #0284c7; }
-    .btn-outline { background: #2a2a2a; color: #e5e7eb; border: 1px solid #4b5563; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; white-space: nowrap;}
-    .btn-outline:hover { background: #3f3f46; border-color: #38bdf8; color: #38bdf8;}
-    .btn-danger { color: #ef4444; border-color: #ef4444; }
-    .btn-danger:hover { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #ef4444;}
-    .flex-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .status { margin-top: 20px; color: #34d399; text-align: center; font-size: 15px; font-weight: bold; }
-    .log-box { display: none; margin-top: 15px; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; font-family: monospace; font-size: 12px; color: #9ca3af; max-height: 150px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
-
-    /* 📖 学习模块 */
-    .learning-container { width: 100%; max-width: 1300px; display: flex; gap: 24px; height: calc(100vh - 80px); }
-    .list-pane { width: 320px; background: #1a1a1a; border: 1px solid #333; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-    .list-header { padding: 20px; border-bottom: 1px solid #333; background: #1e1e1e;}
-    .search-box { width: 100%; background: #0f0f11; border: 1px solid #3f3f46; color: #fff; padding: 12px 14px; border-radius: 8px; outline: none; box-sizing: border-box; font-size: 14px;}
-    .data-list { flex: 1; overflow-y: auto; padding: 10px; margin: 0; list-style: none; }
-    .data-list::-webkit-scrollbar { width: 6px; } .data-list::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-    .data-item { padding: 14px 16px; border-radius: 10px; cursor: pointer; border-bottom: 1px solid transparent; transition: 0.2s; margin-bottom: 4px;}
-    .data-item:hover { background: #27272a; }
-    .data-item.selected { background: #1e293b; border-left: 4px solid #38bdf8; border-radius: 6px;}
-    .data-item-title { font-weight: bold; font-size: 16px; color: #fff; display: flex; justify-content: space-between; align-items: center;}
-    .data-item-sub { font-size: 13px; color: #a1a1aa; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;}
-    
-    .detail-pane { flex: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 16px; padding: 40px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative;}
-    .detail-pane::-webkit-scrollbar { width: 8px; } .detail-pane::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #6b7280; font-size: 16px; text-align: center;}
-    
-    .word-breakdown { font-size: 40px; font-weight: 900; color: #fff; letter-spacing: 2px; margin-bottom: 10px;}
-    .phonetic { color: #9ca3af; font-size: 16px; font-family: monospace; margin-right: 15px;}
-    .primary-meaning { font-size: 22px; font-weight: bold; color: #34d399; padding: 6px 16px; background: rgba(52,211,153,0.1); border-radius: 8px; display: inline-block;}
-    .core-meaning { font-size: 15px; font-weight: 600; color: #ef4444; margin: 20px 0; padding: 12px 16px; background: rgba(239,68,68,0.05); border-left: 4px solid #ef4444; border-radius: 0 8px 8px 0;}
-    
-    .part-row { display: flex; margin-bottom: 12px; border: 1px solid #333; border-radius: 12px; overflow: hidden; background: #222; transition: 0.2s;}
-    .part-row:hover { border-color: #38bdf8; box-shadow: 0 4px 12px rgba(56,189,248,0.1);}
-    .segment-box { width: 140px; background: #0c4a6e; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 10px; border-right: 1px solid #0369a1; cursor: pointer; transition: 0.2s;}
-    .segment-box:hover { background: #0284c7; }
-    .segment-text { font-size: 20px; font-weight: 900; color: #bae6fd; text-align: center; word-break: break-all;}
-    .segment-type { font-size: 12px; color: #9ca3af; background: #0f0f11; padding: 4px 10px; border-radius: 12px; margin-top: 8px;}
-    .detail-box { padding: 20px; flex: 1; }
-    .part-meaning { font-weight: bold; color: #fff; font-size: 16px; margin-bottom: 10px;}
-    .part-origin { font-size: 14px; color: #a1a1aa; line-height: 1.6; border-top: 1px dashed #333; padding-top: 10px;}
-    
-    .memory-lines { margin-top: 25px; padding: 20px; background: rgba(245,158,11,0.05); border-radius: 12px; border: 1px solid #333; border-left: 4px solid #f59e0b; }
-    .memory-title { color: #f59e0b; font-weight: 800; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;}
-    
-    .source-tabs { display: flex; gap: 8px; }
-    .source-tab { font-size: 12px; background: #111; border: 1px solid #333; color: #888; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;}
-    .source-tab.active { background: #f59e0b; color: #000; border-color: #f59e0b;}
-
-    .root-origin-card { background: rgba(56,189,248,0.05); border-left: 4px solid #38bdf8; padding: 25px; border-radius: 12px; margin-top: 25px; }
-    .root-origin-text { font-size: 15px; color: #e5e7eb; line-height: 1.8; margin-bottom: 15px;}
-    
-    .root-deriv-box { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;}
-    .deriv-tag { background: #27272a; border: 1px solid #3f3f46; padding: 6px 14px; border-radius: 20px; font-size: 14px; color: #bae6fd; cursor: pointer; transition: 0.2s;}
-    .deriv-tag:hover { background: #38bdf8; color: #000; font-weight: bold; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(56,189,248,0.3);}
-    
-    .loader-overlay { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; display: none; border-radius: 16px;}
-    .loader-spinner { font-size: 40px; animation: spin 1s infinite linear;}
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-  </style>
+  <link rel="stylesheet" href="css/options.css">
 </head>
 <body>
 
@@ -131,12 +33,12 @@
           <div class="engine-panel active" id="panel-custom">
             <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="https://api.openai.com/v1"></div>
             <div class="form-group">
-  <label style="display:flex; justify-content:space-between; align-items:center;">
-    <span>API Key</span>
-    <a href="https://lingkeapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 12px; text-decoration: none;">🔑 获取 API</a>
-  </label>
-  <input type="password" id="api-key" placeholder="sk-...">
-</div>
+              <label style="display:flex; justify-content:space-between; align-items:center;">
+                <span>API Key</span>
+                <a href="https://lingkeapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 12px; text-decoration: none;">🔑 获取 API</a>
+              </label>
+              <input type="password" id="api-key" placeholder="sk-...">
+            </div>
             <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" placeholder="gpt-4o"></div>
           </div>
           <div class="engine-panel" id="panel-ollama">
@@ -211,45 +113,80 @@
 
         <div class="split-layout" style="margin-bottom: 30px;">
           <div class="split-col section-box" style="margin-bottom: 0;">
-            <div class="section-title">🔀 引擎间数据共享</div>
-            <select id="data-fallback-rule">
-              <option value="cross">⚡ 智能借用 (库里有啥用啥)</option>
-              <option value="strict">🔒 各算各的 (强制重跑)</option>
-              <option value="remote_first">🌐 只认远程 API 记录</option>
-              <option value="ollama_first">🦙 只认 Ollama 记录</option>
-            </select>
+            <div class="section-title">🔀 数据借用与情景跨越</div>
+            <div style="margin-bottom: 15px;">
+              <select id="data-fallback-rule" style="margin-bottom: 0;" title="无网络或API失败时，是否借用其他引擎(如Ollama)的数据">
+                <option value="cross">⚡ 跨引擎借用 (库里有啥用啥)</option>
+                <option value="strict">🔒 引擎严格隔离 (强制重跑)</option>
+                <option value="remote_first">🌐 优先使用远程 API 记录</option>
+                <option value="ollama_first">🦙 优先使用 Ollama 记录</option>
+              </select>
+            </div>
           </div>
+          
           <div class="split-col section-box" style="margin-bottom: 0; border-left: 4px solid #f59e0b;">
-            <div class="section-title" style="color: #f59e0b;">🌱 独立词根保护</div>
-            <label class="switch-wrap" style="float:right;">
-              <label class="switch">
-                <input type="checkbox" id="root-toggle-switch">
-                <span class="slider"></span>
-              </label>
-              全局开关
-            </label>
-            <div style="clear:both; margin-top: 10px; font-size:13px; color:#888;">开启后，拆解新单词若遇到库中已有词根，将绝对保护您珍贵的旧词源故事，防止被洗掉。</div>
+            <div class="section-title" style="color: #f59e0b; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <span>🌱 高级保护规则</span>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <select id="context-fallback-rule" style="border-color:#38bdf8; background: #0c4a6e; color: #bae6fd;" title="切换不同角色(如日常/极客)查词时，若当前角色无缓存，是否直接借用其他角色的数据">
+                <option value="cross">⚡ 允许跨情景借用 (免重跑)</option>
+                <option value="strict">🔒 强制当前情景 (无缓存必重跑)</option>
+              </select>
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #444;">
+                <span style="font-size: 14px; font-weight: bold; color: #d1d5db;" title="若拆解新单词时遇到库中已有词根，将保留您的旧词源故事">保护旧词根故事</span>
+                <label class="switch">
+                  <input type="checkbox" id="root-toggle-switch">
+                  <span class="slider"></span>
+                </label>
+            </div>
           </div>
         </div>
 
         <div class="section-box" style="border-left: 4px solid #ef4444;">
-          <div class="section-title" style="color: #ef4444;">🗄️ 跨引擎数据交换站 (导入/导出)</div>
-          <div class="flex-row" style="margin-bottom: 15px; gap:15px;">
-            <select id="export-scope" style="flex: 2; padding: 12px;">
-              <option value="all">📦 整体导出备份 (含单词与词根)</option>
-              <option value="only_roots">🌱 仅单独提取【词根库】</option>
-            </select>
-            <button id="export-btn" class="btn-outline" style="flex: 1; padding: 12px; font-size: 14px;">💾 导出 .json</button>
+          <div class="section-title" style="color: #ef4444;">🗄️ 数据导入 / 导出</div>
+          
+          <div class="action-panel">
+            <div style="display: flex; gap: 15px; margin-bottom: 5px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 12px; color: #a1a1aa; display: block; margin-bottom: 8px;">🌍 作用域 (情景)</label>
+                    <select id="data-action-context" class="context-selector">
+                        <option value="all">所有情景模式 (全量数据)</option>
+                        <option value="current">仅上方选定的当前情景</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 12px; color: #a1a1aa; display: block; margin-bottom: 8px;">📥 导入模式设定</label>
+                    <select id="import-mode" class="context-selector" style="border-color: #f59e0b; color: #fcd34d;">
+                        <option value="merge">合并导入 (遇重名覆盖更新)</option>
+                        <option value="replace">替换导入 (先清空再导入)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="border-top: 1px dashed #333; margin: 10px 0;"></div>
+
+            <div class="action-grid">
+                <div class="grid-label">📤 导出</div>
+                <button id="export-words-btn" class="btn-action">仅单词</button>
+                <button id="export-roots-btn" class="btn-action">仅词根</button>
+                <button id="export-all-btn" class="btn-action">单词 + 词根</button>
+
+                <div class="grid-label">📥 导入</div>
+                <button id="import-words-btn" class="btn-action btn-import">仅单词</button>
+                <button id="import-roots-btn" class="btn-action btn-import">仅词根</button>
+                <button id="import-all-btn" class="btn-action btn-import">单词 + 词根</button>
+                <input type="file" id="import-file" style="display:none" accept=".json">
+
+                <div class="grid-label" style="color: #ef4444;">🗑️ 清除</div>
+                <button id="delete-words-btn" class="btn-action btn-danger-action">仅单词</button>
+                <button id="delete-roots-btn" class="btn-action btn-danger-action">仅词根</button>
+                <button id="delete-all-btn" class="btn-action btn-danger-action">单词 + 词根</button>
+            </div>
           </div>
-          <div class="flex-row" style="margin-bottom: 15px; gap:15px;">
-            <select id="import-target" style="flex: 2; padding: 12px;">
-              <option value="merge">📥 无损合并入当前库</option>
-              <option value="replace">⚠️ 彻底清除并替换</option>
-            </select>
-            <button id="import-btn" class="btn-outline" style="flex: 1; padding: 12px; font-size: 14px;">📤 选择文件导入</button>
-            <input type="file" id="import-file" style="display:none" accept=".json">
-          </div>
-          <button id="clear-all-data-btn" class="btn-outline btn-danger" style="width: 100%; padding: 12px; font-size: 14px;">🗑️ 危险：彻底清空插件库</button>
         </div>
 
         <button class="btn-save" id="save-btn">💾 提交并应用所有设置</button>
@@ -262,13 +199,21 @@
         <div class="list-pane">
           <div class="list-header">
             <input type="text" id="word-search" class="search-box" placeholder="搜索已解析的单词...">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-              <span style="font-size:12px; color:#a1a1aa; font-weight:bold;">🗂️ 排序方式</span>
-              <select id="word-sort" class="quick-select" style="background:#111; border-color:#333; padding: 4px 8px;">
-                <option value="time">🕒 最近查阅</option>
-                <option value="freq">🔥 查阅频率</option>
-                <option value="az">🔤 A-Z 字母</option>
-              </select>
+            <div class="filter-group">
+                <div class="filter-row">
+                    <span style="font-size:12px; color:#a1a1aa; font-weight:bold; width: 40px;">排序</span>
+                    <select id="word-sort" class="quick-select" style="flex:1; background:#111; border-color:#333; padding: 6px 8px; color:#a1a1aa; font-size:12px; border-radius:6px;">
+                        <option value="time">🕒 最近查阅</option>
+                        <option value="freq">🔥 查阅频率</option>
+                        <option value="az">🔤 A-Z 字母</option>
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <span style="font-size:12px; color:#a1a1aa; font-weight:bold; width: 40px;">情景</span>
+                    <select id="word-context-filter" class="quick-select" style="flex:1; background:#111; border-color:#333; padding: 6px 8px; color:#a1a1aa; font-size:12px; border-radius:6px;">
+                        <option value="all">🌍 全部情景</option>
+                    </select>
+                </div>
             </div>
           </div>
           <ul class="data-list" id="word-list"></ul>
@@ -287,13 +232,21 @@
         <div class="list-pane">
           <div class="list-header">
             <input type="text" id="root-search" class="search-box" placeholder="搜索珍贵的独立词根...">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-              <span style="font-size:12px; color:#a1a1aa; font-weight:bold;">🗂️ 排序方式</span>
-              <select id="root-sort" class="quick-select" style="background:#111; border-color:#333; padding: 4px 8px;">
-                <option value="time">🕒 最近查阅</option>
-                <option value="freq">🔥 查阅频率</option>
-                <option value="az">🔤 A-Z 字母</option>
-              </select>
+            <div class="filter-group">
+                <div class="filter-row">
+                    <span style="font-size:12px; color:#a1a1aa; font-weight:bold; width: 40px;">排序</span>
+                    <select id="root-sort" class="quick-select" style="flex:1; background:#111; border-color:#333; padding: 6px 8px; color:#a1a1aa; font-size:12px; border-radius:6px;">
+                        <option value="time">🕒 最近查阅</option>
+                        <option value="freq">🔥 查阅频率</option>
+                        <option value="az">🔤 A-Z 字母</option>
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <span style="font-size:12px; color:#a1a1aa; font-weight:bold; width: 40px;">情景</span>
+                    <select id="root-context-filter" class="quick-select" style="flex:1; background:#111; border-color:#333; padding: 6px 8px; color:#a1a1aa; font-size:12px; border-radius:6px;">
+                        <option value="all">🌍 全部情景</option>
+                    </select>
+                </div>
             </div>
           </div>
           <ul class="data-list" id="root-list"></ul>
