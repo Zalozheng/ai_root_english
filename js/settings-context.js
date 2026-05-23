@@ -93,7 +93,6 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
     const resetJsonBtn = document.getElementById('reset-global-json-btn');
     if (jsonTextarea) {
         jsonTextarea.value = window.appConfig.globalJsonTemplate || defaultGlobalJson;
-        jsonTextarea.addEventListener('input', (e) => window.appConfig.globalJsonTemplate = e.target.value);
     }
     if (resetJsonBtn && jsonTextarea) {
         resetJsonBtn.addEventListener('click', () => {
@@ -125,37 +124,6 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
     if (promptArea) promptArea.addEventListener('input', (e) => window.appConfig.prompts[window.appConfig.promptContext || 'general'] = e.target.value);
 
     
-    // Edit logic for System Prompt
-    const customPromptArea = document.getElementById('custom-prompt');
-    const editPromptBtn = document.getElementById('edit-prompt-btn');
-    const savePromptBtn = document.getElementById('save-prompt-btn');
-    
-    if (editPromptBtn && savePromptBtn && customPromptArea) {
-        editPromptBtn.addEventListener('click', () => {
-            customPromptArea.removeAttribute('readonly');
-            customPromptArea.style.opacity = '1';
-            customPromptArea.style.borderColor = '#38bdf8';
-            customPromptArea.rows = 8;
-            editPromptBtn.style.display = 'none';
-            savePromptBtn.style.display = 'inline-block';
-            customPromptArea.focus();
-        });
-        
-        savePromptBtn.addEventListener('click', () => {
-            const currentId = window.appConfig.promptContext || 'general';
-            window.appConfig.prompts[currentId] = customPromptArea.value.trim();
-            chrome.storage.local.set({ app_config: window.appConfig }, () => {
-                window.showStatus('💾 情景指令已保存', '#38bdf8');
-                customPromptArea.setAttribute('readonly', 'true');
-                customPromptArea.style.opacity = '0.7';
-                customPromptArea.style.borderColor = '#333';
-                customPromptArea.rows = 3;
-                savePromptBtn.style.display = 'none';
-                editPromptBtn.style.display = 'inline-block';
-            });
-        });
-    }
-
     const restoreBtn = document.getElementById('restore-prompt-btn');
     if (restoreBtn) {
         const newRestoreBtn = restoreBtn.cloneNode(true); restoreBtn.parentNode.replaceChild(newRestoreBtn, restoreBtn);
@@ -178,4 +146,45 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
             promptArea.value = defaultText; window.appConfig.prompts[currentId] = defaultText; window.showStatus('🔄 已重置', '#10b981');
         });
     }
+
+    // ======= 高级编辑模式逻辑 =======
+    function bindEditMode(textAreaId, editBtnId, saveBtnId, highlightColor, expandedRows) {
+        const area = document.getElementById(textAreaId);
+        const editBtn = document.getElementById(editBtnId);
+        const saveBtn = document.getElementById(saveBtnId);
+        
+        if (area && editBtn && saveBtn) {
+            editBtn.addEventListener('click', () => {
+                area.removeAttribute('readonly');
+                area.style.opacity = '1';
+                area.style.borderColor = highlightColor;
+                area.rows = expandedRows;
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+                area.focus();
+            });
+            
+            saveBtn.addEventListener('click', () => {
+                if (textAreaId === 'custom-prompt') {
+                    const currentId = window.appConfig.promptContext || 'general';
+                    window.appConfig.prompts[currentId] = area.value.trim();
+                } else if (textAreaId === 'global-json-prompt') {
+                    window.appConfig.globalJsonTemplate = area.value.trim();
+                }
+                
+                chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                    window.showStatus('💾 已安全保存', highlightColor);
+                    area.setAttribute('readonly', 'true');
+                    area.style.opacity = '0.7';
+                    area.style.borderColor = '#333';
+                    area.rows = 3;
+                    saveBtn.style.display = 'none';
+                    editBtn.style.display = 'inline-block';
+                });
+            });
+        }
+    }
+
+    bindEditMode('custom-prompt', 'edit-prompt-btn', 'save-prompt-btn', '#38bdf8', 12);
+    bindEditMode('global-json-prompt', 'edit-global-json-btn', 'save-global-json-btn', '#a855f7', 15);
 };
