@@ -147,24 +147,79 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
         });
     }
 
-    // ======= 高级编辑模式逻辑 =======
+    // ======= 高级编辑模式逻辑 (禅模式：大框大字) =======
     function bindEditMode(textAreaId, editBtnId, saveBtnId, highlightColor, expandedRows) {
         const area = document.getElementById(textAreaId);
         const editBtn = document.getElementById(editBtnId);
         const saveBtn = document.getElementById(saveBtnId);
+        const backdrop = document.getElementById('editor-backdrop');
+        const container = area.parentElement; // 获取 form-group 或 section-box
         
-        if (area && editBtn && saveBtn) {
+        if (area && editBtn && saveBtn && backdrop) {
             editBtn.addEventListener('click', () => {
+                // 进入大框模式
+                backdrop.style.display = 'block';
+                
+                // 将容器临时变为固定定位
+                container.style.position = 'fixed';
+                container.style.top = '50%';
+                container.style.left = '50%';
+                container.style.transform = 'translate(-50%, -50%)';
+                container.style.width = '85vw';
+                container.style.height = '75vh';
+                container.style.zIndex = '1001';
+                container.style.background = '#111';
+                container.style.padding = '30px';
+                container.style.borderRadius = '16px';
+                container.style.boxShadow = `0 0 50px ${highlightColor}33`;
+                container.style.border = `2px solid ${highlightColor}`;
+                container.style.display = 'flex';
+                container.style.flexDirection = 'column';
+
                 area.removeAttribute('readonly');
                 area.style.opacity = '1';
-                area.style.borderColor = highlightColor;
-                area.rows = expandedRows;
+                area.style.flex = '1'; // 铺满剩余高度
+                area.style.fontSize = '18px'; // 字体拉大
+                area.style.lineHeight = '1.6';
+                area.style.background = '#000';
+                area.style.color = '#fff';
+                area.style.marginTop = '20px';
+                
                 editBtn.style.display = 'none';
                 saveBtn.style.display = 'inline-block';
                 area.focus();
             });
             
+            const exitZenMode = () => {
+                backdrop.style.display = 'none';
+                // 还原容器样式
+                container.style.position = '';
+                container.style.top = '';
+                container.style.left = '';
+                container.style.transform = '';
+                container.style.width = '';
+                container.style.height = '';
+                container.style.zIndex = '';
+                container.style.background = '';
+                container.style.padding = '';
+                container.style.borderRadius = '';
+                container.style.boxShadow = '';
+                container.style.border = '';
+                container.style.display = '';
+                container.style.flexDirection = '';
+
+                area.setAttribute('readonly', 'true');
+                area.style.opacity = '0.7';
+                area.style.flex = '';
+                area.style.height = '';
+                area.style.fontSize = '12px';
+                area.rows = 3;
+                saveBtn.style.display = 'none';
+                editBtn.style.display = 'inline-block';
+            };
+
             saveBtn.addEventListener('click', () => {
+                // 保存逻辑
                 if (textAreaId === 'custom-prompt') {
                     const currentId = window.appConfig.promptContext || 'general';
                     window.appConfig.prompts[currentId] = area.value.trim();
@@ -173,15 +228,13 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
                 }
                 
                 chrome.storage.local.set({ app_config: window.appConfig }, () => {
-                    window.showStatus('💾 已安全保存', highlightColor);
-                    area.setAttribute('readonly', 'true');
-                    area.style.opacity = '0.7';
-                    area.style.borderColor = '#333';
-                    area.rows = 3;
-                    saveBtn.style.display = 'none';
-                    editBtn.style.display = 'inline-block';
+                    window.showStatus('💾 已安全保存并应用', highlightColor);
+                    exitZenMode();
                 });
             });
+
+            // 点击背景也可退出
+            backdrop.addEventListener('click', exitZenMode);
         }
     }
 
