@@ -79,6 +79,9 @@
 - **若使用 API**：在「远程 API」选项卡填入你的 `Base URL`、`API Key` 和 `模型名称`。
 - **若使用 Ollama**：请确保本地已启动 Ollama 客户端。在工作台填入 `http://127.0.0.1:11434`，点击“刷新”获取本地已下载的模型列表。
 
+词库导入 vocab里面的 /vocab/expert.json
+[text](https://raw.githubusercontent.com/Zalozheng/ai_root_english/main/vocab/expert.json)
+
 ### 2. 开始使用
 
 - **网页划词**：在任意网页选中文本，点击扩展图标即可自动获取并在弹窗中深度解析。
