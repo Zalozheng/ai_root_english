@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(hints.autoParse) hints.autoParse.textContent = autoToggle.checked ? "点击插件图标立即翻译选中词" : "图标点击仅打开插件主面板";
         }
         if(contextFallbackToggle && contextFallbackLabel) {
-            contextFallbackLabel.textContent = contextFallbackToggle.checked ? "共用模式：开启" : "共用模式：不共用";
+            contextFallbackLabel.textContent = contextFallbackToggle.checked ? "情景共用模式：开启" : "共用模式：不共用";
             contextFallbackLabel.style.color = contextFallbackToggle.checked ? "#bae6fd" : "#f59e0b";
             if(hints.contextFallback) hints.contextFallback.textContent = contextFallbackToggle.checked ? "允许不同角色间共用缓存数据" : "严格隔离不同角色的解析记录";
         }

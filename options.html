@@ -34,12 +34,12 @@
         
         <!-- 交互与外观 (5/12) -->
         <div class="section-box" style="grid-column: span 5; border-top: 4px solid #10b981; background: linear-gradient(180deg, #111 0%, rgba(16, 185, 129, 0.02) 100%); margin-bottom: 0; display: flex; flex-direction: column; gap: 20px;">
-          <div class="section-title" style="color: #10b981;">🎨 交互与外观</div>
+          <div class="section-title" style="color: #10b981;">🎨 核心功能:情景模式设置</div>
           
           <!-- 高亮角色情景区域 -->
           <div class="form-group" style="background: rgba(245, 158, 11, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
             <label style="color: #f59e0b; font-weight: 800; display: flex; align-items: center; gap: 6px;">
-                🎭 核心角色与记忆情景
+                🎭 用来设置不同情景下 对单词的解读 记忆技巧
             </label>
             <div style="display: flex; gap: 8px; align-items: center; margin-top: 10px;">
               <select id="prompt-context" style="flex: 1; background: #000; border-color: #f59e0b33; font-weight: bold;"></select>
@@ -53,7 +53,7 @@
           </div>
 
           <div class="form-group" style="margin-bottom: 0;">
-            <label style="font-size: 13px; color: #a1a1aa;">控制台主题</label>
+            <label style="font-size: 13px; color: #a1a1aa;">弹窗颜色</label>
             <select id="theme" style="background: #000;">
               <option value="system">跟随系统 (System)</option>
               <option value="dark">黑客深邃 (Dark)</option>
@@ -75,7 +75,7 @@
         
         <!-- 引擎配置 (7/12) -->
         <div class="section-box" style="grid-column: span 7; border-top: 4px solid #38bdf8; background: linear-gradient(180deg, #111 0%, rgba(56, 189, 248, 0.02) 100%); margin-bottom: 0;">
-          <div class="section-title">⚙️ 解析主引擎配置</div>
+          <div class="section-title">⚙️ api或者不用api</div>
           
           <div class="engine-tabs">
             <div class="engine-tab active" data-engine="custom">🌐 远程 API</div>
@@ -124,7 +124,7 @@
           <!-- 上部分：System Prompt -->
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <div class="section-title" style="margin-bottom:0; color: #38bdf8;">📜 System Prompt</div>
+                <div class="section-title" style="margin-bottom:0; color: #38bdf8;">📜 情景模式提示词</div>
                 <div style="display: flex; gap: 8px;">
                     <button id="edit-prompt-btn" class="btn-outline" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf844; color: #38bdf8; padding: 4px 12px;">✏️ 深度编辑</button>
                     <button id="save-prompt-btn" class="btn-outline" style="border-color: #38bdf8; color: #38bdf8; display: none;">💾 保存</button>
@@ -139,7 +139,7 @@
           <!-- 下部分：JSON 结构 -->
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <div class="section-title" style="margin-bottom: 0; color: #a855f7;">🧩 JSON 结构约束</div>
+                <div class="section-title" style="margin-bottom: 0; color: #a855f7;">🧩 全局JSON 结构约束 一般不改除非你看了文档</div>
                 <div style="display: flex; gap: 8px;">
                     <button id="edit-global-json-btn" class="btn-outline" style="background: rgba(168, 85, 247, 0.1); border-color: #a855f744; color: #a855f7; padding: 4px 12px;">✏️ 调整结构</button>
                     <button id="save-global-json-btn" class="btn-outline" style="border-color: #10b981; color: #10b981; display: none;">💾 保存</button>
@@ -152,9 +152,9 @@
         
         <!-- 进阶策略 (4/12) -->
         <div class="section-box" style="grid-column: span 4; border-top: 4px solid #f59e0b; background: linear-gradient(180deg, #111 0%, rgba(245, 158, 11, 0.02) 100%); margin-bottom: 0;">
-          <div class="section-title" style="color: #f59e0b;">🛡️ 进阶策略</div>
+          <div class="section-title" style="color: #f59e0b;">🛡️ 默认开启就好 主要设置词库是否覆盖</div>
           <div class="form-group">
-            <label>数据借用规则</label>
+            <label>api或者本地模式设置 </label>
             <select id="data-fallback-rule">
               <option value="cross">⚡ 跨引擎借用(库里有啥用啥)</option>
               <option value="strict">🔒 引擎严格隔离(强制重跑)</option>
@@ -180,12 +180,12 @@
             </div>
           </div>
           <div class="form-group" style="margin-bottom:0;">
-              <label>历史保留上限</label>
+              <label>弹窗历史保留上限</label>
               <div style="display:flex; align-items:center; gap:6px;">
                   <button id="hist-minus" class="btn-outline" style="padding: 4px 10px;">-</button>
                   <input type="number" id="history-limit" value="10" style="text-align:center; flex:1; padding: 6px; background:#000;">
                   <button id="hist-plus" class="btn-outline" style="padding: 4px 10px;">+</button>
-                  <button id="clear-history-btn" class="btn-outline btn-danger" style="font-size:11px; padding: 6px;">🧹</button>
+                  <button id="clear-history-btn" class="btn-outline btn-danger" style="font-size:11px; padding: 6px;">只清除历史🧹</button>
               </div>
           </div>
         </div>
