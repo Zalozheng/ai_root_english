@@ -76,6 +76,10 @@ window.initDataEngine = function() {
             }
             if (count === 0) return window.showStatus("⚠️ 该范围内无数据可导", "#f59e0b");
             
+            let wordExportCount = Object.keys(exportData).filter(k => k.startsWith('W:')).length;
+            let rootExportCount = Object.keys(exportData).filter(k => k.startsWith('R:')).length;
+            window.showStatus(`📤 准备导出 (单词:${wordExportCount}, 词根:${rootExportCount})`, "#38bdf8");
+
             let filenamePrefix = "全局导出";
             if (scopeCtx) {
                 const contextSelect = document.getElementById('prompt-context');
@@ -255,7 +259,15 @@ window.initDataEngine = function() {
 
                         let finalize = () => {
                             if (Object.keys(toSave).length > 0) {
-                                chrome.storage.local.set(toSave, () => window.showStatus(`✅ ${isReplaceMode?'替换':'合并'}导入成功`, "#10b981"));
+                                chrome.storage.local.set(toSave, () => {
+                                    let wordCount = Object.keys(toSave).filter(k => k.startsWith('W:')).length;
+                                    let rootCount = Object.keys(toSave).filter(k => k.startsWith('R:')).length;
+                                    window.showStatus(`✅ ${isReplaceMode?'替换':'合并'}导入成功 (单词:${wordCount}, 词根:${rootCount})`, "#10b981");
+                                    if(window.loadWordsLibrary) window.loadWordsLibrary();
+                                    if(window.loadRootsLibrary) window.loadRootsLibrary();
+                                    if(window.clearWordDetail) window.clearWordDetail();
+                                    if(window.clearRootDetail) window.clearRootDetail();
+                                });
                             } else {
                                 window.showStatus(`✅ 操作完成`, "#10b981");
                             }
@@ -321,15 +333,31 @@ window.initDataEngine = function() {
                         }
                     } else if (isRoot) {
                         let rootSeg = (items[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
-                        // 安全验证：仅当词根在这个情景被使用，且【没有】在其他情景被使用时，才彻底删除
-                        if (usedRoots.has(rootSeg) && !otherRoots.has(rootSeg)) {
+                        // 优化删除逻辑：
+                        // 1. 如果该词根在这个情景被使用过，且没被其他情景使用，删掉。
+                        // 2. 如果该词根是一个“孤儿”（没被任何情景的任何单词使用），且我们正在当前情景执行清理，也删掉。
+                        let isUsedInCtx = usedRoots.has(rootSeg);
+                        let isUsedElsewhere = otherRoots.has(rootSeg);
+                        
+                        if (isUsedInCtx && !isUsedElsewhere) {
+                            keysToRemove.push(k);
+                        } else if (!isUsedInCtx && !isUsedElsewhere) {
+                            // 彻底清理无主词根
                             keysToRemove.push(k);
                         }
                     }
                 }
             }
             
-            let finalize = () => window.showStatus("🗑️ 清除完成", "#10b981");
+            let finalize = () => {
+                let wCount = keysToRemove.filter(k => k.startsWith('W:')).length;
+                let rCount = keysToRemove.filter(k => k.startsWith('R:')).length;
+                window.showStatus(`🗑️ 清除完成 (删除了单词:${wCount}, 词根:${rCount})`, "#10b981");
+                if(window.loadWordsLibrary) window.loadWordsLibrary();
+                if(window.loadRootsLibrary) window.loadRootsLibrary();
+                if(window.clearWordDetail) window.clearWordDetail();
+                if(window.clearRootDetail) window.clearRootDetail();
+            };
             let tasks = 0;
             if (keysToRemove.length > 0) tasks++;
             if (Object.keys(itemsToUpdate).length > 0) tasks++;

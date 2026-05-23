@@ -141,7 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 importMode: document.getElementById('import-mode').checked
             };
             chrome.storage.local.set({ app_config: mergedConfig, ui_theme: document.getElementById('theme').value }, () => {
-                window.showStatus('💾 引擎设置已保存！', '#38bdf8');
+                chrome.storage.local.get(null, (all) => {
+                    const wCount = Object.keys(all).filter(k => k.startsWith('W:')).length;
+                    const rCount = Object.keys(all).filter(k => k.startsWith('R:')).length;
+                    window.showStatus(`💾 引擎设置已保存！(库中共有 单词:${wCount}, 词根:${rCount})`, "#38bdf8");
+                });
+                
                 // 刷新下拉框文本
                 const contextSelect = document.getElementById('prompt-context');
                 if (contextSelect) {

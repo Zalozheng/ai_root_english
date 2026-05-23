@@ -3,12 +3,27 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.storage.local.get(null, (items) => {
             window.globalRoots = Object.keys(items).filter(k => k.startsWith('R:')).map(k => items[k]);
             window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
-            triggerRootFilter();
+            window.triggerRootFilter();
             if (callback) callback();
         });
     };
 
-    function triggerRootFilter() {
+    window.clearRootDetail = function() {
+        const pane = document.getElementById('root-detail');
+        if(pane) {
+            pane.innerHTML = `
+                <div class="empty-state">
+                    <div style="background: rgba(56, 189, 248, 0.05); width: 120px; height: 120px; border-radius: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; border: 1px solid rgba(56, 189, 248, 0.1);">
+                        <span style="font-size: 60px;">🌱</span>
+                    </div>
+                    <div style="font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 10px;">词源图谱库</div>
+                    <div style="color: #71717a; line-height: 1.6;">请从左侧列表选择一个词根<br>探寻古老的文字图谱</div>
+                </div>
+            `;
+        }
+    };
+
+    window.triggerRootFilter = function() {
         const searchEl = document.getElementById('root-search');
         if(!searchEl) return;
         const q = searchEl.value.toLowerCase();
@@ -47,21 +62,26 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (targetType === '其他') return !hasPrefix && !hasRoot && !hasSuffix && !isComposite;
             return false;
         });
+
+        // 更新数量显示
+        const countValueEl = document.querySelector('#root-count .count-value');
+        if (countValueEl) countValueEl.textContent = filtered.length;
+
         renderRootList(window.sortData(filtered, sortType));
     }
 
     if(document.getElementById('root-search')) {
-        document.getElementById('root-search').addEventListener('input', triggerRootFilter);
-        document.getElementById('root-sort').addEventListener('change', triggerRootFilter);
+        document.getElementById('root-search').addEventListener('input', window.triggerRootFilter);
+        document.getElementById('root-sort').addEventListener('change', window.triggerRootFilter);
         if(document.getElementById('root-context-filter')) {
-            document.getElementById('root-context-filter').addEventListener('change', triggerRootFilter);
+            document.getElementById('root-context-filter').addEventListener('change', window.triggerRootFilter);
         }
 
         const rootSort = document.getElementById('root-sort');
         if (rootSort && !document.getElementById('root-type-filter')) {
             const typeSelect = document.createElement('select'); typeSelect.id = 'root-type-filter'; typeSelect.className = rootSort.className; typeSelect.style.marginLeft = '8px';       
             typeSelect.innerHTML = `<option value="all">🏷️ 全部类型</option><option value="前缀">前缀</option><option value="词根">词根</option><option value="后缀">后缀</option><option value="组合">🧩 组合</option><option value="其他">其他</option>`;
-            typeSelect.addEventListener('change', triggerRootFilter);
+            typeSelect.addEventListener('change', window.triggerRootFilter);
             rootSort.parentNode.insertBefore(typeSelect, rootSort.nextSibling);
         }
     }
