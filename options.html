@@ -24,8 +24,50 @@
 
   <main class="main-content">
     
+    
     <div id="view-settings" class="view-section active">
       <div class="settings-container" style="max-width: 1200px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding-bottom: 60px;">
+        
+        <!-- 交互与外观 (5/12) -->
+        <div class="section-box" style="grid-column: span 5; border-top: 4px solid #10b981; background: linear-gradient(180deg, #111 0%, rgba(16, 185, 129, 0.02) 100%); margin-bottom: 0; display: flex; flex-direction: column; gap: 20px;">
+          <div class="section-title" style="color: #10b981;">🎨 交互与外观</div>
+          
+          <!-- 高亮角色情景区域 -->
+          <div class="form-group" style="background: rgba(245, 158, 11, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2);">
+            <label style="color: #f59e0b; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                🎭 核心角色与记忆情景
+            </label>
+            <div style="display: flex; gap: 8px; align-items: center; margin-top: 10px;">
+              <select id="prompt-context" style="flex: 1; background: #000; border-color: #f59e0b33; font-weight: bold;"></select>
+              <button id="add-context-btn" class="btn-outline" style="padding: 10px; border-color: #f59e0b66; color: #f59e0b;">➕</button>
+            </div>
+            <div id="rename-context-wrapper" style="display: none; margin-top: 10px; display: flex; gap: 8px;">
+              <input type="text" id="custom-context-input" placeholder="名称" style="flex: 1; font-size: 12px; background:#000; border-color: #333;">
+              <button id="rename-context-btn" class="btn-outline">💾</button>
+              <button id="delete-context-btn" class="btn-outline btn-danger-action">❌</button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 13px; color: #a1a1aa;">控制台主题</label>
+            <select id="theme" style="background: #000;">
+              <option value="system">跟随系统 (System)</option>
+              <option value="dark">黑客深邃 (Dark)</option>
+              <option value="light">简约明亮 (Light)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);" title="开启后，在网页中选中文本会弹出搜索小图标。">
+                <span style="font-size: 12px; font-weight: 600; color: #a1a1aa;" id="label-content-script">🌐 网页划词</span>
+                <label class="switch blue-switch"><input type="checkbox" id="enable-content-script" checked><span class="slider"></span></label>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);" title="开启后，点击插件图标将直接翻译选中词。">
+                <span style="font-size: 12px; font-weight: 600; color: #fcd34d;" id="label-auto-parse">⚡ 图标即译</span>
+                <label class="switch blue-switch"><input type="checkbox" id="auto-parse" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
         
         <!-- 引擎配置 (7/12) -->
         <div class="section-box" style="grid-column: span 7; border-top: 4px solid #38bdf8; background: linear-gradient(180deg, #111 0%, rgba(56, 189, 248, 0.02) 100%); margin-bottom: 0;">
@@ -63,7 +105,7 @@
           
           <div class="engine-panel" id="panel-local_only">
             <div class="form-group" style="margin-bottom:0;">
-              <label style="color:#f59e0b;">断网历史溯源策略：</label>
+              <label style="color:#f59e0b;">离线模式策略：</label>
               <select id="offline-source" style="background:#000;">
                 <option value="remote">优先读取「远程 API」生成的记录</option>
                 <option value="ollama">优先读取「Ollama」生成的记录</option>
@@ -71,42 +113,6 @@
             </div>
           </div>
         </div>
-
-        <!-- 交互与外观 (5/12) -->
-        <div class="section-box" style="grid-column: span 5; border-top: 4px solid #10b981; background: linear-gradient(180deg, #111 0%, rgba(16, 185, 129, 0.02) 100%); margin-bottom: 0; display: flex; flex-direction: column;">
-          <div class="section-title" style="color: #10b981;">🎨 交互与外观</div>
-          <div class="form-group">
-            <label>角色与记忆情景</label>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <select id="prompt-context" style="flex: 1;"></select>
-              <button id="add-context-btn" class="btn-outline" style="padding: 10px;">➕</button>
-            </div>
-            <div id="rename-context-wrapper" style="display: none; margin-top: 10px; display: flex; gap: 8px;">
-              <input type="text" id="custom-context-input" placeholder="名称" style="flex: 1; font-size: 12px; background:#111;">
-              <button id="rename-context-btn" class="btn-outline">💾</button>
-              <button id="delete-context-btn" class="btn-outline btn-danger-action">❌</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>控制台主题</label>
-            <select id="theme">
-              <option value="system">跟随系统</option>
-              <option value="dark">黑客深邃 (Dark)</option>
-              <option value="light">简约明亮 (Light)</option>
-            </select>
-          </div>
-          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);" title="开启后，在网页中选中文本会弹出搜索小图标。">
-                <span style="font-size: 13px; font-weight: 600; color: #a1a1aa;" id="label-content-script">🌐 网页划词</span>
-                <label class="switch blue-switch"><input type="checkbox" id="enable-content-script" checked><span class="slider"></span></label>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);" title="开启后，点击插件图标将直接翻译选中词。">
-                <span style="font-size: 13px; font-weight: 600; color: #fcd34d;" id="label-auto-parse">⚡ 图标即译</span>
-                <label class="switch blue-switch"><input type="checkbox" id="auto-parse" checked><span class="slider"></span></label>
-            </div>
-          </div>
-        </div>
-
         
         <!-- AI 核心指令与结构 (8/12) -->
         <div class="section-box" style="grid-column: span 8; border-top: 4px solid #38bdf8; background: linear-gradient(180deg, #111 0%, #1a1a1a 100%); margin-bottom: 0; display: flex; flex-direction: column; gap: 25px;">
@@ -139,13 +145,12 @@
             <textarea id="global-json-prompt" rows="3" spellcheck="false" style="font-family: monospace; font-size: 11px; background: rgba(0,0,0,0.4); color: #71717a; width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #222; border-radius: 8px; resize: none; overflow: hidden; white-space: pre-wrap;" readonly title="点击进入全屏大字号编辑模式"></textarea>
           </div>
         </div>
-
-
+        
         <!-- 进阶策略 (4/12) -->
         <div class="section-box" style="grid-column: span 4; border-top: 4px solid #f59e0b; background: linear-gradient(180deg, #111 0%, rgba(245, 158, 11, 0.02) 100%); margin-bottom: 0;">
           <div class="section-title" style="color: #f59e0b;">🛡️ 进阶策略</div>
           <div class="form-group">
-            <label>api调用模式</label>
+            <label>数据借用规则</label>
             <select id="data-fallback-rule">
               <option value="cross">⚡ 跨引擎借用(库里有啥用啥)</option>
               <option value="strict">🔒 引擎严格隔离(强制重跑)</option>
@@ -153,39 +158,46 @@
               <option value="ollama_first">🦙 优先使用 Ollama 记录</option>
             </select>
           </div>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);" title="一旦不共用会根据 情景模式生成 单词和词根">
-                  <span style="font-size: 12px; color: #bae6fd; font-weight: bold;" id="label-context-fallback">共用模式：开启</span>
-                  <label class="switch"><input type="checkbox" id="context-fallback-rule" checked><span class="slider"></span></label>
-              </div>
-              <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);" title="关闭词根保护，无论在什么模式下都会重新生成词根，这是一个全局设置">
-                  <span style="font-size: 12px; color: #d1d5db; font-weight: bold;" id="label-root-strategy">护根模式：开启</span>
-                  <label class="switch"><input type="checkbox" id="root-toggle-switch" checked><span class="slider"></span></label>
-              </div>
-            </div>          <div class="form-group" style="margin-bottom:0;">
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 13px; color: #bae6fd; font-weight: bold;" id="label-context-fallback">共用模式：开启</span>
+                    <label class="switch"><input type="checkbox" id="context-fallback-rule" checked><span class="slider"></span></label>
+                </div>
+                <div style="font-size: 11px; color: #71717a; line-height: 1.5;">一旦不共用会根据 情景模式生成 单词和词根</div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 13px; color: #d1d5db; font-weight: bold;" id="label-root-strategy">护根模式：开启</span>
+                    <label class="switch"><input type="checkbox" id="root-toggle-switch" checked><span class="slider"></span></label>
+                </div>
+                <div style="font-size: 11px; color: #71717a; line-height: 1.5;">关闭词根保护 无论在什么模式下都会重新生成词根这是一个全局设置</div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
               <label>历史保留上限</label>
               <div style="display:flex; align-items:center; gap:6px;">
                   <button id="hist-minus" class="btn-outline" style="padding: 4px 10px;">-</button>
                   <input type="number" id="history-limit" value="10" style="text-align:center; flex:1; padding: 6px; background:#000;">
                   <button id="hist-plus" class="btn-outline" style="padding: 4px 10px;">+</button>
-                  <button id="clear-history-btn" class="btn-outline btn-danger" style="font-size:11px; padding: 6px;">清除历史🧹</button>
+                  <button id="clear-history-btn" class="btn-outline btn-danger" style="font-size:11px; padding: 6px;">🧹</button>
               </div>
           </div>
         </div>
-
+         
         
-
         <!-- 数据管理 (12/12) -->
         <div class="section-box" style="grid-column: span 12; border-top: 4px solid #ef4444; background: linear-gradient(180deg, #111 0%, rgba(239, 68, 68, 0.02) 100%); margin-bottom: 0;">
           <div class="section-title" style="color: #ef4444;">🗄️ 词库数据管理 (导出/导入/清除)</div>
           <div class="action-panel" style="padding: 0; background: transparent; border: none;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 16px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                    <div><b style="font-size: 14px; color: #a1a1aa;" id="label-action-context">🌍 全局数据模式</b><br><span id="hint-action-context" style="font-size: 12px; color: #71717a;">操作将影响所有情景下的数据记录</span></div>
+                    <div><b style="font-size: 14px; color: #a1a1aa;" id="label-action-context">🌍 全局数据模式</b><br><span id="hint-action-context" style="font-size: 11px; color: #71717a;">操作将影响所有情景下的数据记录</span></div>
                     <label class="switch red-switch"><input type="checkbox" id="data-action-context"><span class="slider"></span></label>
                 </div>
                 <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 16px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                    <div><b style="font-size: 14px; color: #a1a1aa;" id="label-import-mode">📥 合并模式导入</b><br><span id="hint-import-mode" style="font-size: 12px; color: #71717a;">将新数据与现有记录进行安全合并</span></div>
+                    <div><b style="font-size: 14px; color: #a1a1aa;" id="label-import-mode">📥 合并模式导入</b><br><span id="hint-import-mode" style="font-size: 11px; color: #71717a;">将新数据与现有记录进行安全合并</span></div>
                     <label class="switch red-switch"><input type="checkbox" id="import-mode"><span class="slider"></span></label>
                 </div>
             </div>
@@ -200,12 +212,10 @@
             <input type="file" id="import-file" style="display:none" accept=".json">
           </div>
         </div>
-
         <div id="status" class="status" style="display:none; grid-column: span 12; margin: 0 auto;"></div>
       </div>
     </div>
 
-    <!-- 单词库 -->
     <div id="view-words" class="view-section">
       <div class="learning-container">
         <div class="list-pane">
