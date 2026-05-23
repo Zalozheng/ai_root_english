@@ -88,28 +88,21 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
         });
     }
 
-    if (contextSelect && !document.getElementById('global-json-card')) {
-        let card = contextSelect.parentElement;
-        while(card && card.tagName !== 'BODY') { if (card.textContent.includes('界面设定与历史')) break; card = card.parentElement; }
-        if (card && card.tagName !== 'BODY') {
-            const globalCard = document.createElement('div');
-            globalCard.id = 'global-json-card';
-            globalCard.innerHTML = `
-                <div class="json-title">
-                    <span>🧩 全局底层 JSON 结构约束</span>
-                    <button id="reset-global-json-btn" class="btn-outline" style="padding: 4px 10px; font-size: 12px;">🔄 恢复默认结构</button>
-                </div>
-                <div style="font-size: 12px; color: #888; margin-bottom: 12px; line-height: 1.5;">无论下方切换什么情景，解析时都会自动套用此处数据格式。</div>
-                <textarea id="global-json-prompt" spellcheck="false"></textarea>
-            `;
-            card.parentNode.insertBefore(globalCard, card);
-            const jsonTextarea = document.getElementById('global-json-prompt');
-            jsonTextarea.value = window.appConfig.globalJsonTemplate;
-            jsonTextarea.addEventListener('input', (e) => window.appConfig.globalJsonTemplate = e.target.value);
-            document.getElementById('reset-global-json-btn').addEventListener('click', () => {
-                jsonTextarea.value = defaultGlobalJson; window.appConfig.globalJsonTemplate = defaultGlobalJson; window.showStatus('🔄 已恢复默认', '#10b981');
-            });
-        }
+    // ======= 全局 JSON 结构约束初始化 =======
+    const jsonTextarea = document.getElementById('global-json-prompt');
+    const resetJsonBtn = document.getElementById('reset-global-json-btn');
+    if (jsonTextarea) {
+        jsonTextarea.value = window.appConfig.globalJsonTemplate || defaultGlobalJson;
+        jsonTextarea.addEventListener('input', (e) => window.appConfig.globalJsonTemplate = e.target.value);
+    }
+    if (resetJsonBtn && jsonTextarea) {
+        resetJsonBtn.addEventListener('click', () => {
+            if (confirm('🔄 确定要将 JSON 结构恢复为系统默认吗？')) {
+                jsonTextarea.value = defaultGlobalJson; 
+                window.appConfig.globalJsonTemplate = defaultGlobalJson; 
+                window.showStatus('🔄 已恢复默认结构', '#10b981');
+            }
+        });
     }
 
     if (contextSelect) {

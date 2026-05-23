@@ -113,6 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('save-btn').addEventListener('click', () => {
             const curCtx = document.getElementById('prompt-context').value;
             window.appConfig.prompts[curCtx] = document.getElementById('custom-prompt').value;
+            
+            const globalJsonEl = document.getElementById('global-json-prompt');
+            if (globalJsonEl) window.appConfig.globalJsonTemplate = globalJsonEl.value.trim();
 
             const customNameInput = document.getElementById('custom-context-input');
             if (curCtx === 'custom' && customNameInput && customNameInput.value.trim()) {
