@@ -54,54 +54,50 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); 
 }
 
-/* 2024 引擎卡片选项卡样式 */
+/* 2024 精致模式切换条 (Classic refined) */
+.engine-tabs { 
+    display: flex; 
+    background: rgba(0,0,0,0.3); 
+    padding: 5px; 
+    border-radius: 12px; 
+    border: 1px solid rgba(255,255,255,0.06); 
+    margin-bottom: 20px; 
+    gap: 4px;
+}
+
 .engine-tab {
-    padding: 14px 10px;
-    border: 1px solid rgba(255,255,255,0.05);
-    background: rgba(255,255,255,0.02);
-    border-radius: 12px;
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
     cursor: pointer;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.engine-tab .tab-icon {
-    font-size: 20px;
-    margin-bottom: 6px;
-    filter: grayscale(1) opacity(0.6);
-    transition: 0.3s;
-}
-
-.engine-tab .tab-label {
+    transition: all 0.2s ease;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700;
     color: #94a3b8;
-    letter-spacing: 1px;
+    border: 1px solid transparent;
 }
 
-.engine-tab:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(255,255,255,0.1);
-    transform: translateY(-2px);
+.engine-tab:hover:not(.active) {
+    background: rgba(255,255,255,0.03);
+    color: #fff;
 }
 
 .engine-tab.active {
-    border: 1px solid rgba(56,189,248,0.4);
-    background: rgba(56,189,248,0.1);
-    box-shadow: 0 4px 20px rgba(56,189,248,0.15), inset 0 0 10px rgba(56,189,248,0.05);
+    background: #1e293b;
+    color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.engine-tab.active .tab-icon {
-    filter: grayscale(0) opacity(1);
-    transform: scale(1.1);
+.engine-panel { 
+    display: none; 
+    background: rgba(0,0,0,0.2); 
+    border: 1px solid rgba(255,255,255,0.03); 
+    padding: 20px; 
+    border-radius: 14px;
 }
-
-.engine-tab.active .tab-label {
-    color: #fff;
-}
+.engine-panel.active { display: block; }
 
 .btn-outline { 
     background: rgba(255,255,255,0.03); 
