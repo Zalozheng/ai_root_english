@@ -88,28 +88,20 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
         });
     }
 
-    if (contextSelect && !document.getElementById('global-json-card')) {
-        let card = contextSelect.parentElement;
-        while(card && card.tagName !== 'BODY') { if (card.textContent.includes('界面设定与历史')) break; card = card.parentElement; }
-        if (card && card.tagName !== 'BODY') {
-            const globalCard = document.createElement('div');
-            globalCard.id = 'global-json-card';
-            globalCard.innerHTML = `
-                <div class="json-title">
-                    <span>🧩 全局底层 JSON 结构约束</span>
-                    <button id="reset-global-json-btn" class="btn-outline" style="padding: 4px 10px; font-size: 12px;">🔄 恢复默认结构</button>
-                </div>
-                <div style="font-size: 12px; color: #888; margin-bottom: 12px; line-height: 1.5;">无论下方切换什么情景，解析时都会自动套用此处数据格式。</div>
-                <textarea id="global-json-prompt" spellcheck="false"></textarea>
-            `;
-            card.parentNode.insertBefore(globalCard, card);
-            const jsonTextarea = document.getElementById('global-json-prompt');
-            jsonTextarea.value = window.appConfig.globalJsonTemplate;
-            jsonTextarea.addEventListener('input', (e) => window.appConfig.globalJsonTemplate = e.target.value);
-            document.getElementById('reset-global-json-btn').addEventListener('click', () => {
-                jsonTextarea.value = defaultGlobalJson; window.appConfig.globalJsonTemplate = defaultGlobalJson; window.showStatus('🔄 已恢复默认', '#10b981');
-            });
-        }
+    // ======= 全局 JSON 结构约束初始化 =======
+    const jsonTextarea = document.getElementById('global-json-prompt');
+    const resetJsonBtn = document.getElementById('reset-global-json-btn');
+    if (jsonTextarea) {
+        jsonTextarea.value = window.appConfig.globalJsonTemplate || defaultGlobalJson;
+    }
+    if (resetJsonBtn && jsonTextarea) {
+        resetJsonBtn.addEventListener('click', () => {
+            if (confirm('🔄 确定要将 JSON 结构恢复为系统默认吗？')) {
+                jsonTextarea.value = defaultGlobalJson; 
+                window.appConfig.globalJsonTemplate = defaultGlobalJson; 
+                window.showStatus('🔄 已恢复默认结构', '#10b981');
+            }
+        });
     }
 
     if (contextSelect) {
@@ -131,6 +123,7 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
 
     if (promptArea) promptArea.addEventListener('input', (e) => window.appConfig.prompts[window.appConfig.promptContext || 'general'] = e.target.value);
 
+    
     const restoreBtn = document.getElementById('restore-prompt-btn');
     if (restoreBtn) {
         const newRestoreBtn = restoreBtn.cloneNode(true); restoreBtn.parentNode.replaceChild(newRestoreBtn, restoreBtn);
@@ -153,4 +146,76 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
             promptArea.value = defaultText; window.appConfig.prompts[currentId] = defaultText; window.showStatus('🔄 已重置', '#10b981');
         });
     }
+
+    // ======= 全屏禅模式编辑器逻辑 (修复版) =======
+    const zenBackdrop = document.getElementById('zen-backdrop');
+    const zenModal = document.getElementById('zen-editor-modal');
+    const zenTextarea = document.getElementById('zen-textarea');
+    const zenTitle = document.getElementById('zen-editor-title');
+    const zenSaveBtn = document.getElementById('zen-save-btn');
+    const zenCloseBtn = document.getElementById('zen-close-btn');
+
+    function openZenEditor(sourceAreaId, titleText, highlightColor) {
+        const sourceArea = document.getElementById(sourceAreaId);
+        if (!sourceArea || !zenModal) return;
+
+        zenTitle.textContent = titleText;
+        zenTitle.style.color = highlightColor;
+        zenSaveBtn.style.background = highlightColor;
+        zenTextarea.value = sourceArea.value;
+        
+        zenBackdrop.style.display = 'block';
+        zenModal.style.display = 'flex';
+        zenTextarea.focus();
+
+        // 临时存储当前正在编辑的目标 ID，以便保存时回写
+        zenModal.dataset.targetId = sourceAreaId;
+        zenModal.dataset.color = highlightColor;
+    }
+
+    const closeZenEditor = () => {
+        if (!zenModal) return;
+        zenBackdrop.style.display = 'none';
+        zenModal.style.display = 'none';
+    };
+
+    if (zenSaveBtn) {
+        zenSaveBtn.addEventListener('click', () => {
+            const targetId = zenModal.dataset.targetId;
+            const targetArea = document.getElementById(targetId);
+            const color = zenModal.dataset.color;
+
+            if (targetArea) {
+                targetArea.value = zenTextarea.value.trim();
+                
+                // 执行实际的配置保存逻辑
+                if (targetId === 'custom-prompt') {
+                    const currentId = window.appConfig.promptContext || 'general';
+                    window.appConfig.prompts[currentId] = targetArea.value;
+                } else if (targetId === 'global-json-prompt') {
+                    window.appConfig.globalJsonTemplate = targetArea.value;
+                }
+
+                chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                    window.showStatus('✅ 内容已安全同步', color);
+                    closeZenEditor();
+                });
+            }
+        });
+    }
+
+    if (zenCloseBtn) zenCloseBtn.addEventListener('click', closeZenEditor);
+    if (zenBackdrop) zenBackdrop.addEventListener('click', closeZenEditor);
+
+    // 绑定主界面按钮
+    if (document.getElementById('edit-prompt-btn')) {
+        document.getElementById('edit-prompt-btn').addEventListener('click', () => openZenEditor('custom-prompt', '📜 编辑 System Prompt', '#38bdf8'));
+    }
+    if (document.getElementById('edit-global-json-btn')) {
+        document.getElementById('edit-global-json-btn').addEventListener('click', () => openZenEditor('global-json-prompt', '🧩 调整 JSON 结构约束', '#a855f7'));
+    }
+    
+    // 也允许点击预览框直接进入编辑
+    if (promptArea) promptArea.addEventListener('click', () => openZenEditor('custom-prompt', '📜 编辑 System Prompt', '#38bdf8'));
+    if (jsonTextarea) jsonTextarea.addEventListener('click', () => openZenEditor('global-json-prompt', '🧩 调整 JSON 结构约束', '#a855f7'));
 };

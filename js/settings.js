@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         engineTabs.forEach(tab => { if(tab.dataset.engine === engineName) tab.classList.add('active'); else tab.classList.remove('active'); });
         enginePanels.forEach(panel => { if(panel.id === `panel-${engineName}`) panel.classList.add('active'); else panel.classList.remove('active'); });
     }
-    engineTabs.forEach(tab => { tab.addEventListener('click', (e) => updateEngineTabs(e.target.dataset.engine)); });
+    engineTabs.forEach(tab => { 
+        tab.addEventListener('click', () => updateEngineTabs(tab.dataset.engine)); 
+    });
 
     // 显示版本号
     const versionEl = document.getElementById('plugin-version');
@@ -108,57 +110,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 保存全局配置
-    if(document.getElementById('save-btn')) {
-        document.getElementById('save-btn').addEventListener('click', () => {
-            const curCtx = document.getElementById('prompt-context').value;
-            window.appConfig.prompts[curCtx] = document.getElementById('custom-prompt').value;
-            const globalJsonEl = document.getElementById('global-json-prompt');
-            if (globalJsonEl) window.appConfig.globalJsonTemplate = globalJsonEl.value.trim();
+    window.autoSaveConfig = function() {
+        const selectedEngineTab = document.querySelector('.engine-tab.active');
+        const engine = selectedEngineTab ? selectedEngineTab.dataset.engine : 'custom';
+        const curCtx = document.getElementById('prompt-context').value;
+        const customNameInput = document.getElementById('custom-context-input');
 
-            const customNameInput = document.getElementById('custom-context-input');
-            if (curCtx === 'custom' && customNameInput && customNameInput.value.trim()) {
-                const customCtxObj = window.appConfig.contexts.find(c => c.id === 'custom');
-                if (customCtxObj) {
-                    customCtxObj.name = `✍️ ${customNameInput.value.trim()}`;
+        if (curCtx === 'custom' && customNameInput && customNameInput.value.trim()) {
+            const customCtxObj = window.appConfig.contexts.find(c => c.id === 'custom');
+            if (customCtxObj) {
+                customCtxObj.name = `✍️ ${customNameInput.value.trim()}`;
+            }
+        }
+
+        const mergedConfig = {
+            ...window.appConfig,
+            engine: engine, 
+            apiBase: document.getElementById('api-base') ? document.getElementById('api-base').value.trim() : '',
+            apiKey: document.getElementById('api-key') ? document.getElementById('api-key').value.trim() : '',
+            model: document.getElementById('api-model') ? document.getElementById('api-model').value.trim() : '', 
+            ollamaBase: document.getElementById('ollama-base') ? document.getElementById('ollama-base').value.trim() : '',
+            ollamaModel: document.getElementById('ollama-model-select') ? document.getElementById('ollama-model-select').value : '', 
+            promptContext: curCtx,
+            autoParse: document.getElementById('auto-parse') ? document.getElementById('auto-parse').checked : true, 
+            enableContentScript: document.getElementById('enable-content-script') ? document.getElementById('enable-content-script').checked : true,
+            historyLimit: document.getElementById('history-limit') ? document.getElementById('history-limit').value : 10, 
+            dataFallbackRule: document.getElementById('data-fallback-rule') ? document.getElementById('data-fallback-rule').value : 'cross', 
+            contextFallbackRule: document.getElementById('context-fallback-rule') ? document.getElementById('context-fallback-rule').checked : true,
+            offlineSource: document.getElementById('offline-source') ? document.getElementById('offline-source').value : 'remote', 
+            rootStrategy: document.getElementById('root-toggle-switch') && document.getElementById('root-toggle-switch').checked ? 'keep_old' : 'force_new',
+            dataActionContext: document.getElementById('data-action-context') ? document.getElementById('data-action-context').checked : false,
+            importMode: document.getElementById('import-mode') ? document.getElementById('import-mode').checked : false,
+            ui_theme: document.getElementById('theme') ? document.getElementById('theme').value : 'system'
+        };
+
+        chrome.storage.local.set({ app_config: mergedConfig, ui_theme: mergedConfig.ui_theme }, () => {
+            window.showStatus('⚡ 设置已实时同步', '#38bdf8');
+            // 刷新下拉框文本
+            const contextSelect = document.getElementById('prompt-context');
+            if (contextSelect) {
+                const customOpt = Array.from(contextSelect.options).find(opt => opt.value === 'custom');
+                const customCtxObj = mergedConfig.contexts.find(c => c.id === 'custom');
+                if (customOpt && customCtxObj) {
+                    customOpt.textContent = customCtxObj.name;
                 }
             }
-
-            const mergedConfig = {
-                ...window.appConfig, engine: selectedEngine, 
-                apiBase: document.getElementById('api-base').value.trim(), apiKey: document.getElementById('api-key').value.trim(), model: document.getElementById('api-model').value.trim(), 
-                ollamaBase: document.getElementById('ollama-base').value.trim(), ollamaModel: document.getElementById('ollama-model-select').value, 
-                promptContext: curCtx, customPrompt: document.getElementById('custom-prompt').value.trim(), 
-                temperature: parseFloat(tempSlider ? tempSlider.value : 0.2), 
-                autoParse: document.getElementById('auto-parse').checked, 
-                enableContentScript: document.getElementById('enable-content-script').checked,
-                historyLimit: document.getElementById('history-limit').value, 
-                dataFallbackRule: document.getElementById('data-fallback-rule').value, 
-                contextFallbackRule: document.getElementById('context-fallback-rule').checked,
-                offlineSource: document.getElementById('offline-source').value, 
-                rootStrategy: rootToggleSwitch.checked ? 'keep_old' : 'force_new',
-                dataActionContext: document.getElementById('data-action-context').checked,
-                importMode: document.getElementById('import-mode').checked
-            };
-            chrome.storage.local.set({ app_config: mergedConfig, ui_theme: document.getElementById('theme').value }, () => {
-                chrome.storage.local.get(null, (all) => {
-                    const wCount = Object.keys(all).filter(k => k.startsWith('W:')).length;
-                    const rCount = Object.keys(all).filter(k => k.startsWith('R:')).length;
-                    window.showStatus(`💾 引擎设置已保存！(库中共有 单词:${wCount}, 词根:${rCount})`, "#38bdf8");
-                });
-                
-                // 刷新下拉框文本
-                const contextSelect = document.getElementById('prompt-context');
-                if (contextSelect) {
-                    const customOpt = Array.from(contextSelect.options).find(opt => opt.value === 'custom');
-                    const customCtxObj = mergedConfig.contexts.find(c => c.id === 'custom');
-                    if (customOpt && customCtxObj) {
-                        customOpt.textContent = customCtxObj.name;
-                    }
-                }
-            });
         });
-    }
+    };
+
+    // 引擎切换自动保存
+    document.querySelectorAll('.engine-tab').forEach(tab => {
+        tab.addEventListener('click', () => setTimeout(window.autoSaveConfig, 100));
+    });
+
+    // 输入框失焦自动保存 (API配置等)
+    ['api-base', 'api-key', 'api-model', 'ollama-base', 'ollama-model-select', 'custom-context-input'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('blur', window.autoSaveConfig);
+    });
 
     // ======= 历史记录限制加减逻辑 =======
     const histInput = document.getElementById('history-limit');
@@ -232,22 +241,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if(hints.autoParse) hints.autoParse.textContent = autoToggle.checked ? "点击插件图标立即翻译选中词" : "图标点击仅打开插件主面板";
         }
         if(contextFallbackToggle && contextFallbackLabel) {
-            contextFallbackLabel.textContent = contextFallbackToggle.checked ? "⚡ 跨情景借用已开" : "⚡ 跨情景借用已关";
-            contextFallbackLabel.style.color = contextFallbackToggle.checked ? "#bae6fd" : "#71717a";
+            contextFallbackLabel.textContent = contextFallbackToggle.checked ? "情景共用模式：开启" : "共用模式：不共用";
+            contextFallbackLabel.style.color = contextFallbackToggle.checked ? "#bae6fd" : "#f59e0b";
             if(hints.contextFallback) hints.contextFallback.textContent = contextFallbackToggle.checked ? "允许不同角色间共用缓存数据" : "严格隔离不同角色的解析记录";
         }
         if(rootStrategyToggle && rootStrategyLabel) {
-            rootStrategyLabel.textContent = rootStrategyToggle.checked ? "🛡️ 保护旧词根已开" : "🛡️ 保护旧词根已关";
-            rootStrategyLabel.style.color = rootStrategyToggle.checked ? "#d1d5db" : "#71717a";
+            rootStrategyLabel.textContent = rootStrategyToggle.checked ? "护根模式：开启" : "护根模式：关闭";
+            rootStrategyLabel.style.color = rootStrategyToggle.checked ? "#d1d5db" : "#ef4444";
             if(hints.rootStrategy) hints.rootStrategy.textContent = rootStrategyToggle.checked ? "优先保留手动修改过的词源故事" : "词根故事将由 AI 重新生成";
         }
     }
 
-    if(ctxToggle) ctxToggle.addEventListener('change', updateLabels);
-    if(modeToggle) modeToggle.addEventListener('change', updateLabels);
-    if(contentToggle) contentToggle.addEventListener('change', updateLabels);
-    if(autoToggle) autoToggle.addEventListener('change', updateLabels);
-    if(contextFallbackToggle) contextFallbackToggle.addEventListener('change', updateLabels);
-    if(rootStrategyToggle) rootStrategyToggle.addEventListener('change', updateLabels);
+    [ctxToggle, modeToggle, contentToggle, autoToggle, contextFallbackToggle, rootStrategyToggle].forEach(el => {
+        if(el) el.addEventListener('change', () => { updateLabels(); window.autoSaveConfig(); });
+    });
+    
+    ['theme', 'data-fallback-rule', 'offline-source', 'history-limit', 'prompt-context'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('change', window.autoSaveConfig);
+    });
+
     updateLabels();
 });
