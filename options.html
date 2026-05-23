@@ -33,41 +33,53 @@
       <div class="settings-container" style="max-width: 1200px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding-bottom: 60px;">
         
         
-        <div class="section-box" style="grid-column: span 7; border-top: 4px solid #38bdf8; margin-bottom: 0;">
-          <div class="section-title">⚙️ 解析主引擎</div>
-          <div class="engine-tabs">
-            <div class="engine-tab active" data-engine="custom">远程 API</div>
-            <div class="engine-tab" data-engine="ollama">Ollama</div>
-            <div class="engine-tab" data-engine="local_only">离线</div>
+        <div class="section-box" style="grid-column: span 7; border-top: 4px solid #38bdf8; background: linear-gradient(180deg, #111 0%, #151515 100%); margin-bottom:0;">
+          <div class="section-title">⚙️ 解析主引擎配置</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div class="engine-tab active" data-engine="custom">
+                <div class="tab-icon">🌐</div>
+                <div class="tab-label">远程 API</div>
+            </div>
+            <div class="engine-tab" data-engine="ollama">
+                <div class="tab-icon">🦙</div>
+                <div class="tab-label">Ollama</div>
+            </div>
+            <div class="engine-tab" data-engine="local_only">
+                <div class="tab-icon">💾</div>
+                <div class="tab-label">离线溯源</div>
+            </div>
           </div>
-          <div class="engine-panel active" id="panel-custom" style="background:transparent; border:none; padding:0;">
-            <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="https://api.openai.com/v1"></div>
+          
+          <div class="engine-panel active" id="panel-custom" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px;">
+            <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="https://api.openai.com/v1" style="background:#000; border-color:#222;"></div>
             <div class="form-group">
               <label style="display:flex; justify-content:space-between; align-items:center;">
                 <span>API Key</span>
-                <a href="https://lingkeapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">🔑 获取</a>
+                <a href="https://lingkeapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 4px 10px; font-size: 11px; border-radius: 6px;">🔑 获取 API</a>
               </label>
-              <input type="password" id="api-key" placeholder="sk-...">
+              <input type="password" id="api-key" placeholder="sk-..." style="background:#000; border-color:#222;">
             </div>
-            <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" placeholder="gpt-4o"></div>
+            <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" placeholder="gpt-4o" style="background:#000; border-color:#222;"></div>
           </div>
-          <div class="engine-panel" id="panel-ollama" style="background:transparent; border:none; padding:0;">
-            <div class="form-group"><label>Ollama 接口</label><input type="text" id="ollama-base" placeholder="http://127.0.0.1:11434"></div>
+          
+          <div class="engine-panel" id="panel-ollama" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px;">
+            <div class="form-group"><label>Ollama 接口</label><input type="text" id="ollama-base" placeholder="http://127.0.0.1:11434" style="background:#000; border-color:#222;"></div>
             <div class="form-group" style="margin-bottom:0;">
-              <select id="ollama-model-select" style="margin-bottom: 12px;"><option value="">请刷新获取...</option></select>
+              <select id="ollama-model-select" style="margin-bottom: 15px; background:#000; border-color:#222;"><option value="">请刷新获取...</option></select>
               <div class="flex-row">
-                <button id="refresh-ollama-btn" class="btn-outline">🔄 刷新</button>
-                <button id="test-ollama-btn" class="btn-outline">🚀 测试</button>
+                <button id="refresh-ollama-btn" class="btn-outline">🔄 刷新列表</button>
+                <button id="test-ollama-btn" class="btn-outline">🚀 测试连接</button>
               </div>
               <div id="ollama-test-log" class="log-box"></div>
             </div>
           </div>
-          <div class="engine-panel" id="panel-local_only" style="background:transparent; border:none; padding:0;">
+          
+          <div class="engine-panel" id="panel-local_only" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px;">
             <div class="form-group" style="margin-bottom:0;">
-              <label style="color:#f59e0b;">离线策略</label>
-              <select id="offline-source">
-                <option value="remote">优先读取「远程 API」记录</option>
-                <option value="ollama">优先读取「Ollama」记录</option>
+              <label style="color:#f59e0b;">离线模式逻辑：</label>
+              <select id="offline-source" style="background:#000; border-color:#222;">
+                <option value="remote">优先读取「远程 API」历史记录</option>
+                <option value="ollama">优先读取「Ollama」历史记录</option>
               </select>
             </div>
           </div>
@@ -107,19 +119,16 @@
           </div>
         </div>
         
-        <div class="section-box" style="grid-column: span 8; border-top: 4px solid #38bdf8; margin-bottom: 0; display: flex; flex-direction: column; justify-content: center;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <div class="section-title" style="margin-bottom:4px;">📜 System Prompt</div>
-                <div style="font-size: 12px; color: #71717a;">非专业人员无需修改。点击右侧按钮进入深度编辑。</div>
-              </div>
+        <div class="section-box" style="grid-column: span 8; border-top: 4px solid #38bdf8; margin-bottom: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div class="section-title" style="margin-bottom:0;">📜 System Prompt</div>
               <div style="display: flex; gap: 8px;">
-                  <button id="edit-prompt-btn" class="btn-outline" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf833; color: #38bdf8;">✏️ 进入编辑模式</button>
+                  <button id="edit-prompt-btn" class="btn-outline" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf844; color: #38bdf8; padding: 4px 12px;">✏️ 深度编辑</button>
                   <button id="save-prompt-btn" class="btn-outline" style="border-color: #38bdf8; color: #38bdf8; display: none;">💾 保存</button>
                   <button id="restore-prompt-btn" class="btn-outline" style="font-size: 11px; padding: 4px 8px; opacity: 0.5;">🔄 重置</button>
               </div>
           </div>
-          <textarea id="custom-prompt" style="display:none;"></textarea>
+          <textarea id="custom-prompt" rows="3" placeholder="正在读取指令内容..." style="width: 100%; box-sizing: border-box; font-family: monospace; font-size: 11px; background: rgba(0,0,0,0.4); color: #71717a; border: 1px solid #222; border-radius: 8px; padding: 12px; cursor: pointer; resize: none; overflow: hidden; white-space: pre-wrap;" readonly title="点击进入全屏大字号编辑模式"></textarea>
         </div>
         
         <div class="section-box" style="grid-column: span 4; border-top: 4px solid #f59e0b; margin-bottom: 0;">
@@ -154,18 +163,18 @@
         </div>
         
         <div class="section-box" id="global-json-card" style="grid-column: span 12; border-top: 4px solid #a855f7; margin-bottom: 0;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
               <div>
                 <div class="section-title" style="color: #a855f7; margin-bottom: 4px;">🧩 全局底层 JSON 结构约束 (核心格式)</div>
                 <div style="font-size: 12px; color: #71717a;">定义 AI 输出的原始数据层级，非开发者请勿修改。</div>
               </div>
               <div style="display: flex; gap: 8px;">
-                  <button id="edit-global-json-btn" class="btn-outline" style="background: rgba(168, 85, 247, 0.1); border-color: #a855f733; color: #a855f7;">✏️ 调整结构</button>
+                  <button id="edit-global-json-btn" class="btn-outline" style="background: rgba(168, 85, 247, 0.1); border-color: #a855f744; color: #a855f7; padding: 4px 12px;">✏️ 调整结构</button>
                   <button id="save-global-json-btn" class="btn-outline" style="border-color: #10b981; color: #10b981; display: none;">💾 保存</button>
                   <button id="reset-global-json-btn" class="btn-outline" style="font-size: 11px; padding: 4px 8px; opacity: 0.5;">🔄 恢复默认</button>
               </div>
           </div>
-          <textarea id="global-json-prompt" style="display:none;"></textarea>
+          <textarea id="global-json-prompt" rows="3" spellcheck="false" style="font-family: monospace; font-size: 11px; background: rgba(0,0,0,0.4); color: #71717a; width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #222; border-radius: 8px; resize: none; overflow: hidden; white-space: pre-wrap;" readonly title="点击进入全屏大字号编辑模式"></textarea>
         </div>
         
         <div class="section-box" style="grid-column: span 12; border-top: 4px solid #ef4444; margin-bottom: 0;">

@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         engineTabs.forEach(tab => { if(tab.dataset.engine === engineName) tab.classList.add('active'); else tab.classList.remove('active'); });
         enginePanels.forEach(panel => { if(panel.id === `panel-${engineName}`) panel.classList.add('active'); else panel.classList.remove('active'); });
     }
-    engineTabs.forEach(tab => { tab.addEventListener('click', (e) => updateEngineTabs(e.target.dataset.engine)); });
+    engineTabs.forEach(tab => { 
+        tab.addEventListener('click', () => updateEngineTabs(tab.dataset.engine)); 
+    });
 
     // 显示版本号
     const versionEl = document.getElementById('plugin-version');
