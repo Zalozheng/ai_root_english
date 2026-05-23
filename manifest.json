@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Ai词根分析",
   "short_name": "词根引擎",
-  "version": "26.0.5",
+  "version": "26.0.6",
   "default_locale": "zh_CN",
   "description": "Ai词根分析,用大模型对单词进行拆分,方便记忆",
   "icons": {
