@@ -167,7 +167,14 @@ skill
 说:
 word-generator 技能，帮我生成关于电脑的50个单词。
 ai 就会自动生成50个单词 的json 你直接导入就可以 
-注意 必须导入 选择词根加单词的方式
+注意 必须导入 选择词根加单词的方式 gemini cli 2026.6.18开始 将不能用了 而
+Antigravity 就很不合适, 所以推荐卸载gemini 一切的产品 用cloda 或者codex
+
+卸载:
+npm uninstall -g @google/gemini-cli
+也不要安装 npm install -g @google/antigravity-cli
+因为我们给了数据它 开发模型 它谷歌只能付费 不给我们使用,人家好歹
+Claude 和 codex知道感嗯.
 ```
 ------
 
