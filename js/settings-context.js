@@ -124,6 +124,38 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
 
     if (promptArea) promptArea.addEventListener('input', (e) => window.appConfig.prompts[window.appConfig.promptContext || 'general'] = e.target.value);
 
+    
+    // Edit logic for System Prompt
+    const customPromptArea = document.getElementById('custom-prompt');
+    const editPromptBtn = document.getElementById('edit-prompt-btn');
+    const savePromptBtn = document.getElementById('save-prompt-btn');
+    
+    if (editPromptBtn && savePromptBtn && customPromptArea) {
+        editPromptBtn.addEventListener('click', () => {
+            customPromptArea.removeAttribute('readonly');
+            customPromptArea.style.opacity = '1';
+            customPromptArea.style.borderColor = '#38bdf8';
+            customPromptArea.rows = 8;
+            editPromptBtn.style.display = 'none';
+            savePromptBtn.style.display = 'inline-block';
+            customPromptArea.focus();
+        });
+        
+        savePromptBtn.addEventListener('click', () => {
+            const currentId = window.appConfig.promptContext || 'general';
+            window.appConfig.prompts[currentId] = customPromptArea.value.trim();
+            chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                window.showStatus('💾 情景指令已保存', '#38bdf8');
+                customPromptArea.setAttribute('readonly', 'true');
+                customPromptArea.style.opacity = '0.7';
+                customPromptArea.style.borderColor = '#333';
+                customPromptArea.rows = 3;
+                savePromptBtn.style.display = 'none';
+                editPromptBtn.style.display = 'inline-block';
+            });
+        });
+    }
+
     const restoreBtn = document.getElementById('restore-prompt-btn');
     if (restoreBtn) {
         const newRestoreBtn = restoreBtn.cloneNode(true); restoreBtn.parentNode.replaceChild(newRestoreBtn, restoreBtn);
