@@ -152,60 +152,20 @@
           </div>
         </div>
 
-        <div class="split-layout" style="margin-bottom: 30px;">
-          <div class="split-col section-box" style="margin-bottom: 0; background: linear-gradient(180deg, #111 0%, #151515 100%);">
-            <div class="section-title">🔀 数据借用与情景跨越</div>
-            <div style="margin-bottom: 15px;">
-              <select id="data-fallback-rule" style="margin-bottom: 0;" title="无网络或API失败时，是否借用其他引擎(如Ollama)的数据">
-                <option value="cross">⚡ 跨引擎借用 (库里有啥用啥)</option>
-                <option value="strict">🔒 引擎严格隔离 (强制重跑)</option>
-                <option value="remote_first">🌐 优先使用远程 API 记录</option>
-                <option value="ollama_first">🦙 优先使用 Ollama 记录</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="split-col section-box" style="margin-bottom: 0; border-left: 4px solid #f59e0b; background: linear-gradient(180deg, #111 0%, rgba(245, 158, 11, 0.02) 100%);">
-            <div class="section-title" style="color: #f59e0b;">🌱 高级保护规则</div>
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px 14px; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px;" title="开启：当当前角色没有单词记录时，会自动借用其他角色的解析记录；关闭：严格按角色隔离，没有记录则重新解析。">
-                <div style="flex: 1;">
-                    <label style="margin: 0; font-size: 13px; color: #bae6fd; font-weight: bold;" id="label-context-fallback">⚡ 跨情景借用已开</label>
-                    <span class="sub-label" id="hint-context-fallback">允许不同角色间共用缓存数据</span>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="context-fallback-rule" checked>
-                  <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启：解析新单词时，如果命中已存在的词根，将优先保留您之前保存的词源故事；关闭：由 AI 重新生成可能略有差异的解释。">
-                <div style="flex: 1;">
-                    <label style="margin: 0; font-size: 13px; color: #d1d5db; font-weight: bold;" id="label-root-strategy">🛡️ 保护旧词根已开</label>
-                    <span class="sub-label" id="hint-root-strategy">优先保留手动修改过的词源故事</span>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="root-toggle-switch" checked>
-                  <span class="slider"></span>
-                </label>
-            </div>
+        <div class="section-box" id="global-json-card" style="border-left: 4px solid #38bdf8;">
+          <div class="json-title" style="font-weight:bold; color:#38bdf8; font-size: 15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span>🧩 全局底层 JSON 结构约束</span>
+            <button id="reset-global-json-btn" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">🔄 恢复默认结构</button>
           </div>
         </div>
 
-        <div class="section-box" style="border-left: 4px solid #ef4444; background: linear-gradient(180deg, #111 0%, rgba(239, 68, 68, 0.02) 100%);">
-          <div class="section-title" style="color: #ef4444;">🗄️ 数据导入 / 导出</div>
-          
-          <div class="action-panel">
-            <div style="display: flex; gap: 15px; margin-bottom: 10px;">
-                <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;" title="开启：仅操作当前情景的数据；关闭：操作全局所有情景的数据">
-                    <div style="flex: 1;">
-                        <label style="margin: 0; font-size: 12px; color: #a1a1aa;" id="label-action-context">🌍 全局数据模式</label>
-                        <span class="sub-label" id="hint-action-context">操作将影响所有情景下的数据</span>
-                    </div>
-                    <label class="switch red-switch">
-                      <input type="checkbox" id="data-action-context">
-                      <span class="slider"></span>
-                    </label>
+        <div class="section-box" style="border-left: 4px solid #ef4444;">
+          <div class="section-title" style="color: #ef4444;">🗄️ 数据导入 / 导出 / 清除</div>
+          <div class="action-panel" style="padding: 0; background: transparent; border: none;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px 14px; border-radius: 10px; border: 1px solid #333;">
+                    <div><b style="font-size: 13px; color: #a1a1aa;">🌍 作用范围</b><br><span id="hint-action-context" style="font-size: 11px; color: #71717a;">操作将影响所有情景数据</span></div>
+                    <label class="switch red-switch"><input type="checkbox" id="data-action-context"><span class="slider"></span></label>
                 </div>
                 <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: #111; padding: 8px 12px; border-radius: 8px; border: 1px solid #333;" title="开启：导入时替换现有数据；关闭：导入时与现有数据合并">
                     <div style="flex: 1;">
