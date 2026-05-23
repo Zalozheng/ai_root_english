@@ -241,13 +241,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if(hints.autoParse) hints.autoParse.textContent = autoToggle.checked ? "点击插件图标立即翻译选中词" : "图标点击仅打开插件主面板";
         }
         if(contextFallbackToggle && contextFallbackLabel) {
-            contextFallbackLabel.textContent = contextFallbackToggle.checked ? "⚡ 跨情景借用已开" : "⚡ 跨情景借用已关";
+            contextFallbackLabel.textContent = contextFallbackToggle.checked ? "单词共用库：共用" : "单词共用库：不共用";
             contextFallbackLabel.style.color = contextFallbackToggle.checked ? "#bae6fd" : "#71717a";
             if(hints.contextFallback) hints.contextFallback.textContent = contextFallbackToggle.checked ? "允许不同角色间共用缓存数据" : "严格隔离不同角色的解析记录";
         }
         if(rootStrategyToggle && rootStrategyLabel) {
-            rootStrategyLabel.textContent = rootStrategyToggle.checked ? "🛡️ 保护旧词根已开" : "🛡️ 保护旧词根已关";
-            rootStrategyLabel.style.color = rootStrategyToggle.checked ? "#d1d5db" : "#71717a";
+            // 注意：开关开启 (checked) 意味着“保护旧词根”，即“不重新生成”
+            rootStrategyLabel.textContent = rootStrategyToggle.checked ? "词根重新生成：不会" : "词根重新生成：会";
+            rootStrategyLabel.style.color = rootStrategyToggle.checked ? "#d1d5db" : "#ef4444";
             if(hints.rootStrategy) hints.rootStrategy.textContent = rootStrategyToggle.checked ? "优先保留手动修改过的词源故事" : "词根故事将由 AI 重新生成";
         }
     }
