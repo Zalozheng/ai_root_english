@@ -2,94 +2,187 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <title>插件使用指南 - Ai词源引擎</title>
+  <title>使用手册 - Ai词源引擎</title>
   <style>
-    body { background-color: #0f0f11; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 20px; line-height: 1.6;}
-    .doc-container { max-width: 800px; margin: 0 auto; background: #1a1a1a; padding: 40px; border-radius: 16px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-    h1 { color: #38bdf8; border-bottom: 2px solid #333; padding-bottom: 15px; display: flex; align-items: center; gap: 10px;}
-    h1 img { width: 36px; height: 36px; border-radius: 8px;}
-    h2 { color: #f59e0b; margin-top: 35px; font-size: 20px;}
-    h3 { color: #10b981; margin-top: 25px; font-size: 16px;}
-    p, li { font-size: 15px; color: #d1d5db; margin-bottom: 10px;}
-    code { background: #000; padding: 2px 6px; border-radius: 4px; color: #bae6fd; border: 1px solid #333;}
-    .highlight-box { background: rgba(56, 189, 248, 0.05); border-left: 4px solid #38bdf8; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;}
-    .warning-box { background: rgba(239, 68, 68, 0.05); border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;}
-    table { width: 100%; border-collapse: collapse; margin-top: 15px;}
-    th, td { border: 1px solid #333; padding: 10px; text-align: left; font-size: 14px;}
-    th { background: #111; color: #a1a1aa;}
+    :root {
+      --bg: #0b0e14;
+      --surface: #1e1e24;
+      --accent: #38bdf8;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: rgba(255,255,255,0.06);
+    }
+    body { 
+      background-color: var(--bg); 
+      color: var(--text); 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+      margin: 0; 
+      padding: 40px 20px; 
+      line-height: 1.7;
+    }
+    .doc-container { 
+      max-width: 900px; 
+      margin: 0 auto; 
+    }
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    h1 { 
+      color: #fff; 
+      font-size: 36px; 
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    
+    .section-card {
+      background: var(--surface);
+      padding: 30px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .full-width { grid-column: span 2; }
+    
+    h2 { 
+      color: #fff; 
+      font-size: 20px; 
+      margin-top: 0; 
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2::before {
+      content: "";
+      width: 4px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    p, li { font-size: 15px; color: var(--text-muted); }
+    b { color: #fff; }
+    code { background: #000; padding: 2px 6px; border-radius: 6px; color: var(--accent); border: 1px solid var(--border); font-family: monospace; }
+    
+    .step-list { list-style: none; padding: 0; }
+    .step-list li { margin-bottom: 15px; display: flex; gap: 12px; }
+    .step-number { 
+      background: var(--accent); 
+      color: #000; 
+      width: 24px; 
+      height: 24px; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 800; 
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .feature-box {
+      background: rgba(0,0,0,0.2);
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+      border-left: 3px solid var(--accent);
+    }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; border-radius: 12px; overflow: hidden;}
+    th, td { border: 1px solid var(--border); padding: 15px; text-align: left; font-size: 14px;}
+    th { background: rgba(0,0,0,0.3); color: #fff; font-weight: 700;}
   </style>
 </head>
 <body>
   <div class="doc-container">
-    <h1><img src="icons/ui_128.png" alt="icon"> Ai 词源引擎使用指南</h1>
-    
-    <div class="highlight-box">
-      <strong>👋 欢迎使用！</strong> 这是一款专为深度英语学习者设计的浏览器插件，它将大语言模型（如 ChatGPT, Ollama）的推理能力与词根词缀记忆法深度结合，为您打造专属的英语特训库。
+    <header>
+      <h1>Ai 词源引擎使用手册</h1>
+      <div class="subtitle">深度逻辑推理 · 模块化记忆 ·ai词根记忆</div>
+    </header>
+
+    <div class="grid-layout">
+      <!-- 快速上手 -->
+      <div class="section-card">
+        <h2>快速上手</h2>
+        <ul class="step-list">
+          <li><span class="step-number">1</span><div><b>网页划词：</b> 选中文字，点击出现的 <code>🔍</code> 按钮即可开始深度溯源。</div></li>
+          <li><span class="step-number">2</span><div><b>右键解析：</b> 选中单词右键菜单选择 <code>AI 词源解析</code>，在侧边栏查看结果。</div></li>
+          <li><span class="step-number">3</span><div><b>即点即译：</b> 点击右上角图标直接输入；或开启“图标即译”点击图标立即分析。</div></li>
+        </ul>
+      </div>
+
+      <!-- 情景记忆 -->
+      <div class="section-card">
+        <h2>情景记忆</h2>
+        <p>AI 能根据您的<b>角色情景</b>讲述不同的词源故事。例如解析 <code>buffer</code>：</p>
+        <div class="feature-box">
+          <span style="color: #38bdf8; font-weight: bold;">🐧 极客模式：</span> 讲解显存、内核队列与数据缓冲。<br>
+          <span style="color: #f59e0b; font-weight: bold;">🏡 生活模式：</span> 讲解沙发靠垫与社交缓冲余地。
+        </div>
+        <p style="font-size: 13px; margin-top: 15px;">提示：您可以在设置中创建无限个自定义角色情景。</p>
+      </div>
+
+      <!-- 引擎配置 -->
+      <div class="section-card full-width">
+        <h2>引擎配置</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+          <div>
+            <b style="color: var(--accent);">方案 A：云端 API</b>
+            <p>适合希望开箱即用的用户。支持 OpenAI, DeepSeek 等。只需填入 API 地址与 Key 即可。</p>
+          </div>
+          <div>
+            <b style="color: #10b981;">方案 B：本地 Ollama</b>
+            <p>适合追求隐私与免费的用户。支持断网可用。推荐使用 RTX 3060 及以上显卡运行 <code>qwen2.5</code> 等模型。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 数据安全 -->
+      <div class="section-card full-width">
+        <h2>数据安全与管理</h2>
+        <p>所有数据均<b>本地存储</b>，不经过任何服务器。操作时请注意配合“模式开关”使用：</p>
+        <table>
+          <thead>
+            <tr>
+              <th>组合模式</th>
+              <th>功能表现</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>开启 <b>🌍 仅限当前情景</b></td>
+              <td>导入/清除操作将<b>只针对当前选中的角色</b>，不会影响其他情景下的笔记。</td>
+            </tr>
+            <tr>
+              <td>开启 <b>📥 替换模式导入</b></td>
+              <td>先清空当前选定范围的数据，再将新数据写入。</td>
+            </tr>
+            <tr>
+              <td>关闭 <b>📥 替换 (即合并模式)</b></td>
+              <td>增量导入，将新记录与本地现有记录<b>无缝合并</b>。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <h2>1. 🚀 快速上手</h2>
-    <ul>
-      <li><strong>网页划词：</strong> 在任意网页中选中文本，鼠标附近会弹出一个 <code>🔍</code> 图标，点击即可呼出 AI 解析弹窗。</li>
-      <li><strong>图标即译：</strong> 点击浏览器右上角的插件图标，可以直接在弹出的窗口中输入单词进行解析（如果您开启了【图标即点即译】，选中文本后点击图标会立刻开始解析）。</li>
-      <li><strong>一键发音：</strong> 在解析结果中点击 <code>🔊</code> 图标，即可朗读纯正的美式发音。</li>
-    </ul>
-
-    <h2>2. 🎭 核心特色：情景记忆与角色扮演</h2>
-    <p>传统的背单词软件每个单词只有一种解释，但本插件允许您通过<strong>【角色与记忆情景】</strong>功能，让单词在不同的专业领域“活”起来。</p>
-    <ul>
-      <li>您可以在【⚙️ 引擎偏好设置】中无限添加<strong>自定义情景</strong>（如：考研英语、律师日常、医学专业）。</li>
-      <li>当您在“极客模式”下查询 <code>buffer</code> 时，AI 会解释为“缓冲器”，并结合计算机底层逻辑给您画面感。</li>
-      <li>如果切换到“通用生活”，<code>buffer</code> 可能会被解释为“缓冲物”或“起缓冲作用的人”。</li>
-    </ul>
-
-    <h2>3. ⚙️ AI 引擎配置 (必须配置才能使用)</h2>
-    <p>进入【⚙️ 引擎偏好设置】，您可以选择以下两种引擎之一：</p>
-    
-    <h3>方案 A：自定义云端大模型 (如 OpenAI, DeepSeek, Kimi 等)</h3>
-    <p>适合没有高配置电脑，希望开箱即用的用户。填入您的 API 地址和密钥即可使用。</p>
-    
-    <h3>方案 B：Ollama 本地引擎 (极客推荐)</h3>
-    <p>适合拥有独立显卡（如 RTX 3060 以上）的用户，实现<strong>完全免费、断网可用、绝对隐私</strong>的本地查词。</p>
-    <ol>
-      <li>下载并安装 <a href="https://ollama.com/" target="_blank" style="color: #38bdf8;">Ollama</a>。</li>
-      <li>在终端运行命令下载模型：<code>ollama run qwen2.5</code> (或 llama3 等)。</li>
-      <li>在插件设置中选择【🦙 Ollama 本地引擎】，确保接口地址为 <code>http://127.0.0.1:11434</code>。</li>
-    </ol>
-
-    <h2>4. 🗄️ 数据安全与高阶管理</h2>
-    <p>您的所有数据均<strong>保存在您的浏览器本地</strong>，不上传任何服务器。请养成定期备份的好习惯。</p>
-    
-    <div class="warning-box">
-      <strong>⚠️ 数据管理面板说明：</strong><br>
-      设置页底部的导出/导入/清除按钮非常强大，请注意配合上方的<strong>【模式开关】</strong>使用。
-    </div>
-    
-    <table>
-      <tr>
-        <th>组合模式</th>
-        <th>功能表现</th>
-      </tr>
-      <tr>
-        <td>开启 <code>🌍 仅限当前情景</code></td>
-        <td>所有操作（导出、覆盖导入、清除）<strong>只会影响您当前选择的情景</strong>（例如：只会删掉该单词在极客模式下的笔记，保留日常模式）。</td>
-      </tr>
-      <tr>
-        <td>开启 <code>📥 替换模式导入</code></td>
-        <td>导入前会先<strong>清空当前选定范围的数据</strong>，然后将新数据写入。</td>
-      </tr>
-      <tr>
-        <td>关闭 <code>📥 合并模式导入</code></td>
-        <td>导入时不会删除任何现有数据，而是将新文件中的记录与本地记录<strong>无缝合并</strong>。</td>
-      </tr>
-    </table>
-
-    <h2>5. 🌳 词树图谱与特训</h2>
-    <p>除了单个单词的记忆，插件还自动为您构建了庞大的词源网络。</p>
-    <ul>
-      <li>在【🌱 词源图谱库】中，您可以查看所有遇到过的词根（如 <code>struct</code> 表示“建造”），并浏览它的所有同根词（construct, destroy）。</li>
-      <li>点击【🌳 在词树图谱中探索】，会生成一张优美的知识导图，帮您把散落的单词串联成线。</li>
-    </ul>
-
+    <footer style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 60px; border-top: 1px solid var(--border); padding-top: 30px;">
+      🌳 探索文字源头，构建属于您的英语神经网络。
+    </footer>
   </div>
 </body>
 </html>
