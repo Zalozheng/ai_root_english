@@ -163,7 +163,7 @@ skill
 ~/.agents/skills/word-generator
 打开 gmini-cli
 输入：安装skill word-generator
-然后打开输出目录
+然后打开输出目录 agy --dangerously-skip-permissions全自动不用受权确认
 说:
 word-generator 技能，帮我生成关于电脑的50个单词。
 ai 就会自动生成50个单词 的json 你直接导入就可以 
