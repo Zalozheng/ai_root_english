@@ -28,39 +28,38 @@
       <div class="settings-container" style="max-width: 1200px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding-bottom: 60px;">
         
         <!-- 引擎配置 (7/12) -->
-        <div class="section-box" style="grid-column: span 7; border-top: 4px solid #38bdf8; background: linear-gradient(180deg, #111 0%, #151515 100%); margin-bottom:0;">
+        <div class="section-box" style="grid-column: span 7; border-top: 4px solid #38bdf8; background: #111; margin-bottom:0;">
           <div class="section-title">⚙️ 解析主引擎配置</div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-            <div class="engine-tab active" data-engine="custom">
-                <div class="tab-icon">🌐</div>
-                <div class="tab-label">远程 API</div>
+          
+          <!-- 极简模式切换条 (参考经典布局) -->
+          <div style="display: flex; background: #000; padding: 6px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; gap: 4px;">
+            <div class="engine-tab active" data-engine="custom" style="flex: 1; padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; transition: 0.2s; font-size: 13px; font-weight: bold; color: #fff;">
+                🌐 远程 API
             </div>
-            <div class="engine-tab" data-engine="ollama">
-                <div class="tab-icon">🦙</div>
-                <div class="tab-label">本地 Ollama</div>
+            <div class="engine-tab" data-engine="ollama" style="flex: 1; padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; transition: 0.2s; font-size: 13px; font-weight: bold; color: #71717a;">
+                🦙 本地 Ollama
             </div>
-            <div class="engine-tab" data-engine="local_only">
-                <div class="tab-icon">💾</div>
-                <div class="tab-label">纯离线模式</div>
+            <div class="engine-tab" data-engine="local_only" style="flex: 1; padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; transition: 0.2s; font-size: 13px; font-weight: bold; color: #71717a;">
+                💾 离线模式
             </div>
           </div>
           
-          <div class="engine-panel active" id="panel-custom" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px;">
-            <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="https://api.openai.com/v1" style="background:#000;"></div>
+          <div class="engine-panel active" id="panel-custom" style="background: rgba(255,255,255,0.02); border: 1px solid #222; padding: 18px; border-radius: 12px;">
+            <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="https://api.openai.com/v1" style="background:#000; border-color:#333;"></div>
             <div class="form-group">
               <label style="display:flex; justify-content:space-between; align-items:center;">
                 <span>API Key</span>
                 <a href="https://lingkeapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">🔑 获取</a>
               </label>
-              <input type="password" id="api-key" placeholder="sk-..." style="background:#000;">
+              <input type="password" id="api-key" placeholder="sk-..." style="background:#000; border-color:#333;">
             </div>
-            <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" placeholder="gpt-4o" style="background:#000;"></div>
+            <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" placeholder="gpt-4o" style="background:#000; border-color:#333;"></div>
           </div>
           
-          <div class="engine-panel" id="panel-ollama" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px;">
-            <div class="form-group"><label>Ollama 接口</label><input type="text" id="ollama-base" placeholder="http://127.0.0.1:11434" style="background:#000;"></div>
+          <div class="engine-panel" id="panel-ollama" style="background: rgba(255,255,255,0.02); border: 1px solid #222; padding: 18px; border-radius: 12px;">
+            <div class="form-group"><label>Ollama 接口</label><input type="text" id="ollama-base" placeholder="http://127.0.0.1:11434" style="background:#000; border-color:#333;"></div>
             <div class="form-group" style="margin-bottom:0;">
-              <select id="ollama-model-select" style="margin-bottom: 12px; background:#000;"><option value="">请刷新获取...</option></select>
+              <select id="ollama-model-select" style="margin-bottom: 12px; background:#000; border-color:#333;"><option value="">请刷新获取...</option></select>
               <div class="flex-row">
                 <button id="refresh-ollama-btn" class="btn-outline">🔄 刷新列表</button>
                 <button id="test-ollama-btn" class="btn-outline">🚀 测试连接</button>
@@ -69,12 +68,12 @@
             </div>
           </div>
           
-          <div class="engine-panel" id="panel-local_only" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px;">
+          <div class="engine-panel" id="panel-local_only" style="background: rgba(255,255,255,0.02); border: 1px solid #222; padding: 18px; border-radius: 12px;">
             <div class="form-group" style="margin-bottom:0;">
-              <label style="color:#f59e0b;">断网历史溯源策略：</label>
-              <select id="offline-source" style="background:#000;">
-                <option value="remote">优先读取「远程 API」生成的记录</option>
-                <option value="ollama">优先读取「Ollama」生成的记录</option>
+              <label style="color:#f59e0b;">离线模式逻辑：</label>
+              <select id="offline-source" style="background:#000; border-color:#333;">
+                <option value="remote">优先读取「远程 API」历史记录</option>
+                <option value="ollama">优先读取「Ollama」历史记录</option>
               </select>
             </div>
           </div>
@@ -394,7 +393,19 @@
 
   </main>
   
-  <div id="editor-backdrop" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; backdrop-filter: blur(4px);"></div>
+  <!-- 全屏禅模式编辑器 -->
+  <div id="zen-backdrop" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);"></div>
+  <div id="zen-editor-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:85vw; height:80vh; background:#111; z-index:2001; border-radius:20px; border:2px solid #333; padding:40px; flex-direction:column; box-shadow: 0 0 50px rgba(0,0,0,0.5);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+          <h3 id="zen-editor-title" style="margin:0; color:#fff; font-size:20px; font-weight:800;">编辑内容</h3>
+          <div style="display:flex; gap:12px;">
+              <button id="zen-save-btn" class="btn-outline" style="background:#38bdf8; color:#000; border:none; padding:10px 24px; font-weight:800;">💾 保存并同步</button>
+              <button id="zen-close-btn" class="btn-outline" style="padding:10px 24px;">❌ 取消</button>
+          </div>
+      </div>
+      <textarea id="zen-textarea" style="flex:1; width:100%; background:#000; color:#fff; border:1px solid #222; border-radius:12px; padding:25px; font-family:monospace; font-size:18px; line-height:1.6; outline:none; resize:none;"></textarea>
+  </div>
+
   <script src="js/global.js"></script>
   <script src="js/settings-context.js"></script>
   <script src="js/settings-data.js"></script>

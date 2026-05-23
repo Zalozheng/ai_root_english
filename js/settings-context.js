@@ -147,97 +147,75 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
         });
     }
 
-    // ======= 高级编辑模式逻辑 (禅模式：大框大字) =======
-    function bindEditMode(textAreaId, editBtnId, saveBtnId, highlightColor, expandedRows) {
-        const area = document.getElementById(textAreaId);
-        const editBtn = document.getElementById(editBtnId);
-        const saveBtn = document.getElementById(saveBtnId);
-        const backdrop = document.getElementById('editor-backdrop');
-        const container = area.parentElement; // 获取 form-group 或 section-box
+    // ======= 全屏禅模式编辑器逻辑 (修复版) =======
+    const zenBackdrop = document.getElementById('zen-backdrop');
+    const zenModal = document.getElementById('zen-editor-modal');
+    const zenTextarea = document.getElementById('zen-textarea');
+    const zenTitle = document.getElementById('zen-editor-title');
+    const zenSaveBtn = document.getElementById('zen-save-btn');
+    const zenCloseBtn = document.getElementById('zen-close-btn');
+
+    function openZenEditor(sourceAreaId, titleText, highlightColor) {
+        const sourceArea = document.getElementById(sourceAreaId);
+        if (!sourceArea || !zenModal) return;
+
+        zenTitle.textContent = titleText;
+        zenTitle.style.color = highlightColor;
+        zenSaveBtn.style.background = highlightColor;
+        zenTextarea.value = sourceArea.value;
         
-        if (area && editBtn && saveBtn && backdrop) {
-            editBtn.addEventListener('click', () => {
-                // 进入大框模式
-                backdrop.style.display = 'block';
-                
-                // 将容器临时变为固定定位
-                container.style.position = 'fixed';
-                container.style.top = '50%';
-                container.style.left = '50%';
-                container.style.transform = 'translate(-50%, -50%)';
-                container.style.width = '85vw';
-                container.style.height = '75vh';
-                container.style.zIndex = '1001';
-                container.style.background = '#111';
-                container.style.padding = '30px';
-                container.style.borderRadius = '16px';
-                container.style.boxShadow = `0 0 50px ${highlightColor}33`;
-                container.style.border = `2px solid ${highlightColor}`;
-                container.style.display = 'flex';
-                container.style.flexDirection = 'column';
+        zenBackdrop.style.display = 'block';
+        zenModal.style.display = 'flex';
+        zenTextarea.focus();
 
-                area.removeAttribute('readonly');
-                area.style.opacity = '1';
-                area.style.flex = '1'; // 铺满剩余高度
-                area.style.fontSize = '18px'; // 字体拉大
-                area.style.lineHeight = '1.6';
-                area.style.background = '#000';
-                area.style.color = '#fff';
-                area.style.marginTop = '20px';
-                
-                editBtn.style.display = 'none';
-                saveBtn.style.display = 'inline-block';
-                area.focus();
-            });
-            
-            const exitZenMode = () => {
-                backdrop.style.display = 'none';
-                // 还原容器样式
-                container.style.position = '';
-                container.style.top = '';
-                container.style.left = '';
-                container.style.transform = '';
-                container.style.width = '';
-                container.style.height = '';
-                container.style.zIndex = '';
-                container.style.background = '';
-                container.style.padding = '';
-                container.style.borderRadius = '';
-                container.style.boxShadow = '';
-                container.style.border = '';
-                container.style.display = '';
-                container.style.flexDirection = '';
-
-                area.setAttribute('readonly', 'true');
-                area.style.opacity = '0.7';
-                area.style.flex = '';
-                area.style.height = '';
-                area.style.fontSize = '12px';
-                area.rows = 3;
-                saveBtn.style.display = 'none';
-                editBtn.style.display = 'inline-block';
-            };
-
-            saveBtn.addEventListener('click', () => {
-                // 保存逻辑
-                if (textAreaId === 'custom-prompt') {
-                    const currentId = window.appConfig.promptContext || 'general';
-                    window.appConfig.prompts[currentId] = area.value.trim();
-                } else if (textAreaId === 'global-json-prompt') {
-                    window.appConfig.globalJsonTemplate = area.value.trim();
-                }
-                
-                chrome.storage.local.set({ app_config: window.appConfig }, () => {
-                    window.showStatus('💾 已安全保存并应用', highlightColor);
-                    exitZenMode();
-                });
-            });
-
-            // 点击背景也可退出
-            backdrop.addEventListener('click', exitZenMode);
-        }
+        // 临时存储当前正在编辑的目标 ID，以便保存时回写
+        zenModal.dataset.targetId = sourceAreaId;
+        zenModal.dataset.color = highlightColor;
     }
 
-    bindEditMode('custom-prompt', 'edit-prompt-btn', 'save-prompt-btn', '#38bdf8', 12);
-    bindEditMode('global-json-prompt', 'edit-global-json-btn', 'save-global-json-btn', '#a855f7', 15);
+    const closeZenEditor = () => {
+        if (!zenModal) return;
+        zenBackdrop.style.display = 'none';
+        zenModal.style.display = 'none';
+    };
+
+    if (zenSaveBtn) {
+        zenSaveBtn.addEventListener('click', () => {
+            const targetId = zenModal.dataset.targetId;
+            const targetArea = document.getElementById(targetId);
+            const color = zenModal.dataset.color;
+
+            if (targetArea) {
+                targetArea.value = zenTextarea.value.trim();
+                
+                // 执行实际的配置保存逻辑
+                if (targetId === 'custom-prompt') {
+                    const currentId = window.appConfig.promptContext || 'general';
+                    window.appConfig.prompts[currentId] = targetArea.value;
+                } else if (targetId === 'global-json-prompt') {
+                    window.appConfig.globalJsonTemplate = targetArea.value;
+                }
+
+                chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                    window.showStatus('✅ 内容已安全同步', color);
+                    closeZenEditor();
+                });
+            }
+        });
+    }
+
+    if (zenCloseBtn) zenCloseBtn.addEventListener('click', closeZenEditor);
+    if (zenBackdrop) zenBackdrop.addEventListener('click', closeZenEditor);
+
+    // 绑定主界面按钮
+    if (document.getElementById('edit-prompt-btn')) {
+        document.getElementById('edit-prompt-btn').addEventListener('click', () => openZenEditor('custom-prompt', '📜 编辑 System Prompt', '#38bdf8'));
+    }
+    if (document.getElementById('edit-global-json-btn')) {
+        document.getElementById('edit-global-json-btn').addEventListener('click', () => openZenEditor('global-json-prompt', '🧩 调整 JSON 结构约束', '#a855f7'));
+    }
+    
+    // 也允许点击预览框直接进入编辑
+    if (promptArea) promptArea.addEventListener('click', () => openZenEditor('custom-prompt', '📜 编辑 System Prompt', '#38bdf8'));
+    if (jsonTextarea) jsonTextarea.addEventListener('click', () => openZenEditor('global-json-prompt', '🧩 调整 JSON 结构约束', '#a855f7'));
 };
