@@ -28,29 +28,30 @@
 
   <main class="main-content">
     
+    
     <div id="view-settings" class="view-section active">
-      <div class="settings-container">
-        <h2 class="settings-title"><img src="icons/ui_128.png" alt="icon"> AI 词根解析引擎 Pro 控制台</h2>
+      <div class="settings-container" style="max-width: 1200px; display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding-bottom: 60px;">
         
-        <div class="section-box" style="border-left: 4px solid #38bdf8; background: linear-gradient(180deg, #111 0%, #151515 100%);">
-          <div class="section-title">⚙️ 解析主引擎选择</div>
+        
+        <div class="section-box" style="grid-column: span 7; border-top: 4px solid #38bdf8; margin-bottom: 0;">
+          <div class="section-title">⚙️ 解析主引擎</div>
           <div class="engine-tabs">
-            <div class="engine-tab active" data-engine="custom">🌐 远程 API</div>
-            <div class="engine-tab" data-engine="ollama">🦙 本地 Ollama</div>
-            <div class="engine-tab" data-engine="local_only">💾 纯本地离线</div>
+            <div class="engine-tab active" data-engine="custom">远程 API</div>
+            <div class="engine-tab" data-engine="ollama">Ollama</div>
+            <div class="engine-tab" data-engine="local_only">离线</div>
           </div>
-          <div class="engine-panel active" id="panel-custom">
+          <div class="engine-panel active" id="panel-custom" style="background:transparent; border:none; padding:0;">
             <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="https://api.openai.com/v1"></div>
             <div class="form-group">
               <label style="display:flex; justify-content:space-between; align-items:center;">
                 <span>API Key</span>
-                <a href="https://lingkeapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 12px; text-decoration: none;">🔑 获取 API</a>
+                <a href="https://lingkeapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">🔑 获取</a>
               </label>
               <input type="password" id="api-key" placeholder="sk-...">
             </div>
             <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" placeholder="gpt-4o"></div>
           </div>
-          <div class="engine-panel" id="panel-ollama">
+          <div class="engine-panel" id="panel-ollama" style="background:transparent; border:none; padding:0;">
             <div class="form-group"><label>Ollama 接口</label><input type="text" id="ollama-base" placeholder="http://127.0.0.1:11434"></div>
             <div class="form-group" style="margin-bottom:0;">
               <select id="ollama-model-select" style="margin-bottom: 12px;"><option value="">请刷新获取...</option></select>
@@ -61,171 +62,135 @@
               <div id="ollama-test-log" class="log-box"></div>
             </div>
           </div>
-          <div class="engine-panel" id="panel-local_only">
+          <div class="engine-panel" id="panel-local_only" style="background:transparent; border:none; padding:0;">
             <div class="form-group" style="margin-bottom:0;">
-              <label style="color:#f59e0b;">断网历史溯源：</label>
+              <label style="color:#f59e0b;">离线策略</label>
               <select id="offline-source">
-                <option value="remote">🌐 优先读取「远程 API」生成的记录</option>
-                <option value="ollama">🦙 优先读取「Ollama」生成的记录</option>
+                <option value="remote">优先读取「远程 API」记录</option>
+                <option value="ollama">优先读取「Ollama」记录</option>
               </select>
             </div>
           </div>
         </div>
-
-        <div class="section-box" style="border-left: 4px solid #10b981; background: linear-gradient(180deg, #111 0%, rgba(16, 185, 129, 0.02) 100%);">
-          <div class="section-title" style="color: #10b981;">🎨 界面设定与外观</div>
-          
-          <div class="split-layout" style="margin-bottom: 20px;">
-            <div class="split-col">
-              <div class="form-group" style="margin-bottom: 0;">
-                <label title="选择 AI 解析时的角色身份和知识背景">角色与记忆情景</label>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <select id="prompt-context" style="flex: 1;"></select>
-                  <button id="add-context-btn" class="btn-outline" title="新增自定义情景模式" style="padding: 10px; flex-shrink: 0;">➕</button>
-                </div>
-                <div id="rename-context-wrapper" style="display: none; margin-top: 10px; display: flex; gap: 8px;">
-                  <input type="text" id="custom-context-input" placeholder="自定义情景名称" style="flex: 1; padding: 8px 12px; background: #111;">
-                  <button id="rename-context-btn" class="btn-outline" style="padding: 8px 12px;">💾</button>
-                  <button id="delete-context-btn" class="btn-outline btn-danger-action" style="padding: 8px 12px;">❌</button>
-                </div>
+        
+        <div class="section-box" style="grid-column: span 5; border-top: 4px solid #10b981; margin-bottom: 0; display: flex; flex-direction: column;">
+          <div class="section-title" style="color: #10b981;">🎨 交互与外观</div>
+          <div class="form-group">
+            <label>角色情景</label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <select id="prompt-context" style="flex: 1;"></select>
+              <button id="add-context-btn" class="btn-outline" style="padding: 10px;">➕</button>
+            </div>
+            <div id="rename-context-wrapper" style="display: none; margin-top: 10px; display: flex; gap: 8px;">
+              <input type="text" id="custom-context-input" placeholder="名称" style="flex: 1; font-size: 12px;">
+              <button id="rename-context-btn" class="btn-outline">💾</button>
+              <button id="delete-context-btn" class="btn-outline btn-danger-action">❌</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>主题</label>
+            <select id="theme">
+              <option value="system">跟随系统</option>
+              <option value="dark">黑客深邃</option>
+              <option value="light">简约明亮</option>
+            </select>
+          </div>
+          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 13px; font-weight: 600; color: #a1a1aa;">🌐 网页划词</span>
+                <label class="switch blue-switch"><input type="checkbox" id="enable-content-script" checked><span class="slider"></span></label>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 13px; font-weight: 600; color: #fcd34d;">⚡ 图标即译</span>
+                <label class="switch blue-switch"><input type="checkbox" id="auto-parse" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section-box" style="grid-column: span 8; border-top: 4px solid #38bdf8; margin-bottom: 0; display: flex; flex-direction: column; justify-content: center;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="section-title" style="margin-bottom:4px;">📜 System Prompt</div>
+                <div style="font-size: 12px; color: #71717a;">非专业人员无需修改。点击右侧按钮进入深度编辑。</div>
               </div>
-            </div>
-            <div class="split-col">
-              <div class="form-group" style="margin-bottom: 0;">
-                <label>划词弹窗主题</label>
-                <select id="theme">
-                  <option value="system">跟随系统</option>
-                  <option value="dark">黑客深邃 (Dark)</option>
-                  <option value="light">明亮 (Light)</option>
-                </select>
+              <div style="display: flex; gap: 8px;">
+                  <button id="edit-prompt-btn" class="btn-outline" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf833; color: #38bdf8;">✏️ 进入编辑模式</button>
+                  <button id="save-prompt-btn" class="btn-outline" style="border-color: #38bdf8; color: #38bdf8; display: none;">💾 保存</button>
+                  <button id="restore-prompt-btn" class="btn-outline" style="font-size: 11px; padding: 4px 8px; opacity: 0.5;">🔄 重置</button>
               </div>
+          </div>
+          <textarea id="custom-prompt" style="display:none;"></textarea>
+        </div>
+        
+        <div class="section-box" style="grid-column: span 4; border-top: 4px solid #f59e0b; margin-bottom: 0;">
+          <div class="section-title" style="color: #f59e0b;">🛡️ 进阶策略</div>
+          <div class="form-group">
+            <label>借用规则</label>
+            <select id="data-fallback-rule">
+              <option value="cross">⚡ 跨引擎借用</option>
+              <option value="strict">🔒 严格隔离</option>
+              <option value="remote_first">🌐 远程优先</option>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 12px; color: #bae6fd; font-weight: bold;">⚡ 跨情景借用</span>
+                <label class="switch"><input type="checkbox" id="context-fallback-rule" checked><span class="slider"></span></label>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 12px; color: #d1d5db; font-weight: bold;">🛡️ 保护旧词根</span>
+                <label class="switch"><input type="checkbox" id="root-toggle-switch" checked><span class="slider"></span></label>
             </div>
           </div>
-
-          <div class="split-layout" style="margin-bottom: 25px;">
-            <div class="split-col">
-                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启后，在网页中选中文本会弹出搜索小图标。">
-                    <div style="flex: 1;">
-                        <label style="margin: 0; font-size: 13px; color: #a1a1aa; font-weight: bold;" id="label-content-script">🌐 网页划词已开</label>
-                    </div>
-                    <label class="switch blue-switch">
-                      <input type="checkbox" id="enable-content-script" checked>
-                      <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            <div class="split-col">
-                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启后，点击扩展图标将直接翻译选中词。">
-                    <div style="flex: 1;">
-                        <label style="margin: 0; font-size: 13px; color: #fcd34d; font-weight: bold;" id="label-auto-parse">⚡ 图标即译已开</label>
-                    </div>
-                    <label class="switch blue-switch">
-                      <input type="checkbox" id="auto-parse" checked>
-                      <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-          </div>
-          
-          <div class="form-group" style="margin-bottom:0; border-top: 1px dashed #333; padding-top: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <label style="margin: 0; color: #a1a1aa; font-weight: bold;">📜 System Prompt</label>
-                <div style="display: flex; gap: 8px;">
-                    <button id="edit-prompt-btn" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">✏️ 编辑</button>
-                    <button id="save-prompt-btn" class="btn-outline" style="padding: 2px 8px; font-size: 11px; border-color: #38bdf8; color: #38bdf8; display: none;">💾 保存指令</button>
-                    <button id="restore-prompt-btn" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">🔄 恢复默认</button>
-                </div>
-            </div>
-            <textarea id="custom-prompt" rows="3" placeholder="非专业人员请勿修改此处内容..." style="width: 100%; box-sizing: border-box; font-family: monospace; font-size: 12px; background: #000; color: #a1a1aa; border: 1px solid #333; border-radius: 8px; padding: 10px; transition: 0.3s; opacity: 0.7;" readonly></textarea>
+          <div class="form-group" style="margin-bottom:0;">
+              <label>历史保留</label>
+              <div style="display:flex; align-items:center; gap:6px;">
+                  <button id="hist-minus" class="btn-outline" style="padding: 4px 10px;">-</button>
+                  <input type="number" id="history-limit" value="10" style="text-align:center; flex:1; padding: 6px;">
+                  <button id="hist-plus" class="btn-outline" style="padding: 4px 10px;">+</button>
+                  <button id="clear-history-btn" class="btn-outline btn-danger" style="font-size:11px; padding: 6px;">🧹</button>
+              </div>
           </div>
         </div>
-
-        <div class="split-layout" style="margin-bottom: 30px;">
-          <div class="split-col section-box" style="margin-bottom: 0; background: #111;">
-            <div class="section-title">🔀 数据借用规则</div>
-            <div style="margin-bottom: 15px;">
-              <select id="data-fallback-rule" style="margin-bottom: 10px;" title="无网络或API失败时，是否借用其他引擎的缓存数据">
-                <option value="cross">⚡ 跨引擎借用</option>
-                <option value="strict">🔒 引擎严格隔离</option>
-                <option value="remote_first">🌐 优先使用远程记录</option>
-                <option value="ollama_first">🦙 优先使用 Ollama 记录</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-                <label>搜索历史上限</label>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <button id="hist-minus" class="btn-outline" style="padding: 5px 12px;">-</button>
-                    <input type="number" id="history-limit" value="10" style="text-align:center; flex:1;">
-                    <button id="hist-plus" class="btn-outline" style="padding: 5px 12px;">+</button>
-                    <button id="clear-history-btn" class="btn-outline btn-danger" style="font-size:11px;">🧹 清空</button>
-                </div>
-            </div>
+        
+        <div class="section-box" id="global-json-card" style="grid-column: span 12; border-top: 4px solid #a855f7; margin-bottom: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="section-title" style="color: #a855f7; margin-bottom: 4px;">🧩 全局底层 JSON 结构约束 (核心格式)</div>
+                <div style="font-size: 12px; color: #71717a;">定义 AI 输出的原始数据层级，非开发者请勿修改。</div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                  <button id="edit-global-json-btn" class="btn-outline" style="background: rgba(168, 85, 247, 0.1); border-color: #a855f733; color: #a855f7;">✏️ 调整结构</button>
+                  <button id="save-global-json-btn" class="btn-outline" style="border-color: #10b981; color: #10b981; display: none;">💾 保存</button>
+                  <button id="reset-global-json-btn" class="btn-outline" style="font-size: 11px; padding: 4px 8px; opacity: 0.5;">🔄 恢复默认</button>
+              </div>
           </div>
-          
-          <div class="split-col section-box" style="margin-bottom: 0; border-left: 4px solid #f59e0b; background: linear-gradient(180deg, #111 0%, rgba(245, 158, 11, 0.02) 100%);">
-            <div class="section-title" style="color: #f59e0b;">🌱 高级缓存保护</div>
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px;" title="开启后，不同情景角色之间可以互相借用已有的解析记录。">
-                <div style="flex: 1;">
-                    <label style="margin: 0; font-size: 13px; color: #bae6fd; font-weight: bold;" id="label-context-fallback">⚡ 跨情景借用已开</label>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="context-fallback-rule" checked>
-                  <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px; border: 1px solid #333;" title="开启后，如果您手动修改过词源，AI 解析新单词时将优先保留您的修改。">
-                <div style="flex: 1;">
-                    <label style="margin: 0; font-size: 13px; color: #d1d5db; font-weight: bold;" id="label-root-strategy">🛡️ 保护旧词根已开</label>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="root-toggle-switch" checked>
-                  <span class="slider"></span>
-                </label>
-            </div>
-          </div>
+          <textarea id="global-json-prompt" style="display:none;"></textarea>
         </div>
-
-        <div class="section-box" id="global-json-card" style="border-left: 4px solid #a855f7; background: linear-gradient(180deg, #111 0%, rgba(168, 85, 247, 0.02) 100%);">
-          <div class="json-title" style="font-weight:bold; color:#a855f7; font-size: 14px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span>🧩 全局底层 JSON 结构约束</span>
-            <div style="display: flex; gap: 8px;">
-                <button id="edit-global-json-btn" class="btn-outline" style="padding: 2px 8px; font-size: 11px; border-color: #a855f7; color: #a855f7;">✏️ 编辑</button>
-                <button id="save-global-json-btn" class="btn-outline" style="padding: 2px 8px; font-size: 11px; border-color: #10b981; color: #10b981; display: none;">💾 保存结构</button>
-                <button id="reset-global-json-btn" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">🔄 恢复默认</button>
-            </div>
+        
+        <div class="section-box" style="grid-column: span 12; border-top: 4px solid #ef4444; margin-bottom: 0;">
+          <div class="section-title" style="color: #ef4444;">🗄️ 词库数据管理</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 16px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                  <div><b style="font-size: 14px; color: #a1a1aa;" id="label-action-context">🌍 全局数据模式</b><br><span id="hint-action-context" style="font-size: 12px; color: #71717a;">影响所有情景数据</span></div>
+                  <label class="switch red-switch"><input type="checkbox" id="data-action-context"><span class="slider"></span></label>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 16px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                  <div><b style="font-size: 14px; color: #a1a1aa;" id="label-import-mode">📥 合并模式导入</b><br><span id="hint-import-mode" style="font-size: 12px; color: #71717a;">新老数据安全合并</span></div>
+                  <label class="switch red-switch"><input type="checkbox" id="import-mode"><span class="slider"></span></label>
+              </div>
           </div>
-          <p style="font-size: 12px; color: #71717a; margin-bottom: 12px; line-height: 1.5;">无论上方切换什么情景，解析时都会严格套用此处的 JSON 结构格式。非开发人员请勿修改。</p>
-          <textarea id="global-json-prompt" rows="3" spellcheck="false" style="font-family: monospace; font-size: 11px; background: #000; color: #a1a1aa; width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #333; border-radius: 8px; resize: vertical; transition: 0.3s; opacity: 0.7;" readonly></textarea>
-        </div>
-
-        <div class="section-box" style="border-left: 4px solid #ef4444; background: linear-gradient(180deg, #111 0%, rgba(239, 68, 68, 0.02) 100%);">
-          <div class="section-title" style="color: #ef4444;">🗄️ 数据导入 / 导出 / 清除</div>
-          <div class="action-panel" style="padding: 0; background: transparent; border: none;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px 14px; border-radius: 10px; border: 1px solid #333;">
-                    <div><b style="font-size: 13px; color: #a1a1aa;" id="label-action-context">🌍 全局数据模式</b><br><span id="hint-action-context" style="font-size: 11px; color: #71717a;">操作将影响所有情景数据</span></div>
-                    <label class="switch red-switch"><input type="checkbox" id="data-action-context"><span class="slider"></span></label>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px 14px; border-radius: 10px; border: 1px solid #333;">
-                    <div><b style="font-size: 13px; color: #a1a1aa;" id="label-import-mode">📥 合并模式导入</b><br><span id="hint-import-mode" style="font-size: 11px; color: #71717a;">新数据与现有记录合并</span></div>
-                    <label class="switch red-switch"><input type="checkbox" id="import-mode"><span class="slider"></span></label>
-                </div>
-            </div>
-            <div class="action-grid" style="grid-template-columns: 60px 1fr 1fr 1fr; gap: 8px;">
-                <div class="grid-label" style="font-size: 12px;">📤 导出</div>
-                <button id="export-words-btn" class="btn-action">单词</button><button id="export-roots-btn" class="btn-action">词根</button><button id="export-all-btn" class="btn-action">全部</button>
-                <div class="grid-label" style="font-size: 12px;">📥 导入</div>
-                <button id="import-words-btn" class="btn-action btn-import">单词</button><button id="import-roots-btn" class="btn-action btn-import">词根</button><button id="import-all-btn" class="btn-action btn-import">全部</button>
-                <div class="grid-label" style="font-size: 12px; color: #ef4444;">🗑️ 清除</div>
-                <button id="delete-words-btn" class="btn-action btn-danger-action">单词</button><button id="delete-roots-btn" class="btn-action btn-danger-action">词根</button><button id="delete-all-btn" class="btn-action btn-danger-action">全部</button>
-            </div>
-            <input type="file" id="import-file" style="display:none" accept=".json">
+          <div class="action-grid" style="grid-template-columns: 100px 1fr 1fr 1fr; align-items: center;">
+              <div class="grid-label" style="text-align: left; color: #38bdf8; font-weight: 800;">📤 导出</div>
+              <button id="export-words-btn" class="btn-action">单词</button><button id="export-roots-btn" class="btn-action">词根</button><button id="export-all-btn" class="btn-action">全部打包</button>
+              <div class="grid-label" style="text-align: left; color: #10b981; font-weight: 800;">📥 导入</div>
+              <button id="import-words-btn" class="btn-action btn-import">单词</button><button id="import-roots-btn" class="btn-action btn-import">词根</button><button id="import-all-btn" class="btn-action btn-import">全部打包</button>
+              <div class="grid-label" style="text-align: left; color: #ef4444; font-weight: 800;">🗑️ 清除</div>
+              <button id="delete-words-btn" class="btn-action btn-danger-action">单词</button><button id="delete-roots-btn" class="btn-action btn-danger-action">词根</button><button id="delete-all-btn" class="btn-action btn-danger-action">全部清除</button>
           </div>
+          <input type="file" id="import-file" style="display:none" accept=".json">
         </div>
-
-        <div id="status" class="status" style="display:none; margin-bottom: 20px;"></div>
+        <div id="status" class="status" style="display:none; grid-column: span 12; margin: 0 auto;"></div>
       </div>
     </div>
 
@@ -341,7 +306,7 @@
         </div>
 
         <div class="split-layout">
-          <div class="split-col section-box" style="border-left: 4px solid #f59e0b;">
+          <div class="split-col section-box" style="border-top: 4px solid #f59e0b;">
             <div class="section-title" style="color: #f59e0b;">🚀 快速上手：三种交互方式</div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
               <div style="background: #1a1a1b; padding: 12px; border-radius: 8px; border: 1px solid #333;">
@@ -377,7 +342,7 @@
           </div>
         </div>
 
-        <div class="section-box" style="border-left: 4px solid #ef4444;">
+        <div class="section-box" style="border-top: 4px solid #ef4444;">
           <div class="section-title" style="color: #ef4444;">🗄️ 高阶技巧：数据主权与精准管理</div>
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
             <div>
