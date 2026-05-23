@@ -153,16 +153,16 @@
               <option value="ollama_first">🦙 优先使用 Ollama 记录</option>
             </select>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                <span style="font-size: 12px; color: #bae6fd; font-weight: bold;" id="label-context-fallback">单词共用库：共用</span>
-                <label class="switch"><input type="checkbox" id="context-fallback-rule" checked><span class="slider"></span></label>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                <span style="font-size: 12px; color: #d1d5db; font-weight: bold;" id="label-root-strategy">词根重新生成：不会</span>
-                <label class="switch"><input type="checkbox" id="root-toggle-switch" checked><span class="slider"></span></label>
-            </div>
-          </div>          <div class="form-group" style="margin-bottom:0;">
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);" title="一旦不共用会根据 情景模式生成 单词和词根">
+                  <span style="font-size: 12px; color: #bae6fd; font-weight: bold;" id="label-context-fallback">共用模式：开启</span>
+                  <label class="switch"><input type="checkbox" id="context-fallback-rule" checked><span class="slider"></span></label>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);" title="关闭词根保护，无论在什么模式下都会重新生成词根，这是一个全局设置">
+                  <span style="font-size: 12px; color: #d1d5db; font-weight: bold;" id="label-root-strategy">护根模式：开启</span>
+                  <label class="switch"><input type="checkbox" id="root-toggle-switch" checked><span class="slider"></span></label>
+              </div>
+            </div>          <div class="form-group" style="margin-bottom:0;">
               <label>历史保留上限</label>
               <div style="display:flex; align-items:center; gap:6px;">
                   <button id="hist-minus" class="btn-outline" style="padding: 4px 10px;">-</button>
