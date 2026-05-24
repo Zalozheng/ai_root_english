@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     pinWindowBtn.addEventListener('click', () => {
       if (isInPage) {
-        window.close();
+        window.parent.postMessage('close_etymorph_iframe', '*');
       } else {
         const targetWord = wordInput.value.trim();
         const url = chrome.runtime.getURL(`popup.html?mode=in_page&word=${encodeURIComponent(targetWord)}`);
