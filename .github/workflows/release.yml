@@ -1,0 +1,54 @@
+name: 发布插件 Release
+
+on:
+  push:
+    tags:
+      - 'v*'   # 监听所有 v 开头的 tag，例如 v28.1.2
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 需要写权限才能创建 Release
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 读取版本号（从 manifest.json）
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' manifest.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "插件版本: $VERSION"
+
+      - name: 打包插件为 zip
+        run: |
+          zip -r ../ai_root_english_v${{ steps.version.outputs.version }}.zip . \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "readme.assets/*" \
+            --exclude "ouput-word/*" \
+            --exclude "assets/*" \
+            --exclude "vocab/*" \
+            --exclude "skill/*" \
+            --exclude "*.md" \
+            --exclude "LICENSE"
+          echo "打包完成：ai_root_english_v${{ steps.version.outputs.version }}.zip"
+
+      - name: 创建 GitHub Release 并上传 zip
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Ai词根分析 v${{ steps.version.outputs.version }}"
+          body: |
+            ## 📦 安装方式
+            1. 下载下方的 `.zip` 文件
+            2. 解压到本地文件夹
+            3. 打开 `chrome://extensions/` → 开启**开发者模式**
+            4. 点击**加载已解压的扩展程序** → 选择解压后的文件夹
+
+            ## 更新日志
+            > 请在此处手动填写本次更新内容
+          files: ../ai_root_english_v${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: false
