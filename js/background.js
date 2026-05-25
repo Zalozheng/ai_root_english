@@ -1,3 +1,26 @@
+// ===== 安全批量写入（service worker 版，无 window）=====
+function safeStorageSet(items, callback, batchSize = 50) {
+    const keys = Object.keys(items);
+    if (keys.length === 0) { if (callback) callback(false); return; }
+    let index = 0;
+    let hasError = false;
+    function writeNextBatch() {
+        if (index >= keys.length) { if (callback) callback(hasError); return; }
+        const batchKeys = keys.slice(index, index + batchSize);
+        const batch = {};
+        batchKeys.forEach(k => { batch[k] = items[k]; });
+        index += batchSize;
+        chrome.storage.local.set(batch, () => {
+            if (chrome.runtime.lastError) {
+                console.error('[词根引擎] storage.set 失败:', chrome.runtime.lastError.message);
+                hasError = true;
+            }
+            writeNextBatch();
+        });
+    }
+    writeNextBatch();
+}
+
 function updateOllamaCorsRule(ollamaUrl) {
   try {
     const url = new URL(ollamaUrl || 'http://127.0.0.1:11434');
@@ -233,7 +256,12 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
 
           toSave[cleanWordKey] = wordData;
           
-          chrome.storage.local.set(toSave, () => {
+          // 使用安全分批写入，避免一次性写入超出配额
+          safeStorageSet(toSave, (hasError) => {
+              if (hasError) {
+                  sendResponse({ success: false, error: '本地存储空间不足 (QuotaBytes exceeded)，数据未能缓存。请到设置页面导出并清理旧数据。' });
+                  return;
+              }
               let resData = JSON.parse(JSON.stringify(wordData));
               resData.memory_lines = wordData.memory_lines_map[`${sourceTag}_${context}`];
               resData.sourceTag = sourceTag;

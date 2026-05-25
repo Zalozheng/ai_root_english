@@ -259,17 +259,21 @@ window.initDataEngine = function() {
 
                         let finalize = () => {
                             if (Object.keys(toSave).length > 0) {
-                                chrome.storage.local.set(toSave, () => {
+                                window.safeStorageSet(toSave, (hasError) => {
                                     let wordCount = Object.keys(toSave).filter(k => k.startsWith('W:')).length;
                                     let rootCount = Object.keys(toSave).filter(k => k.startsWith('R:')).length;
-                                    window.showStatus(`✅ ${isReplaceMode?'替换':'合并'}导入成功 (单词:${wordCount}, 词根:${rootCount})`, "#10b981");
+                                    if (hasError) {
+                                        window.showStatus(`⚠️ 存储空间不足，部分数据未能导入。请先清理旧数据再重试。`, '#ef4444');
+                                    } else {
+                                        window.showStatus(`✅ ${isReplaceMode?'替换':'合并'}导入成功 (单词:${wordCount}, 词根:${rootCount})`, '#10b981');
+                                    }
                                     if(window.loadWordsLibrary) window.loadWordsLibrary();
                                     if(window.loadRootsLibrary) window.loadRootsLibrary();
                                     if(window.clearWordDetail) window.clearWordDetail();
                                     if(window.clearRootDetail) window.clearRootDetail();
                                 });
                             } else {
-                                window.showStatus(`✅ 操作完成`, "#10b981");
+                                window.showStatus(`✅ 操作完成`, '#10b981');
                             }
                         };
 
@@ -368,7 +372,7 @@ window.initDataEngine = function() {
             let checkDone = () => { done++; if (done === tasks) finalize(); };
 
             if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove, checkDone);
-            if (Object.keys(itemsToUpdate).length > 0) chrome.storage.local.set(itemsToUpdate, checkDone);
+            if (Object.keys(itemsToUpdate).length > 0) window.safeStorageSet(itemsToUpdate, checkDone);
         });
     }
 

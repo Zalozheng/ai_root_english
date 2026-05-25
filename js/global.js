@@ -8,6 +8,44 @@ window.escapeHtml = function(str) {
     return (str||'').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); 
 };
 
+/**
+ * 安全批量写入 chrome.storage.local，自动分片防止超出单次写入配额。
+ * @param {Object} items - 要写入的键值对对象
+ * @param {Function} [callback] - 全部写入完成后的回调，参数 (hasError: boolean)
+ * @param {number} [batchSize=50] - 每批最多写入的 key 数量
+ */
+window.safeStorageSet = function(items, callback, batchSize = 50) {
+    const keys = Object.keys(items);
+    if (keys.length === 0) { if (callback) callback(false); return; }
+
+    let index = 0;
+    let hasError = false;
+
+    function writeNextBatch() {
+        if (index >= keys.length) {
+            if (callback) callback(hasError);
+            return;
+        }
+        const batchKeys = keys.slice(index, index + batchSize);
+        const batch = {};
+        batchKeys.forEach(k => { batch[k] = items[k]; });
+        index += batchSize;
+
+        chrome.storage.local.set(batch, () => {
+            if (chrome.runtime.lastError) {
+                console.error('[词根引擎] storage.set 失败:', chrome.runtime.lastError.message);
+                hasError = true;
+                // 尝试显示友好提示（仅在 options 页面有效）
+                if (typeof window.showStatus === 'function') {
+                    window.showStatus('⚠️ 存储空间不足，部分数据未能保存。请在"数据管理"页面导出并清理旧数据。', '#ef4444');
+                }
+            }
+            writeNextBatch();
+        });
+    }
+    writeNextBatch();
+};
+
 window.showStatus = function(msg, color) { 
     const s = document.getElementById('status'); 
     if(!s) return; 

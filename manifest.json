@@ -23,6 +23,7 @@
     "activeTab",
     "scripting",
     "storage",
+    "unlimitedStorage",
     "tts",
     "declarativeNetRequest"
   ],
