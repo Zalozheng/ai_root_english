@@ -3,13 +3,13 @@ name: 发布插件 Release
 on:
   push:
     tags:
-      - 'v*'   # 监听所有 v 开头的 tag，例如 v28.1.2
+      - 'v*'
 
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # 需要写权限才能创建 Release
+      contents: write
 
     steps:
       - name: 检出代码
@@ -25,22 +25,21 @@ jobs:
       - name: 打包插件为 zip
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          # 用 rsync 只复制需要的文件到临时目录，彻底避免 zip --exclude 路径匹配问题
           mkdir /tmp/plugin_build
           rsync -av --progress . /tmp/plugin_build \
-            --exclude=".git" \
-            --exclude=".github" \
-            --exclude="readme.assets" \
-            --exclude="ouput-word" \
-            --exclude="assets" \
-            --exclude="vocab" \
-            --exclude="skill" \
+            --exclude=".git/" \
+            --exclude=".github/" \
+            --exclude="assets/" \
+            --exclude="vocab/" \
+            --exclude="skill/" \
             --exclude="*.md" \
             --exclude="LICENSE"
-          # 进入临时目录打包，确保 zip 内没有多余父目录层级
+          # 验证 vocab 是否被排除
+          echo "=== 检查打包内容，不应出现 vocab ===" 
+          ls /tmp/plugin_build
           cd /tmp/plugin_build
-          zip -r ~/ai_root_english_v${VERSION}.zip .
-          echo "打包完成，大小：$(du -sh ~/ai_root_english_v${VERSION}.zip | cut -f1)"
+          zip -r "$GITHUB_WORKSPACE/ai_root_english_v${VERSION}.zip" .
+          echo "打包完成，大小：$(du -sh "$GITHUB_WORKSPACE/ai_root_english_v${VERSION}.zip" | cut -f1)"
 
       - name: 创建 GitHub Release 并上传 zip
         uses: softprops/action-gh-release@v2
@@ -55,6 +54,6 @@ jobs:
 
             ## 更新日志
             > 请在此处手动填写本次更新内容
-          files: ~/ai_root_english_v${{ steps.version.outputs.version }}.zip
+          files: ${{ github.workspace }}/ai_root_english_v${{ steps.version.outputs.version }}.zip
           draft: false
           prerelease: false
