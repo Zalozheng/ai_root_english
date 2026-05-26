@@ -200,11 +200,41 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
             catch (e) { throw new Error("Ollama JSON解析失败"); }
         });
     } else {
-        let API_URL = config.apiBase.replace(/\/?$/, '') + '/chat/completions';
-        fetchPromise = fetch(API_URL, {
-            method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
-            body: JSON.stringify({ model: config.model || "gpt-4o", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: `请解析单词：${word}` }], temperature: temperature, response_format: { type: "json_object" } })
-        }).then(res => res.json()).then(data => { if (data.error) throw new Error(data.error.message); return data.choices[0].message.content; });
+        if (config.apiProtocol === 'claude') {
+            // ===== Claude Messages API 格式 =====
+            // Base URL 不含 /v1，SDK 路径为 {base}/v1/messages
+            let API_URL = config.apiBase.replace(/\/?$/, '') + '/v1/messages';
+            fetchPromise = fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${config.apiKey}`,
+                    "anthropic-version": "2023-06-01"
+                },
+                body: JSON.stringify({
+                    model: config.model || "claude-opus-4-5",
+                    max_tokens: 4096,
+                    system: systemPrompt,
+                    messages: [{ role: "user", content: `请解析单词：${word}` }]
+                })
+            }).then(async res => {
+                const rawText = await res.text();
+                if (!res.ok) throw new Error(`Claude API 拒绝: ${res.status} ${rawText}`);
+                try {
+                    const data = JSON.parse(rawText);
+                    if (data.error) throw new Error(data.error.message);
+                    // Claude 返回格式: { content: [{ type:"text", text:"..." }] }
+                    return data.content[0].text;
+                } catch(e) { throw new Error("Claude 响应解析失败: " + e.message); }
+            });
+        } else {
+            // ===== OpenAI 兼容格式（默认）=====
+            let API_URL = config.apiBase.replace(/\/?$/, '') + '/chat/completions';
+            fetchPromise = fetch(API_URL, {
+                method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
+                body: JSON.stringify({ model: config.model || "gpt-4o", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: `请解析单词：${word}` }], temperature: temperature, response_format: { type: "json_object" } })
+            }).then(res => res.json()).then(data => { if (data.error) throw new Error(data.error.message); return data.choices[0].message.content; });
+        }
     }
 
     fetchPromise.then(text => {

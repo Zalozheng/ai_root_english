@@ -6,6 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const tempSlider = document.getElementById('model-temp');
     const tempVal = document.getElementById('temp-val');
 
+    // ======= API 协议切换辅助函数（提前定义避免作用域问题）=======
+    function updateApiProtocolUI(protocol) {
+        const baseInput = document.getElementById('api-base');
+        const hintEl = document.getElementById('api-protocol-hint');
+        if (protocol === 'claude') {
+            if (baseInput) baseInput.placeholder = 'https://api.aaaaapi.com  (不含 /v1)';
+            if (hintEl) hintEl.textContent = '发送至 {base}/v1/messages，使用 Bearer 认证';
+        } else {
+            if (baseInput) baseInput.placeholder = 'https://api.openai.com/v1';
+            if (hintEl) hintEl.textContent = 'OpenAI 兼容格式';
+        }
+    }
+
     if(tempSlider) { tempSlider.addEventListener('input', (e) => { tempVal.textContent = e.target.value; }); }
 
     function updateEngineTabs(engineName) {
@@ -85,6 +98,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if(document.getElementById('offline-source')) document.getElementById('offline-source').value = window.appConfig.offlineSource || 'remote';
       if(rootToggleSwitch) rootToggleSwitch.checked = (window.appConfig.rootStrategy || 'keep_old') === 'keep_old';
 
+      // 回显 API 协议选择
+      const apiProtocolSel = document.getElementById('api-protocol');
+      if (apiProtocolSel) {
+          apiProtocolSel.value = window.appConfig.apiProtocol || 'openai';
+          updateApiProtocolUI(apiProtocolSel.value);
+          apiProtocolSel.addEventListener('change', () => {
+              updateApiProtocolUI(apiProtocolSel.value);
+              window.autoSaveConfig();
+          });
+      }
+
       // 状态回显后，同步更新一遍所有 Label 文案
       if (typeof updateLabels === 'function') updateLabels();
 
@@ -126,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const mergedConfig = {
             ...window.appConfig,
             engine: engine, 
+            apiProtocol: document.getElementById('api-protocol') ? document.getElementById('api-protocol').value : 'openai',
             apiBase: document.getElementById('api-base') ? document.getElementById('api-base').value.trim() : '',
             apiKey: document.getElementById('api-key') ? document.getElementById('api-key').value.trim() : '',
             model: document.getElementById('api-model') ? document.getElementById('api-model').value.trim() : '', 
@@ -164,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 输入框失焦自动保存 (API配置等)
-    ['api-base', 'api-key', 'api-model', 'ollama-base', 'ollama-model-select', 'custom-context-input'].forEach(id => {
+    ['api-protocol', 'api-base', 'api-key', 'api-model', 'ollama-base', 'ollama-model-select', 'custom-context-input'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.addEventListener('blur', window.autoSaveConfig);
     });

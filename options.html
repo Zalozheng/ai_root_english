@@ -84,15 +84,25 @@
           </div>
           
           <div class="engine-panel active" id="panel-custom">
+            <div class="form-group">
+              <label style="display:flex; justify-content:space-between; align-items:center;">
+                <span>API 协议</span>
+                <span id="api-protocol-hint" style="font-size:11px; color:#71717a;">OpenAI 兼容格式</span>
+              </label>
+              <select id="api-protocol" style="background:#000;">
+                <option value="openai">🌐 OpenAI 兼容 (chat/completions)</option>
+                <option value="claude">🤖 Claude Messages API (/v1/messages)</option>
+              </select>
+            </div>
             <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="https://api.openai.com/v1" style="background:#000;"></div>
             <div class="form-group">
               <label style="display:flex; justify-content:space-between; align-items:center;">
                 <span>API Key</span>
-                <a href="https://lingkeapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">🔑 获取 API</a>
+                <a href="https://api.aaaaapi.com/register?aff=f90y" target="_blank" class="btn-outline" style="padding: 2px 8px; font-size: 11px;">🔑 获取 API</a>
               </label>
               <input type="password" id="api-key" placeholder="sk-..." style="background:#000;">
             </div>
-            <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" placeholder="gpt-4o" style="background:#000;"></div>
+            <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" id="api-model-input" placeholder="gpt-4o" style="background:#000;"></div>
           </div>
           
           <div class="engine-panel" id="panel-ollama">
