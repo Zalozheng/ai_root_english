@@ -1,4 +1,5 @@
 # AI词根记忆 Pro (AI Root English)
+edg上架 https://microsoftedge.microsoft.com/addons/detail/ai%E8%AF%8D%E6%A0%B9%E5%88%86%E6%9E%90/alfopapnfekaahccaogpcifohefggcpc
 
 ![Gemini_Generated_Image_jh0x60jh0x60jh0x](./assets/Gemini_Generated_Image_jh0x60jh0x60jh0x.png)
 
