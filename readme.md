@@ -181,11 +181,25 @@ Claude 和 codex知道感嗯.
 ```
 ------
 
-## 🤝 贡献与反馈
+## 🤝 npm构建
 
-如果你在使用过程中遇到任何 Bug，或者有更疯狂的脑洞想法（比如支持更多语言、加入艾宾浩斯记忆曲线等），欢迎提交 **Issue** 或发起 **Pull Request**！
+请用npm-dev分支
+或者 npm install npm run dev 测试
+```bash
+ ## 最终流程
 
-如果这个插件帮助了你的英语学习，请给它点一个 ⭐️ **Star** 吧！
+    push tag → GitHub Actions
+        ↓
+    npm ci /或者 npm install
+        ↓
+    npm run build（Vite 混淆打包）
+        ↓
+    打包 dist/ → ai_root_english_v28.3.2.zip
+    npm run zip
+        ↓
+    zip → ai_root_english_v28.3.2.zip解压拉到浏览器扩展目录
+
+```
 
 ## 📄 License
 
