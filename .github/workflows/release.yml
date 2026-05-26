@@ -15,6 +15,12 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
       - name: 读取版本号（从 manifest.json）
         id: version
         run: |
@@ -22,24 +28,20 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "插件版本: $VERSION"
 
-      - name: 打包插件为 zip
+      - name: 安装依赖
+        run: npm ci
+
+      - name: Vite 构建（混淆压缩）
+        run: npm run build
+
+      - name: 打包 dist/ 为 zip
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          mkdir /tmp/plugin_build
-          rsync -av --progress . /tmp/plugin_build \
-            --exclude=".git/" \
-            --exclude=".github/" \
-            --exclude="assets/" \
-            --exclude="vocab/" \
-            --exclude="skill/" \
-            --exclude="*.md" \
-            --exclude="LICENSE"
-          # 验证 vocab 是否被排除
-          echo "=== 检查打包内容，不应出现 vocab ===" 
-          ls /tmp/plugin_build
-          cd /tmp/plugin_build
+          cd dist
           zip -r "$GITHUB_WORKSPACE/ai_root_english_v${VERSION}.zip" .
           echo "打包完成，大小：$(du -sh "$GITHUB_WORKSPACE/ai_root_english_v${VERSION}.zip" | cut -f1)"
+          echo "=== 打包内容 ==="
+          ls -la
 
       - name: 创建 GitHub Release 并上传 zip
         uses: softprops/action-gh-release@v2
