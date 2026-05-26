@@ -40,8 +40,9 @@ export default defineConfig({
     // 复制静态资源目录
     viteStaticCopy({
       targets: [
-        { src: '_locales', dest: '.' },  // 多语言（必须）
-        { src: 'icons',    dest: '.' },  // 图标（必须）
+        { src: '_locales',          dest: '.' },       // 多语言（必须）
+        { src: 'icons',             dest: '.' },       // 图标（必须）
+        { src: 'js/theme-init.js',  dest: 'js' },     // 同步主题脚本（CSP 不允许内联）
       ],
     }),
   ],
