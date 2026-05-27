@@ -6,16 +6,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const tempSlider = document.getElementById('model-temp');
     const tempVal = document.getElementById('temp-val');
 
-    // ======= API 协议切换辅助函数（提前定义避免作用域问题）=======
+    // ======= API 协议切换辅助函数 =======
     function updateApiProtocolUI(protocol) {
         const baseInput = document.getElementById('api-base');
+        const modelInput = document.getElementById('api-model');
         const hintEl = document.getElementById('api-protocol-hint');
+        
+        // 降低补全强度，不再强制修改已有的合法地址
+        if (baseInput && baseInput.value) {
+            let val = baseInput.value.trim();
+            // 只有当用户填写的地址非常短（只有域名）时才辅助补全
+            const isJustDomain = /^(https?:\/\/[^\/]+)\/?$/.test(val);
+            if (isJustDomain) {
+                if (protocol === 'openai') {
+                    baseInput.value = val.replace(/\/?$/, '/v1');
+                }
+            }
+        }
+
+        // 切换协议时自动加载该协议上次保存的模型
+        if (modelInput && window.appConfig) {
+            const protocolModels = window.appConfig.protocolModels || {};
+            if (protocolModels[protocol]) {
+                modelInput.value = protocolModels[protocol];
+            } else {
+                // 默认值
+                modelInput.value = protocol === 'claude' ? 'claude-3-5-sonnet-20240620' : 'gpt-4o';
+            }
+        }
+
         if (protocol === 'claude') {
-            if (baseInput) baseInput.placeholder = 'https://api.aaaaapi.com  (不含 /v1)';
-            if (hintEl) hintEl.textContent = '发送至 {base}/v1/messages，使用 Bearer 认证';
+            if (baseInput) baseInput.placeholder = '例如: https://api.anthropic.com';
+            if (hintEl) hintEl.textContent = '支持完整路径，如包含 /v1/messages 则不自动追加';
         } else {
-            if (baseInput) baseInput.placeholder = 'https://api.openai.com/v1';
-            if (hintEl) hintEl.textContent = 'OpenAI 兼容格式';
+            if (baseInput) baseInput.placeholder = '例如: https://api.openai.com/v1';
+            if (hintEl) hintEl.textContent = '支持完整路径，如包含 /chat/completions 则不自动追加';
         }
     }
 
@@ -47,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
               { id: 'civ6', name: '🏛️ 文明6游戏策划' },
               { id: 'linux_ai', name: '🐧 Linux/AI极客' },
               { id: 'etymology', name: '📖 openai词源' },
-              { id: 'clauda', name: '📖 claude词源' },
+              { id: 'claude', name: '📖 claude词源' },
               { id: 'custom', name: '✍️ 自定义专属角色' }
           ];
       }
@@ -55,10 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const initialPrompts = {
           general: '你是一个深谙\u201c唯名词论\u201d的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n(提示：您可以通过点击【设为基础模板】来覆盖本段系统内置的文字)',
-          civ6: '你是一个《文明6》(Civilization VI) 的资深游戏策划兼历史学家。\n请结合游戏中的科技树、尤里卡触发、世界奇观建设、政策卡组合、时代得分或兵种克制等核心游戏机制进行解析。\n\n(这是文明6模式的专属提示词)',
+          civ6: '你是一个《文明6》(Civilization VI) 的资深游戏策划兼历史学家。\n请结合游戏中的科技树、尤里卡触发、世界奇观建设、政策卡组合、时代得分或兵种克意等核心游戏机制进行解析。\n\n(这是文明6模式的专属提示词)',
           linux_ai: '你是一个极其硬核的 Linux 内核开发者兼 AI (CUDA/Ollama) 架构师。\n请结合Linux终端命令、C++底层内存管理、GPU显存分配、深度学习模型架构、或者极客黑客的计算机底层逻辑进行解析。\n\n(这是极客模式的专属提示词)',
-          clauda: '你是一个英语词汇词源专家，你是一个深谙\u201c唯名词论\u201d的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n仅返回如下纯JSON对象，不要有任何多余文字，memory_lines必须严格输出8个字符串元素：\n{\n  "word": "String",\n  "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",\n  "phonetic_us": "String (美式音标)",\n  "primary_meaning": "String (最常用中文意思)",\n  "noun_source": "String (基础来源名词，格式：英文 (中文))",\n  "parts": [\n    {\n      "segment": "String",\n      "type": "String (词根/前缀/后缀)",\n      "meaning": "String (中文含义)",\n      "deep_origin": "String (历史渊源，内部严禁使用双引号)",\n      "derivatives": ["String"]\n    }\n  ],\n  "memory_lines": [\n    "1. 中文(`英文部件`) + 中文(`英文部件`) → **完整单词**(中文释义)。",\n    "",\n    "2. 💡 情景联想：结合【{CONTEXT}】写画面，30字以内！",\n    "",\n    "3. 极简英文例句带括号中文翻译。",\n    "",\n    "4. 📖 词源故事：用1~2句话讲历史典故或来源趣事，50字以内。",\n    ""\n  ]\n}\n\n(这是词源模式的专属提示词，基于claude真实词源数据)',
-          etymology: '你是一个英语词汇词源专家，你是一个深谙\u201c唯名词论\u201d的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n当用户输入一个英文单词时：\n必须先用 web_search 查询：\nsite:etymonline.com [单词]\n获取真实词源拆解后，再按格式输出。\n禁止凭记忆猜测词根，一律以查询结果为准。\n\n仅返回如下纯JSON对象，不要有任何多余文字：\n{\n  "word": "String",\n  "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",\n  "phonetic_us": "String (美式音标)",\n  "primary_meaning": "String (最常用中文意思)",\n  "noun_source": "String (基础来源名词，格式：英文 (中文))",\n  "parts": [\n    {\n      "segment": "String",\n      "type": "String (词根/前缀/后缀)",\n      "meaning": "String (中文含义)",\n      "deep_origin": "String (历史渊源，内部严禁使用双引号)",\n      "derivatives": ["String"]\n    }\n  ],\n  "memory_lines": [\n    "1. 中文(`英文部件`) + 中文(`英文部件`) → **完整单词**(中文释义)。",\n    "",\n    "2. 💡 情景联想：结合【{CONTEXT}】写画面，30字以内！",\n    "",\n    "3. 极简英文例句带括号中文翻译。",\n    "",\n    "4. 📖 词源故事：用1~2句话讲历史典故或来源趣事，50字以内。",\n    ""\n  ]\n}\n\n(这是词源模式的专属提示词，基于 etymonline.com 真实词源数据)',
+          claude: '你是一个英语词汇词源专家，你是一个深谙\u201c唯名词论\u201d的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n仅返回如下纯JSON对象，不要有任何多余文字，memory_lines必须严格输出8个字符串元素：\n{\n  "word": "String",\n  "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",\n  "phonetic_us": "String (美式音标)",\n  "primary_meaning": "String (最常用中文意思)",\n  "noun_source": "String (基础来源名词，格式：英文 (中文))",\n  "parts": [\n    {\n      "segment": "String",\n      "type": "String (词根/前缀/后缀)",\n      "meaning": "String (中文含义)",\n      "deep_origin": "String (历史渊源，内部严禁使用双引号)",\n      "derivatives": ["String"]\n    }\n  ],\n  "memory_lines": [\n    "1. 中文(`英文部件`) + 中文(`英文部件`) → **完整单词**(中文释义)。",\n    "",\n    "2. 💡 情景联想：结合【{CONTEXT}】写画面，30字以内！",\n    "",\n    "3. 极简英文例句带括号中文翻译。",\n    "",\n    "4. 📖 词源故事：用1~2句话讲历史典故或来源趣事，50字以内。",\n    ""\n  ]\n}\n\n(这是词源模式的专属提示词，基于claude真实词源数据)',
+          etymology: '你是一个英语词汇词源专家，你是一个深谙\u201c唯名词论\u201d的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n当用户输入一个英文单词时：\n如果你具有联网搜索能力，请先查询：\nsite:etymonline.com [单词]\n获取真实词源拆解后，再按格式输出。\n禁止凭记忆猜测词根，一律以真实词源为准。\n\n仅返回如下纯JSON对象，不要有任何多余文字：\n{\n  "word": "String",\n  "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",\n  "phonetic_us": "String (美式音标)",\n  "primary_meaning": "String (最常用中文意思)",\n  "noun_source": "String (基础来源名词，格式：英文 (中文))",\n  "parts": [\n    {\n      "segment": "String",\n      "type": "String (词根/前缀/后缀)",\n      "meaning": "String (中文含义)",\n      "deep_origin": "String (历史渊源，内部严禁使用双引号)",\n      "derivatives": ["String"]\n    }\n  ],\n  "memory_lines": [\n    "1. 中文(`英文部件`) + 中文(`英文部件`) → **完整单词**(中文释义)。",\n    "",\n    "2. 💡 情景联想：结合【{CONTEXT}】写画面，30字以内！",\n    "",\n    "3. 极简英文例句带括号中文翻译。",\n    "",\n    "4. 📖 词源故事：用1~2句话讲历史典故或来源趣事，50字以内。",\n    ""\n  ]\n}\n\n(这是词源模式的专属提示词，基于 etymonline.com 真实数据。注意：部分 API 并不支持联网搜索功能)',
           custom: ""
       };
 
@@ -139,6 +164,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const engine = selectedEngineTab ? selectedEngineTab.dataset.engine : 'custom';
         const curCtx = document.getElementById('prompt-context').value;
         const customNameInput = document.getElementById('custom-context-input');
+        const apiProtocol = document.getElementById('api-protocol') ? document.getElementById('api-protocol').value : 'openai';
+        const apiModel = document.getElementById('api-model') ? document.getElementById('api-model').value.trim() : '';
+
+        // 保存各协议对应的模型
+        const protocolModels = window.appConfig.protocolModels || {};
+        if (apiModel) protocolModels[apiProtocol] = apiModel;
 
         if (curCtx === 'custom' && customNameInput && customNameInput.value.trim()) {
             const customCtxObj = window.appConfig.contexts.find(c => c.id === 'custom');
@@ -150,10 +181,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const mergedConfig = {
             ...window.appConfig,
             engine: engine, 
-            apiProtocol: document.getElementById('api-protocol') ? document.getElementById('api-protocol').value : 'openai',
+            apiProtocol: apiProtocol,
             apiBase: document.getElementById('api-base') ? document.getElementById('api-base').value.trim() : '',
             apiKey: document.getElementById('api-key') ? document.getElementById('api-key').value.trim() : '',
-            model: document.getElementById('api-model') ? document.getElementById('api-model').value.trim() : '', 
+            model: apiModel, 
+            protocolModels: protocolModels, // 记录协议对应的模型
             ollamaBase: document.getElementById('ollama-base') ? document.getElementById('ollama-base').value.trim() : '',
             ollamaModel: document.getElementById('ollama-model-select') ? document.getElementById('ollama-model-select').value : '', 
             promptContext: curCtx,

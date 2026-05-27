@@ -226,29 +226,122 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
                 } catch(e) { throw new Error("Claude 响应解析失败: " + e.message); }
             });
         } else {
-            let API_URL = config.apiBase.replace(/\/?$/, '') + '/chat/completions';
-            const needsWebSearch = systemPrompt.includes('web_search') || systemPrompt.includes('site:');
-            const requestBody = {
-                model: config.model || "gpt-4o",
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: `请解析单词：${word}` }
-                ],
-                temperature: temperature,
-                response_format: { type: "json_object" }
-            };
-            /* 
-            if (needsWebSearch) {
-                requestBody.tools = [{ type: "web_search_preview" }];
+            // 智能构建 API 地址：如果用户已经写了完整路径，则不再追加
+            let API_URL = config.apiBase.trim();
+            if (!API_URL.includes('/chat/completions') && !API_URL.includes('/messages')) {
+                API_URL = API_URL.replace(/\/?$/, '') + '/chat/completions';
             }
-            */
-            fetchPromise = fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
-                body: JSON.stringify(requestBody)
-            }).then(async res => {
-                const rawText = await res.text();
-                if (!res.ok) throw new Error(`OpenAI API 拒绝: ${res.status} ${rawText.slice(0, 200)}`);
+            
+            const needsWebSearch = systemPrompt.includes('web_search') || systemPrompt.includes('site:');
+            
+            // 检查当前 API 是否已被标记为不支持某些参数
+            const unsupportedToolsMap = config.unsupportedToolsMap || {};
+            const isToolUnsupported = unsupportedToolsMap[config.apiBase] === true;
+            const unsupportedParamsMap = config.unsupportedParamsMap || {};
+            const isTempUnsupported = unsupportedParamsMap[config.apiBase + ':temp'] === true;
+            const isJsonFmtUnsupportedWithSearch = unsupportedParamsMap[config.apiBase + ':json_with_search'] === true;
+
+            const makeRequest = (includeTools, includeTemp, includeJsonFmt) => {
+                const requestBody = {
+                    model: config.model || "gpt-4o",
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: `请解析单词：${word}` }
+                    ]
+                };
+                
+                if (includeJsonFmt) {
+                    requestBody.response_format = { type: "json_object" };
+                }
+
+                if (includeTemp) {
+                    requestBody.temperature = temperature;
+                }
+                
+                // 仅在需要联网且未被标记为不支持时尝试添加联网参数
+                if (includeTools) {
+                    requestBody.tools = [{ type: "web_search_preview" }];
+                    requestBody.web_search_options = {}; 
+                }
+
+                return fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
+                    body: JSON.stringify(requestBody)
+                });
+            };
+
+            // 智能决定初始请求参数
+            const shouldTryTools = needsWebSearch && !isToolUnsupported;
+            const shouldTryTemp = !isTempUnsupported;
+            const shouldTryJsonFmt = !(shouldTryTools && isJsonFmtUnsupportedWithSearch);
+            
+            fetchPromise = makeRequest(shouldTryTools, shouldTryTemp, shouldTryJsonFmt).then(async res => {
+                let rawText = await res.text();
+                
+                if (!res.ok) {
+                    let needsRetry = false;
+                    let nextTryTools = shouldTryTools;
+                    let nextTryTemp = shouldTryTemp;
+                    let nextTryJsonFmt = shouldTryJsonFmt;
+
+                    // 1. 检测是否是不支持联网参数
+                    if (shouldTryTools && (
+                        rawText.includes('tools') || 
+                        rawText.includes('web_search_preview') || 
+                        rawText.includes('web_search_options') ||
+                        rawText.includes('Unsupported value')
+                    )) {
+                        console.warn("当前 API 不支持联网参数，正在降级重试...");
+                        nextTryTools = false;
+                        needsRetry = true;
+
+                        chrome.storage.local.get(['app_config'], (currentRes) => {
+                            const updatedConfig = currentRes.app_config || {};
+                            updatedConfig.unsupportedToolsMap = { ...(updatedConfig.unsupportedToolsMap || {}), [config.apiBase]: true };
+                            chrome.storage.local.set({ app_config: updatedConfig });
+                        });
+                    }
+
+                    // 2. 检测是否是不支持 temperature 参数
+                    if (shouldTryTemp && (rawText.includes('temperature') || rawText.includes('incompatible request argument'))) {
+                        console.warn("当前模型不支持 temperature 参数，正在移除重试...");
+                        nextTryTemp = false;
+                        needsRetry = true;
+
+                        chrome.storage.local.get(['app_config'], (currentRes) => {
+                            const updatedConfig = currentRes.app_config || {};
+                            const pMap = updatedConfig.unsupportedParamsMap || {};
+                            pMap[config.apiBase + ':temp'] = true;
+                            updatedConfig.unsupportedParamsMap = pMap;
+                            chrome.storage.local.set({ app_config: updatedConfig });
+                        });
+                    }
+
+                    // 3. 检测是否是 JSON 格式与联网功能冲突
+                    if (shouldTryTools && shouldTryJsonFmt && rawText.includes('json_object') && (rawText.includes('supported with web_search') || rawText.includes('conflict'))) {
+                        console.warn("当前 API 不支持 JSON 格式与联网功能同时开启，正在降级重试...");
+                        nextTryJsonFmt = false;
+                        needsRetry = true;
+
+                        chrome.storage.local.get(['app_config'], (currentRes) => {
+                            const updatedConfig = currentRes.app_config || {};
+                            const pMap = updatedConfig.unsupportedParamsMap || {};
+                            pMap[config.apiBase + ':json_with_search'] = true;
+                            updatedConfig.unsupportedParamsMap = pMap;
+                            chrome.storage.local.set({ app_config: updatedConfig });
+                        });
+                    }
+
+                    if (needsRetry) {
+                        const retryRes = await makeRequest(nextTryTools, nextTryTemp, nextTryJsonFmt);
+                        rawText = await retryRes.text();
+                        if (!retryRes.ok) throw new Error(`OpenAI API 拒绝 (重试): ${retryRes.status} ${rawText.slice(0, 200)}`);
+                    } else {
+                        throw new Error(`OpenAI API 拒绝: ${res.status} ${rawText.slice(0, 200)}`);
+                    }
+                }
+
                 try {
                     const data = JSON.parse(rawText);
                     if (data.error) throw new Error(data.error.message);
