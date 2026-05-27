@@ -75,9 +75,7 @@ window.dbEngine = {
 };
 
 const BUILTIN_FOLDERS = [
-    {id: 'fav_default', name: '⭐ 默认收藏夹'},
-    {id: 'fav_learned', name: '✅ 已学完'},
-    {id: 'fav_review', name: '🔄 待复习'}
+    {id: 'fav_default', name: '⭐ 默认收藏夹'}
 ];
 
 window.appConfig = {
@@ -93,10 +91,16 @@ window.initFavFoldersManager = function() {
         if (!window.appConfig.favFolders || !Array.isArray(window.appConfig.favFolders)) {
             window.appConfig.favFolders = [];
         }
+        // 清理老配置中遗留的已学完和待复习分组（它们现在作为独立的标记筛选框存在）
+        window.appConfig.favFolders = window.appConfig.favFolders.filter(f => f.id !== 'fav_learned' && f.id !== 'fav_review');
+        
         // 确保内置文件夹永远存在于最前面
         BUILTIN_FOLDERS.slice().reverse().forEach(bf => {
-            if (!window.appConfig.favFolders.find(f => f.id === bf.id)) {
+            const existing = window.appConfig.favFolders.find(f => f.id === bf.id);
+            if (!existing) {
                 window.appConfig.favFolders.unshift(bf);
+            } else {
+                existing.name = bf.name;
             }
         });
         window.renderFavFoldersUI();
@@ -110,7 +114,7 @@ window.renderFavFoldersUI = function() {
     const val = statusFilter.value; // 保存当前选中的值
 
     // 清空除了“所有”以外的选项
-    statusFilter.innerHTML = '<option value="all">📁 所有分组 (全部)</option>';
+    statusFilter.innerHTML = '<option value="all">⭐ 所有分组 (全部)</option>';
 
     window.appConfig.favFolders.forEach((folder) => {
         const option = document.createElement('option');
@@ -174,12 +178,23 @@ window.manageFavFolders = function(action) {
             chrome.storage.local.set({ app_config: window.appConfig }, () => {
                 // 清理所有相关词根的标记
                 window.globalRoots.forEach(r => {
+                    let changed = false;
+                    if (r.favorite_folder_ids && r.favorite_folder_ids.includes(selectedId)) {
+                        r.favorite_folder_ids = r.favorite_folder_ids.filter(id => id !== selectedId);
+                        changed = true;
+                    }
                     if (r.favorite_folder_id === selectedId) {
                         r.favorite_folder_id = null;
-                        r.is_favorite = false;
-                        r.learning_status = null;
-                        if (window.dbEngine) window.dbEngine.batchSave('roots', { [r.id || ('R:'+r.segment)]: r });
-                        chrome.storage.local.set({ [r.id || ('R:'+r.segment)]: r });
+                        changed = true;
+                    }
+                    if (r && changed) {
+                        r.favorite_folder_id = (r.favorite_folder_ids && r.favorite_folder_ids[0]) || null;
+                        r.is_favorite = !!(r.favorite_folder_ids && r.favorite_folder_ids.includes('fav_default'));
+                        const rId = r.id || (r.segment ? ('R:' + r.segment.toLowerCase().replace(/^-|-$/g, '').trim()) : null);
+                        if (rId) {
+                            if (window.dbEngine) window.dbEngine.batchSave('roots', { [rId]: r });
+                            chrome.storage.local.set({ [rId]: r });
+                        }
                     }
                 });
                 statusFilter.value = 'all';

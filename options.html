@@ -311,12 +311,17 @@
                     </select>
                     <div style="display: flex; gap: 4px; align-items: center;">
                         <select id="root-status-filter" class="quick-select" style="margin: 0; border-color: #38bdf833; flex: 1;">
-                            <option value="all">📁 所有分组 (全部)</option>
+                            <option value="all">⭐ 所有分组 (全部)</option>
                         </select>
                         <button id="add-fav-btn" style="background:transparent; border:1px solid #3f3f46; color:#a1a1aa; border-radius:6px; cursor:pointer; padding:4px 6px; font-size:12px;" title="新建分组">➕</button>
                         <button id="edit-fav-btn" style="display:none; background:transparent; border:1px solid #3f3f46; color:#38bdf8; border-radius:6px; cursor:pointer; padding:4px 6px; font-size:12px;" title="重命名自定义分组">✏️</button>
                         <button id="del-fav-btn" style="display:none; background:transparent; border:1px solid #3f3f46; color:#ef4444; border-radius:6px; cursor:pointer; padding:4px 6px; font-size:12px;" title="删除自定义分组">🗑️</button>
                     </div>
+                    <select id="root-learning-filter" class="quick-select" style="margin: 0; border-color: #10b98133; width: 100%;">
+                        <option value="all">🏷️ 所有标记 (全部)</option>
+                        <option value="status_learned">✅ 已学完</option>
+                        <option value="status_review">🔄 待复习</option>
+                    </select>
                 </div>
             </div>
             <div id="root-count" style="margin-top: 12px; font-size: 12px; color: #71717a; font-weight: 500; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #333; padding-top: 8px;">

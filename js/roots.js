@@ -83,6 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetType = typeFilterEl ? typeFilterEl.value : 'all';
         const contextFilter = document.getElementById('root-context-filter') ? document.getElementById('root-context-filter').value : 'all';
         const statusFilter = document.getElementById('root-status-filter') ? document.getElementById('root-status-filter').value : 'all';
+        const learningFilterEl = document.getElementById('root-learning-filter');
+        const learningFilter = learningFilterEl ? learningFilterEl.value : 'all';
 
         if (contextFilter !== 'all' && !window.contextRootMap) buildContextRootMap();
 
@@ -96,17 +98,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!rootsInCtx || !rootsInCtx.has(rootSeg)) return false;
             }
 
-            // 分类筛选逻辑
+            // 收藏夹筛选逻辑
             if (statusFilter !== 'all') {
                 let matches = false;
-                if (d.favorite_folder_id === statusFilter) matches = true;
-                
-                // 兼容旧数据的逻辑映射
+                if (d.favorite_folder_ids && d.favorite_folder_ids.includes(statusFilter)) matches = true;
+                if (!matches && d.favorite_folder_id === statusFilter) matches = true;
                 if (!matches && statusFilter === 'fav_default' && d.is_favorite) matches = true;
-                if (!matches && statusFilter === 'fav_learned' && d.learning_status === 'learned') matches = true;
-                if (!matches && statusFilter === 'fav_review' && d.learning_status === 'review') matches = true;
                 
                 if (!matches) return false;
+            }
+
+            // 标记状态筛选逻辑
+            if (learningFilter !== 'all') {
+                if (learningFilter === 'status_learned' && d.learning_status !== 'learned') return false;
+                if (learningFilter === 'status_review' && d.learning_status !== 'review') return false;
             }
 
             if (targetType === 'all') return true;
@@ -360,6 +365,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.triggerRootFilter(true);
             });
         }
+        if(document.getElementById('root-learning-filter')) {
+            document.getElementById('root-learning-filter').addEventListener('change', () => {
+                window.triggerRootFilter(true);
+            });
+        }
         
         // 绑定收藏夹管理按钮
         if(document.getElementById('add-fav-btn')) document.getElementById('add-fav-btn').addEventListener('click', () => window.manageFavFolders('add'));
@@ -573,29 +583,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const favFolders = window.appConfig?.favFolders || [{id: 'fav_default', name: '⭐ 默认收藏夹'}];
         
-        let currentSelectValue = "";
-        if (fullData.learning_status === 'learned') {
-            currentSelectValue = "status_learned";
-        } else if (fullData.learning_status === 'review') {
-            currentSelectValue = "status_review";
-        } else if (fullData.favorite_folder_id || fullData.is_favorite) {
-            currentSelectValue = fullData.favorite_folder_id || 'fav_default';
+        const isLearned = fullData.learning_status === 'learned';
+        const isReview = fullData.learning_status === 'review';
+        
+        let statusOptions = "";
+        statusOptions += `<option value="" style="background:#1e1e1e; color:#fff;" ${!isLearned && !isReview ? 'selected' : ''}>📁 无标记</option>`;
+        statusOptions += `<option value="status_learned" style="background:#1e1e1e; color:#fff;" ${isLearned ? 'selected' : ''}>✅ 已学完</option>`;
+        statusOptions += `<option value="status_review" style="background:#1e1e1e; color:#fff;" ${isReview ? 'selected' : ''}>🔄 待复习</option>`;
+        
+        let statusColor = '#9ca3af';
+        if (isLearned || isReview) {
+            statusColor = '#10b981';
+        }
+
+        const folderIds = fullData.favorite_folder_ids || 
+                          (fullData.favorite_folder_id ? [fullData.favorite_folder_id] : []) ||
+                          (fullData.is_favorite ? ['fav_default'] : []);
+                          
+        let folderPlaceholderText = "未收藏";
+        let folderColor = '#9ca3af';
+        const activeFolders = [];
+        folderIds.forEach(fid => {
+            const folder = favFolders.find(f => f.id === fid);
+            if (folder) {
+                activeFolders.push(folder.name.replace(/^[📁⭐✅🔄]\s*/, ''));
+                folderColor = '#f59e0b';
+            }
+        });
+        if (activeFolders.length > 0) {
+            folderPlaceholderText = activeFolders.join(' | ');
         }
         
-        let folderOptions = `<option value="" style="background:#1e1e1e; color:#fff;">📁 无标记</option>`;
-        folderOptions += `<optgroup label="📚 学习状态">
-            <option value="status_learned" style="background:#1e1e1e; color:#fff;" ${currentSelectValue === 'status_learned' ? 'selected' : ''}>✅ 已学完</option>
-            <option value="status_review" style="background:#1e1e1e; color:#fff;" ${currentSelectValue === 'status_review' ? 'selected' : ''}>🔄 待复习</option>
-        </optgroup>`;
-        folderOptions += `<optgroup label="⭐ 收藏夹">`;
+        let folderOptions = `<option value="" disabled selected hidden>⭐ ${window.escapeHtml(folderPlaceholderText)}</option>`;
+        folderOptions += `<option value="action_clear_folders" style="background:#1e1e1e; color:#ef4444;">❌ 移出所有收藏</option>`;
         favFolders.forEach(f => {
-            folderOptions += `<option value="${f.id}" style="background:#1e1e1e; color:#fff;" ${currentSelectValue === f.id ? 'selected' : ''}>${window.escapeHtml(f.name)}</option>`;
+            const isSelected = folderIds.includes(f.id);
+            const prefix = isSelected ? '✓ ' : '';
+            folderOptions += `<option value="${f.id}" style="background:#1e1e1e; color:#fff;">${prefix}${window.escapeHtml(f.name)}</option>`;
         });
-        folderOptions += `</optgroup>`;
-
-        let selectColor = '#9ca3af';
-        if (currentSelectValue.startsWith('status_')) selectColor = '#10b981';
-        if (currentSelectValue.startsWith('fav_')) selectColor = '#f59e0b';
 
         pane.innerHTML = `
           <div style="margin-bottom: 20px;">
@@ -603,9 +628,16 @@ document.addEventListener('DOMContentLoaded', () => {
                  <span style="font-size: 14px; color: #a1a1aa; text-transform: uppercase;">[ 原生记录: ${window.escapeHtml(data.type)} ]</span>
                  
                  <div style="display: flex; align-items: center; gap: 10px;">
-                     <select class="unified-status-selector" data-key="${rootId}" style="background:transparent; color:${selectColor}; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer;" title="标记学习状态或加入收藏夹">
+                     <!-- 标记状态 -->
+                     <select class="unified-status-selector" data-key="${rootId}" style="background:transparent; color:${statusColor}; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer;" title="标记学习状态">
+                        ${statusOptions}
+                     </select>
+
+                     <!-- 收藏夹 -->
+                     <select class="unified-folder-selector" data-key="${rootId}" style="background:transparent; color:${folderColor}; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer;" title="加入收藏夹">
                         ${folderOptions}
                      </select>
+
                      <button class="detail-action-btn" data-action="delete" data-key="${rootId}" style="background:transparent; border:none; cursor:pointer; font-size:16px; padding:4px; color:#ef4444;" title="彻底删除">🗑️</button>
                      
                      <select class="manual-category-select" data-key="${rootId}" style="background:#27272a; color:#fff; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer; width:max-content !important; margin-left: 8px;" title="手动覆盖分类">
@@ -661,6 +693,85 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (action === 'favorite') fullData.is_favorite = !fullData.is_favorite;
                 if (action === 'learned') fullData.learning_status = fullData.learning_status === 'learned' ? null : 'learned';
                 if (action === 'review') fullData.learning_status = fullData.learning_status === 'review' ? null : 'review';
+                
+                if (window.dbEngine) await window.dbEngine.batchSave('roots', { [key]: fullData });
+                chrome.storage.local.set({ [key]: fullData }, () => {
+                    window.renderRootDetail(fullData);
+                    window.triggerRootFilter(false);
+                });
+            });
+        });
+
+        // 标记状态 select 改变事件
+        pane.querySelectorAll('.unified-status-selector').forEach(el => {
+            el.addEventListener('change', async (e) => {
+                const val = e.target.value;
+                const key = e.target.getAttribute('data-key');
+                
+                if (val === 'status_learned') {
+                    fullData.learning_status = 'learned';
+                } else if (val === 'status_review') {
+                    fullData.learning_status = 'review';
+                } else {
+                    fullData.learning_status = null;
+                }
+                
+                if (window.globalRoots) {
+                    const idx = window.globalRoots.findIndex(r => {
+                        const rId = r.id || ('R:' + (r.segment||'').toLowerCase().replace(/^-|-$/g, '').trim());
+                        return rId === key;
+                    });
+                    if (idx !== -1) {
+                        window.globalRoots[idx] = fullData;
+                    }
+                }
+                
+                if (window.dbEngine) await window.dbEngine.batchSave('roots', { [key]: fullData });
+                chrome.storage.local.set({ [key]: fullData }, () => {
+                    window.renderRootDetail(fullData);
+                    window.triggerRootFilter(false);
+                });
+            });
+        });
+
+        // 收藏夹 select 改变事件
+        pane.querySelectorAll('.unified-folder-selector').forEach(el => {
+            el.addEventListener('change', async (e) => {
+                const val = e.target.value;
+                const key = e.target.getAttribute('data-key');
+                
+                if (!fullData.favorite_folder_ids || !Array.isArray(fullData.favorite_folder_ids)) {
+                    fullData.favorite_folder_ids = [];
+                    if (fullData.favorite_folder_id) {
+                        fullData.favorite_folder_ids.push(fullData.favorite_folder_id);
+                    } else if (fullData.is_favorite) {
+                        fullData.favorite_folder_ids.push('fav_default');
+                    }
+                }
+                
+                if (val === 'action_clear_folders') {
+                    fullData.favorite_folder_ids = [];
+                    fullData.favorite_folder_id = null;
+                    fullData.is_favorite = false;
+                } else if (val.startsWith('fav_')) {
+                    if (fullData.favorite_folder_ids.includes(val)) {
+                        fullData.favorite_folder_ids = fullData.favorite_folder_ids.filter(id => id !== val);
+                    } else {
+                        fullData.favorite_folder_ids.push(val);
+                    }
+                    fullData.favorite_folder_id = fullData.favorite_folder_ids[0] || null;
+                    fullData.is_favorite = fullData.favorite_folder_ids.includes('fav_default');
+                }
+                
+                if (window.globalRoots) {
+                    const idx = window.globalRoots.findIndex(r => {
+                        const rId = r.id || ('R:' + (r.segment||'').toLowerCase().replace(/^-|-$/g, '').trim());
+                        return rId === key;
+                    });
+                    if (idx !== -1) {
+                        window.globalRoots[idx] = fullData;
+                    }
+                }
                 
                 if (window.dbEngine) await window.dbEngine.batchSave('roots', { [key]: fullData });
                 chrome.storage.local.set({ [key]: fullData }, () => {
