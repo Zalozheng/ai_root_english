@@ -1,10 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 缓存当前的筛选结果，避免重复计算
+    window.allWordsCache = []; 
+
     window.loadWordsLibrary = function(callback) {
-        chrome.storage.local.get(null, (items) => {
-            window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
-            window.globalRoots = Object.keys(items).filter(k => k.startsWith('R:')).map(k => items[k]);
-            window.triggerWordFilter();
-            if (callback) callback();
+        return new Promise(async (resolve) => {
+            try {
+                const db = await window.dbEngine.init();
+                const transaction = db.transaction(['words'], 'readonly');
+                const store = transaction.objectStore('words');
+                const request = store.getAll();
+                
+                request.onsuccess = () => {
+                    window.globalWords = request.result;
+                    window.triggerWordFilter();
+                    if (callback) callback();
+                    resolve();
+                };
+                request.onerror = () => {
+                    console.error('DB加载失败');
+                    resolve();
+                };
+            } catch (err) {
+                chrome.storage.local.get(null, (items) => {
+                    window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
+                    window.triggerWordFilter();
+                    if (callback) callback();
+                    resolve();
+                });
+            }
         });
     };
 
@@ -36,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (contextFilter === 'all') return true;
             
-            // 检查该词在所选情景下是否有记忆记录
             const map = d.memory_lines_map || {};
             return Object.keys(map).some(k => k.endsWith(`_${contextFilter}`));
         });
@@ -59,43 +81,67 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderWordList(words) {
         const listEl = document.getElementById('word-list');
         if(!listEl) return;
+        
+        // 核心加速：无论你有多少词，我们首屏只渲染 100 个！
+        // 这样 DOM 树会非常轻量，操作起来瞬间响应。
+        const DISPLAY_LIMIT = 100;
+        const displayWords = words.slice(0, DISPLAY_LIMIT);
+        
         listEl.innerHTML = words.length === 0 ? '<div style="color:#888; text-align:center; padding: 20px;">词库空空如也</div>' : '';
-        words.forEach(data => {
-            const actualWord = data.word || data.display_breakdown?.replace(/\./g, '') || 'Unknown';
+        
+        displayWords.forEach(data => {
+            const actualWord = data.word || (data.id ? data.id.replace('W:', '') : 'Unknown');
             const freqHtml = `<span style="font-size:11px; color:#f59e0b; margin-left:8px;" title="查阅次数">🔥${data.lookup_count || 0}</span>`;
             
-            const li = document.createElement('li'); li.className = 'data-item';
-            li.innerHTML = `<div class="data-item-title">${window.escapeHtml(actualWord)} <div><span style="font-size:12px; color:#10b981;">/${window.escapeHtml(data.phonetic_us || '-')}/</span> ${freqHtml}</div></div><div class="data-item-sub">${window.escapeHtml(data.primary_meaning)}</div>`;
+            const li = document.createElement('li'); 
+            li.className = 'data-item';
+            li.innerHTML = `<div class="data-item-title">${window.escapeHtml(actualWord)} <div><span style="font-size:12px; color:#10b981;">/${window.escapeHtml(data.phonetic_us || '-')}/</span> ${freqHtml}</div></div><div class="data-item-sub">${window.escapeHtml(data.primary_meaning || '点击查看详情')}</div>`;
             li.addEventListener('click', () => {
                 document.querySelectorAll('#word-list .data-item').forEach(el => el.classList.remove('selected'));
-                li.classList.add('selected'); window.renderWordDetail(data);
+                li.classList.add('selected'); 
+                window.renderWordDetail(data);
             });
             listEl.appendChild(li);
         });
+
+        // 如果还有更多，提示用户
+        if (words.length > DISPLAY_LIMIT) {
+            const more = document.createElement('div');
+            more.style.cssText = 'text-align:center; padding:15px; color:#52525b; font-size:12px; border-top:1px dashed #333;';
+            more.textContent = `... 还有 ${words.length - DISPLAY_LIMIT} 个单词，请使用上方搜索框精准查找 ...`;
+            listEl.appendChild(more);
+        }
     }
 
-    window.renderWordDetail = function(data) {
+    window.renderWordDetail = async function(data) {
         const pane = document.getElementById('word-detail');
         if(!pane) return;
         
-        const cleanWordKey = "W:" + (data.word || data.display_breakdown || '').toLowerCase().trim();
-        chrome.storage.local.get([cleanWordKey], (res) => {
-            if (res[cleanWordKey]) {
-                res[cleanWordKey].lookup_count = (res[cleanWordKey].lookup_count || 0) + 1; res[cleanWordKey].updated_at = Date.now();
-                chrome.storage.local.set({ [cleanWordKey]: res[cleanWordKey] });
-                data.lookup_count = res[cleanWordKey].lookup_count; data.updated_at = res[cleanWordKey].updated_at;
+        // 关键点：点击时才去查最新的完整数据
+        const wordId = data.id || ("W:" + (data.word || '').toLowerCase().trim());
+        let fullData = data;
+        try {
+            const dbData = await window.dbEngine.get('words', wordId);
+            if (dbData) {
+                fullData = dbData;
+                // 更新查阅次数
+                fullData.lookup_count = (fullData.lookup_count || 0) + 1;
+                fullData.updated_at = Date.now();
+                window.dbEngine.batchSave('words', { [wordId]: fullData });
+                // 同步回 storage 以保持兼容
+                chrome.storage.local.set({ [wordId]: fullData });
             }
-        });
+        } catch(e) { console.error('获取详情失败', e); }
 
         const contextKey = document.getElementById('prompt-context') ? document.getElementById('prompt-context').value : 'general';
 
         // 读取所有可能的 key（custom/remote/ollama），优先用有内容的
-        const map = data.memory_lines_map || {};
+        const map = fullData.memory_lines_map || {};
         const customLines = map[`custom_${contextKey}`] || null;
         const apiLines    = map[`remote_${contextKey}`]  || null;
         const ollamaLines = map[`ollama_${contextKey}`]  || null;
 
-        let mLines = data.memory_lines || []; let activeSource = "默认";
+        let mLines = fullData.memory_lines || []; let activeSource = "默认";
         if      (customLines && customLines.length > 0) { mLines = customLines; activeSource = "custom"; }
         else if (apiLines    && apiLines.length    > 0) { mLines = apiLines;    activeSource = "remote"; }
         else if (ollamaLines && ollamaLines.length > 0) { mLines = ollamaLines; activeSource = "ollama"; }

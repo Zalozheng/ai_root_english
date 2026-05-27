@@ -1,10 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
     window.loadRootsLibrary = function(callback) {
-        chrome.storage.local.get(null, (items) => {
-            window.globalRoots = Object.keys(items).filter(k => k.startsWith('R:')).map(k => items[k]);
-            window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
-            window.triggerRootFilter();
-            if (callback) callback();
+        return new Promise(async (resolve) => {
+            try {
+                const db = await window.dbEngine.init();
+                const transaction = db.transaction(['roots'], 'readonly');
+                const store = transaction.objectStore('roots');
+                const request = store.getAll();
+                
+                request.onsuccess = () => {
+                    window.globalRoots = request.result;
+                    if (!window.globalWords || window.globalWords.length === 0) {
+                        const wordTx = db.transaction(['words'], 'readonly');
+                        const wordStore = wordTx.objectStore('words');
+                        const wordReq = wordStore.getAll();
+                        wordReq.onsuccess = () => {
+                            window.globalWords = wordReq.result;
+                            window.triggerRootFilter();
+                            if (callback) callback();
+                            resolve();
+                        };
+                        wordReq.onerror = () => resolve();
+                    } else {
+                        window.triggerRootFilter();
+                        if (callback) callback();
+                        resolve();
+                    }
+                };
+                request.onerror = () => resolve();
+            } catch (err) {
+                chrome.storage.local.get(null, (items) => {
+                    window.globalRoots = Object.keys(items).filter(k => k.startsWith('R:')).map(k => items[k]);
+                    window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
+                    window.triggerRootFilter();
+                    if (callback) callback();
+                    resolve();
+                });
+            }
         });
     };
 
@@ -23,6 +54,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // 性能优化：缓存情景与词根的映射关系
+    window.contextRootMap = null;
+    function buildContextRootMap() {
+        if (!window.globalWords) return;
+        const map = {};
+        window.globalWords.forEach(w => {
+            const mLinesMap = w.memory_lines_map || {};
+            const wordRoots = (w.parts || []).map(p => (p.segment || '').toLowerCase().replace(/^-|-$/g, '').trim()).filter(Boolean);
+            
+            Object.keys(mLinesMap).forEach(k => {
+                if (k.includes('_')) {
+                    const ctxId = k.split('_').slice(1).join('_');
+                    if (!map[ctxId]) map[ctxId] = new Set();
+                    wordRoots.forEach(r => map[ctxId].add(r));
+                }
+            });
+        });
+        window.contextRootMap = map;
+    }
+
     window.triggerRootFilter = function() {
         const searchEl = document.getElementById('root-search');
         if(!searchEl) return;
@@ -32,19 +83,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetType = typeFilterEl ? typeFilterEl.value : 'all';
         const contextFilter = document.getElementById('root-context-filter') ? document.getElementById('root-context-filter').value : 'all';
 
+        // 如果需要按情景过滤，且还没构建映射表，则构建之
+        if (contextFilter !== 'all' && !window.contextRootMap) {
+            buildContextRootMap();
+        }
+
         let filtered = window.globalRoots.filter(d => {
             const matchSearch = (d.segment || '').toLowerCase().includes(q) || (d.meaning || '').includes(q);
             if (!matchSearch) return false;
 
-            // 情景过滤逻辑：检查是否有属于该情景的单词使用了此词根
-            if (contextFilter !== 'all' && window.globalWords && window.globalWords.length > 0) {
+            // 极速过滤：直接查表，不再跑 O(N*M) 的嵌套循环
+            if (contextFilter !== 'all' && window.contextRootMap) {
                 const rootSeg = (d.segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
-                const isUsedInContext = window.globalWords.some(w => {
-                    const hasCtx = w.memory_lines_map && Object.keys(w.memory_lines_map).some(k => k.endsWith(`_${contextFilter}`));
-                    if (!hasCtx) return false;
-                    return (w.parts || []).some(p => p.segment.toLowerCase().replace(/^-|-$/g, '').trim() === rootSeg);
-                });
-                if (!isUsedInContext) return false;
+                const rootsInCtx = window.contextRootMap[contextFilter];
+                if (!rootsInCtx || !rootsInCtx.has(rootSeg)) return false;
             }
 
             if (targetType === 'all') return true;
@@ -89,33 +141,51 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderRootList(roots) {
         const listEl = document.getElementById('root-list');
         if(!listEl) return;
+        
+        const DISPLAY_LIMIT = 100;
+        const displayRoots = roots.slice(0, DISPLAY_LIMIT);
+        
         listEl.innerHTML = roots.length === 0 ? '<div style="color:#888; text-align:center; padding: 20px;">未收录</div>' : '';
-        roots.forEach(data => {
-            const li = document.createElement('li'); li.className = 'data-item';
+        
+        displayRoots.forEach(data => {
+            const li = document.createElement('li'); 
+            li.className = 'data-item';
             const freqHtml = `<span style="font-size:11px; color:#f59e0b; margin-left:8px;" title="查阅次数">🔥${data.lookup_count || 0}</span>`;
-            li.innerHTML = `<div class="data-item-title"><span style="color:#38bdf8;">${window.escapeHtml(data.segment)}</span> ${freqHtml}</div><div class="data-item-sub">${window.escapeHtml(data.meaning)}</div>`;
+            li.innerHTML = `<div class="data-item-title"><span style="color:#38bdf8;">${window.escapeHtml(data.segment)}</span> ${freqHtml}</div><div class="data-item-sub">${window.escapeHtml(data.meaning || '点击查看详情')}</div>`;
             li.addEventListener('click', () => {
                 document.querySelectorAll('#root-list .data-item').forEach(el => el.classList.remove('selected'));
-                li.classList.add('selected'); window.renderRootDetail(data);
+                li.classList.add('selected'); 
+                window.renderRootDetail(data);
             });
             listEl.appendChild(li);
         });
+
+        if (roots.length > DISPLAY_LIMIT) {
+            const more = document.createElement('div');
+            more.style.cssText = 'text-align:center; padding:15px; color:#52525b; font-size:12px; border-top:1px dashed #333;';
+            more.textContent = `... 还有 ${roots.length - DISPLAY_LIMIT} 个词根，请使用上方搜索框查找 ...`;
+            listEl.appendChild(more);
+        }
     }
 
-    window.renderRootDetail = function(data) {
+    window.renderRootDetail = async function(data) {
         const pane = document.getElementById('root-detail');
         if(!pane) return;
 
-        const cleanRootKey = "R:" + (data.segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
-        chrome.storage.local.get([cleanRootKey], (res) => {
-            if (res[cleanRootKey]) {
-                res[cleanRootKey].lookup_count = (res[cleanRootKey].lookup_count || 0) + 1; res[cleanRootKey].updated_at = Date.now();
-                chrome.storage.local.set({ [cleanRootKey]: res[cleanRootKey] });
-                data.lookup_count = res[cleanRootKey].lookup_count; data.updated_at = res[cleanRootKey].updated_at;
+        const rootId = data.id || ("R:" + (data.segment || '').toLowerCase().replace(/^-|-$/g, '').trim());
+        let fullData = data;
+        try {
+            const dbData = await window.dbEngine.get('roots', rootId);
+            if (dbData) {
+                fullData = dbData;
+                fullData.lookup_count = (fullData.lookup_count || 0) + 1;
+                fullData.updated_at = Date.now();
+                window.dbEngine.batchSave('roots', { [rootId]: fullData });
+                chrome.storage.local.set({ [rootId]: fullData });
             }
-        });
+        } catch(e) { console.error('获取详情失败', e); }
 
-        const derivHtml = (data.derivatives || []).map(d => `<span class="deriv-tag jump-word-trigger" data-word="${window.escapeHtml(d)}">${window.escapeHtml(d)}</span>`).join('') || '<span style="color:#666;">暂无记录</span>';
+        const derivHtml = (fullData.derivatives || []).map(d => `<span class="deriv-tag jump-word-trigger" data-word="${window.escapeHtml(d)}">${window.escapeHtml(d)}</span>`).join('') || '<span style="color:#666;">暂无记录</span>';
 
         // 修复 1号位：优化下拉框样式和位置，强制深色主题和自动宽度
         pane.innerHTML = `
@@ -123,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
                  <span style="font-size: 14px; color: #a1a1aa; text-transform: uppercase;">[ 原生记录: ${window.escapeHtml(data.type)} ]</span>
                  
-                 <select class="manual-category-select" data-key="${cleanRootKey}" style="background:#27272a; color:#fff; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer; width:max-content !important;" title="手动覆盖分类">
+                 <select class="manual-category-select" data-key="${rootId}" style="background:#27272a; color:#fff; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer; width:max-content !important;" title="手动覆盖分类">
                      <option value="" style="background:#1e1e1e; color:#fff;">⚙️ 自动分配</option>
                      <option value="前缀" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '前缀' ? 'selected' : ''}>📌 强制归为: 前缀</option>
                      <option value="词根" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '词根' ? 'selected' : ''}>🌱 强制归为: 词根</option>

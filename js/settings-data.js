@@ -105,7 +105,11 @@ window.initDataEngine = function() {
     const importFile = document.getElementById('import-file');
     let pendingImportType = 'all';
 
-    function triggerImport(type) { pendingImportType = type; importFile.click(); }
+    function triggerImport(type) { 
+        if (window.dataBusy) return window.showStatus("⚠️ 系统正忙，请稍候...", "#f59e0b");
+        pendingImportType = type; 
+        importFile.click(); 
+    }
     
     if(document.getElementById('import-words-btn')) document.getElementById('import-words-btn').addEventListener('click', () => triggerImport('words'));
     if(document.getElementById('import-roots-btn')) document.getElementById('import-roots-btn').addEventListener('click', () => triggerImport('roots'));
@@ -117,14 +121,22 @@ window.initDataEngine = function() {
             const isReplaceMode = document.getElementById('import-mode').checked;
             const scopeCtx = getActionScope();
             
+            window.dataBusy = true;
+            window.showProgress("🚀 正在导入词库", 5, "正在读取 JSON 文件...");
+
             const reader = new FileReader();
             reader.onload = (ev) => {
                 try {
                     const data = JSON.parse(ev.target.result);
                     let importedData = {};
                     let extractedRoots = {};
+                    const keys = Object.keys(data);
+                    const totalKeys = keys.length;
                     
-                    for(let k in data) {
+                    window.showProgress("🚀 正在解析数据", 15, `共 ${totalKeys} 条记录...`);
+
+                    for(let i=0; i<totalKeys; i++) {
+                        const k = keys[i];
                         let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
                         if (!isWord && !isRoot) continue;
                         
@@ -185,6 +197,7 @@ window.initDataEngine = function() {
                                 importedData[k] = data[k];
                             }
                         }
+                        if (i % 200 === 0) window.showProgress("🚀 正在解析数据", Math.round(15 + (i/totalKeys)*20), `解析进度: ${i}/${totalKeys}`);
                     }
 
                     for (let rk in extractedRoots) {
@@ -193,6 +206,8 @@ window.initDataEngine = function() {
                     }
 
                     if (Object.keys(importedData).length === 0) {
+                        window.dataBusy = false;
+                        window.hideProgress();
                         window.showStatus("⚠️ JSON中没有符合条件的数据", "#f59e0b");
                         importFile.value = '';
                         return;
@@ -257,30 +272,52 @@ window.initDataEngine = function() {
                             keysToRemove = keysToRemove.filter(rk => rk !== k);
                         }
 
-                        let finalize = () => {
-                            if (Object.keys(toSave).length > 0) {
+                        let finalize = async () => {
+                            const totalToSave = Object.keys(toSave).length;
+                            if (totalToSave > 0) {
+                                window.showProgress("💾 正在持久化存储", 60, `正在同步数据库... (共 ${totalToSave} 条)`);
+                                if (window.dbEngine && typeof window.dbEngine.batchSave === 'function') {
+                                    const wordsToDb = {}; const rootsToDb = {};
+                                    for(let k in toSave) {
+                                        if(k.startsWith('W:')) wordsToDb[k] = toSave[k];
+                                        if(k.startsWith('R:')) rootsToDb[k] = toSave[k];
+                                    }
+                                    await window.dbEngine.batchSave('words', wordsToDb).catch(e => console.warn('DB同步跳过:', e));
+                                    window.showProgress("💾 正在持久化存储", 80, `数据库同步完成，正在更新配置...`);
+                                    await window.dbEngine.batchSave('roots', rootsToDb).catch(e => console.warn('DB同步跳过:', e));
+                                }
+
                                 window.safeStorageSet(toSave, (hasError) => {
+                                    window.dataBusy = false;
                                     let wordCount = Object.keys(toSave).filter(k => k.startsWith('W:')).length;
                                     let rootCount = Object.keys(toSave).filter(k => k.startsWith('R:')).length;
                                     if (hasError) {
-                                        window.showStatus(`⚠️ 存储空间不足，部分数据未能导入。请先清理旧数据再重试。`, '#ef4444');
+                                        window.finishProgress("⚠️ 导入部分受限", `存储配额不足。导入单词:${wordCount}, 词根:${rootCount}`);
                                     } else {
-                                        window.showStatus(`✅ ${isReplaceMode?'替换':'合并'}导入成功 (单词:${wordCount}, 词根:${rootCount})`, '#10b981');
+                                        window.finishProgress("✅ 导入成功", `成功导入单词:${wordCount}, 词根:${rootCount}。点击“完成”刷新列表。`);
                                     }
                                     if(window.loadWordsLibrary) window.loadWordsLibrary();
                                     if(window.loadRootsLibrary) window.loadRootsLibrary();
-                                    if(window.clearWordDetail) window.clearWordDetail();
-                                    if(window.clearRootDetail) window.clearRootDetail();
                                 });
                             } else {
+                                window.dataBusy = false;
+                                window.hideProgress();
                                 window.showStatus(`✅ 操作完成`, '#10b981');
                             }
                         };
 
-                        if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove, finalize);
-                        else finalize();
+                        if (keysToRemove.length > 0) {
+                            window.showProgress("🧹 正在清理旧数据", 40, `正在移除 ${keysToRemove.length} 条旧记录...`);
+                            chrome.storage.local.remove(keysToRemove, finalize);
+                        } else {
+                            finalize();
+                        }
                     });
-                } catch (err) { window.showStatus("❌ 解析失败，非标准JSON", "#ef4444"); }
+                } catch (err) { 
+                    window.dataBusy = false; 
+                    window.hideProgress();
+                    window.showStatus("❌ 解析失败，非标准JSON", "#ef4444"); 
+                }
                 finally { importFile.value = ''; }
             };
             reader.readAsText(file);
@@ -289,6 +326,8 @@ window.initDataEngine = function() {
 
     // 删除引擎
     function handleDelete(type) {
+        if (window.dataBusy) return window.showStatus("⚠️ 系统正忙，请稍候...", "#f59e0b");
+        
         const scopeCtx = getActionScope();
         const typeName = type === 'words' ? '纯单词' : (type === 'roots' ? '纯词根' : '所有单词和词根');
         
@@ -299,9 +338,12 @@ window.initDataEngine = function() {
             scopeName = `【仅限当前情景: ${contextText}】下的`;
         }
         
-        if(!confirm(`🗑️ 危险：确定要彻底清除 ${scopeName} ${typeName} 吗？`)) return;
+        if(!confirm(`🗑️ 确定要彻底清除 ${scopeName} ${typeName} 吗？`)) return;
 
-        chrome.storage.local.get(null, (items) => {
+        window.dataBusy = true;
+        window.showProgress("🗑️ 准备清理磁盘", 10, "正在扫描待删除记录...");
+
+        chrome.storage.local.get(null, async (items) => {
             let keysToRemove = [];
             let itemsToUpdate = {};
             let usedRoots = null;
@@ -329,45 +371,73 @@ window.initDataEngine = function() {
                             Object.keys(cleanItem.memory_lines_map).forEach(mk => { 
                                 if (mk.endsWith(`_${scopeCtx}`)) delete cleanItem.memory_lines_map[mk]; 
                             });
-                            if (Object.keys(cleanItem.memory_lines_map).length === 0) {
-                                keysToRemove.push(k);
-                            } else {
-                                itemsToUpdate[k] = cleanItem;
-                            }
+                            if (Object.keys(cleanItem.memory_lines_map).length === 0) keysToRemove.push(k);
+                            else itemsToUpdate[k] = cleanItem;
                         }
                     } else if (isRoot) {
                         let rootSeg = (items[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
-                        // 优化删除逻辑：
-                        // 1. 如果该词根在这个情景被使用过，且没被其他情景使用，删掉。
-                        // 2. 如果该词根是一个“孤儿”（没被任何情景的任何单词使用），且我们正在当前情景执行清理，也删掉。
                         let isUsedInCtx = usedRoots.has(rootSeg);
                         let isUsedElsewhere = otherRoots.has(rootSeg);
-                        
-                        if (isUsedInCtx && !isUsedElsewhere) {
-                            keysToRemove.push(k);
-                        } else if (!isUsedInCtx && !isUsedElsewhere) {
-                            // 彻底清理无主词根
-                            keysToRemove.push(k);
-                        }
+                        if (isUsedInCtx && !isUsedElsewhere) keysToRemove.push(k);
+                        else if (!isUsedInCtx && !isUsedElsewhere) keysToRemove.push(k);
                     }
                 }
             }
             
-            let finalize = () => {
-                let wCount = keysToRemove.filter(k => k.startsWith('W:')).length;
-                let rCount = keysToRemove.filter(k => k.startsWith('R:')).length;
-                window.showStatus(`🗑️ 清除完成 (删除了单词:${wCount}, 词根:${rCount})`, "#10b981");
-                if(window.loadWordsLibrary) window.loadWordsLibrary();
-                if(window.loadRootsLibrary) window.loadRootsLibrary();
+            let finalize = async () => {
+                // 立即执行的 UI/内存清理
+                window.globalWords = [];
+                window.globalRoots = [];
+                window.contextRootMap = null;
+                const wList = document.getElementById('word-list');
+                const rList = document.getElementById('root-list');
+                if (wList && (!scopeCtx || type === 'words' || type === 'all')) wList.innerHTML = '';
+                if (rList && (!scopeCtx || type === 'roots' || type === 'all')) rList.innerHTML = '';
                 if(window.clearWordDetail) window.clearWordDetail();
                 if(window.clearRootDetail) window.clearRootDetail();
-            };
-            let tasks = 0;
-            if (keysToRemove.length > 0) tasks++;
-            if (Object.keys(itemsToUpdate).length > 0) tasks++;
-            
-            if (tasks === 0) return window.showStatus("✅ 该范围内已被清空", "#10b981");
 
+                window.showProgress("🗑️ 物理抹除中", 40, "正在清理磁盘数据库，请稍候...");
+
+                // 执行物理清理
+                if (window.dbEngine) {
+                    if (!scopeCtx) {
+                        if (type === 'words' || type === 'all') await window.dbEngine.clear('words');
+                        window.showProgress("🗑️ 物理抹除中", 70, "词根库清理中...");
+                        if (type === 'roots' || type === 'all') await window.dbEngine.clear('roots');
+                    } else {
+                        const total = keysToRemove.length;
+                        for (let i=0; i<total; i++) {
+                            const k = keysToRemove[i];
+                            const store = k.startsWith('W:') ? 'words' : 'roots';
+                            await window.dbEngine.delete(store, k);
+                            if (i % 100 === 0) window.showProgress("🗑️ 物理抹除中", 40 + Math.round((i/total)*40), `清理进度: ${i}/${total}`);
+                        }
+                        if (Object.keys(itemsToUpdate).length > 0) {
+                            const wUp = {}; const rUp = {};
+                            for(let k in itemsToUpdate) {
+                                if(k.startsWith('W:')) wUp[k] = itemsToUpdate[k];
+                                else rUp[k] = itemsToUpdate[k];
+                            }
+                            if (Object.keys(wUp).length > 0) await window.dbEngine.batchSave('words', wUp);
+                            if (Object.keys(rUp).length > 0) await window.dbEngine.batchSave('roots', rUp);
+                        }
+                    }
+                }
+
+                window.dataBusy = false;
+                window.finishProgress("✅ 清理完成", "磁盘数据已彻底清空。");
+                if(window.loadWordsLibrary) window.loadWordsLibrary();
+                if(window.loadRootsLibrary) window.loadRootsLibrary();
+            };
+
+            let tasks = (keysToRemove.length > 0 ? 1 : 0) + (Object.keys(itemsToUpdate).length > 0 ? 1 : 0);
+            if (tasks === 0) {
+                if (!scopeCtx) await finalize();
+                else { window.hideProgress(); window.showStatus("✅ 该范围内已被清空", "#10b981"); window.dataBusy = false; }
+                return;
+            }
+
+            window.showProgress("🧹 同步配置", 30, "正在清理 Storage 记录...");
             let done = 0;
             let checkDone = () => { done++; if (done === tasks) finalize(); };
 
