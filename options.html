@@ -91,10 +91,10 @@
               </label>
               <select id="api-protocol" style="background:#000;">
                 <option value="openai">🌐 OpenAI 兼容 (chat/completions)</option>
-                <option value="claude">🤖 Claude Messages API (/v1/messages)</option>
+                <option value="claude">🤖 Anthropic 兼容 (v1/messages)</option>
               </select>
             </div>
-            <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="https://api.openai.com (自动补全 /v1)" style="background:#000;"></div>
+            <div class="form-group"><label>API Base URL</label><input type="text" id="api-base" placeholder="例如: https://api.openai.com/v1" style="background:#000;"></div>
             <div class="form-group">
               <label style="display:flex; justify-content:space-between; align-items:center;">
                 <span>API Key</span>
@@ -102,7 +102,17 @@
               </label>
               <input type="password" id="api-key" placeholder="sk-..." style="background:#000;">
             </div>
-            <div class="form-group" style="margin-bottom:0;"><label>模型名称</label><input type="text" id="api-model" id="api-model-input" placeholder="gpt-4o" style="background:#000;"></div>
+            <div class="form-group" style="margin-bottom:0; position: relative; z-index: 1001;">
+              <label>模型名称 (输入或从下方列表选择)</label>
+              <div class="model-combobox-container" style="position: relative; width: 100%;">
+                <input type="text" id="api-model" placeholder="输入模型名称..." style="width: 100%; background:#000; border: 1px solid #333; border-radius: 8px; padding-right: 40px; height: 38px; box-sizing: border-box;">
+                <div id="model-dropdown-trigger" style="position: absolute; right: 0; top: 0; width: 38px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #38bdf8; font-size: 12px; transition: 0.2s;">▼</div>
+                
+                <ul id="model-dropdown-list" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #111; border: 1px solid #38bdf8; border-radius: 8px; list-style: none; padding: 5px 0; margin: 5px 0 0 0; z-index: 9999; max-height: 300px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border-top: 1px solid #38bdf8;">
+                  <!-- 动态生成列表项 -->
+                </ul>
+              </div>
+            </div>
           </div>
           
           <div class="engine-panel" id="panel-ollama">

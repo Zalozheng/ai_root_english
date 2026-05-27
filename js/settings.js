@@ -6,45 +6,158 @@ document.addEventListener('DOMContentLoaded', () => {
     const tempSlider = document.getElementById('model-temp');
     const tempVal = document.getElementById('temp-val');
 
+    if(tempSlider) { tempSlider.addEventListener('input', (e) => { tempVal.textContent = e.target.value; }); }
+
+    // ======= 模型选择增强逻辑 (Combobox + 历史记录) =======
+    const PRESETS = {
+        openai: [
+            "gpt-4o-mini-search-preview-2025-03-11",
+            "gpt-5.4-nano",
+            "gpt-5.4-mini",
+            "gpt-4o-mini-2024-07-18",
+            "deepseek-v4-flash",
+            "glm-4"
+        ],
+        claude: [
+            "claude-3-5-sonnet-20240620",
+            "claude-opus-4-7",
+            "claude-sonnet-4-6",
+            "claude-haiku-4-5-20251001"
+        ]
+    };
+
+    window.renderModelDropdown = function() {
+        const modelList = document.getElementById('model-dropdown-list');
+        const protocolSelect = document.getElementById('api-protocol');
+        const modelInput = document.getElementById('api-model');
+        if (!modelList || !protocolSelect) return;
+
+        const protocol = protocolSelect.value || 'openai';
+        const presets = PRESETS[protocol] || [];
+        const history = (window.appConfig.modelHistory || {})[protocol] || [];
+        
+        // 合并并去重
+        const allModels = [...new Set([...presets, ...history])];
+        
+        let html = '';
+        if (allModels.length === 0) {
+            html = '<li style="padding: 10px; color: #666; font-size: 12px; text-align: center;">暂无模型</li>';
+        } else {
+            allModels.forEach(m => {
+                const isPreset = presets.includes(m);
+                html += `
+                <li class="model-item" data-val="${m}" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; cursor: pointer; color: #ccc; font-size: 13px; border-bottom: 1px solid #222;">
+                    <span class="model-name" style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${m}${isPreset ? ' <small style="color: #38bdf8; font-size: 10px;">(预设)</small>' : ''}</span>
+                    ${!isPreset ? `<span class="delete-model-btn" data-val="${m}" style="margin-left: 10px; color: #ef4444; padding: 2px 8px; font-weight: bold; border-radius: 4px; transition: 0.2s;">✕</span>` : ''}
+                </li>`;
+            });
+        }
+        modelList.innerHTML = html;
+
+        // 绑定点击模型事件
+        modelList.querySelectorAll('.model-item').forEach(item => {
+            item.addEventListener('mousedown', (e) => {
+                if (e.target.classList.contains('delete-model-btn')) {
+                    e.stopPropagation();
+                    const valToRemove = e.target.dataset.val;
+                    const protocol = protocolSelect.value;
+                    if (!window.appConfig.modelHistory) window.appConfig.modelHistory = {};
+                    window.appConfig.modelHistory[protocol] = (window.appConfig.modelHistory[protocol] || []).filter(v => v !== valToRemove);
+                    chrome.storage.local.set({ app_config: window.appConfig }, window.renderModelDropdown);
+                    return;
+                }
+                modelInput.value = item.dataset.val;
+                window.autoSaveConfig();
+                modelList.style.display = 'none';
+            });
+            item.addEventListener('mouseenter', () => { item.style.background = '#222'; item.style.color = '#fff'; });
+            item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; item.style.color = '#ccc'; });
+        });
+    };
+
+    function initModelCombobox() {
+        const modelInput = document.getElementById('api-model');
+        const modelList = document.getElementById('model-dropdown-list');
+        const modelTrigger = document.getElementById('model-dropdown-trigger');
+        const protocolSelect = document.getElementById('api-protocol');
+        if (!modelInput || !modelList || !modelTrigger) return;
+
+        modelInput.addEventListener('focus', () => { window.renderModelDropdown(); modelList.style.display = 'block'; });
+        modelInput.addEventListener('blur', () => { 
+            const val = modelInput.value.trim();
+            const protocol = protocolSelect.value;
+            if (val && !PRESETS[protocol].includes(val)) {
+                if (!window.appConfig.modelHistory) window.appConfig.modelHistory = {};
+                if (!window.appConfig.modelHistory[protocol]) window.appConfig.modelHistory[protocol] = [];
+                if (!window.appConfig.modelHistory[protocol].includes(val)) {
+                    window.appConfig.modelHistory[protocol].unshift(val);
+                    window.appConfig.modelHistory[protocol] = window.appConfig.modelHistory[protocol].slice(0, 10);
+                    chrome.storage.local.set({ app_config: window.appConfig });
+                }
+            }
+            setTimeout(() => { modelList.style.display = 'none'; }, 200); 
+        });
+        
+        modelInput.addEventListener('input', () => {
+            const filter = modelInput.value.toLowerCase();
+            modelList.querySelectorAll('.model-item').forEach(item => {
+                const text = item.dataset.val.toLowerCase();
+                item.style.display = text.includes(filter) ? 'flex' : 'none';
+            });
+            modelList.style.display = 'block';
+        });
+
+        modelTrigger.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            if (modelList.style.display === 'block') {
+                modelList.style.display = 'none';
+            } else {
+                window.renderModelDropdown();
+                modelList.style.display = 'block';
+                modelInput.focus();
+            }
+        });
+    }
+
     // ======= API 协议切换辅助函数 =======
     function updateApiProtocolUI(protocol) {
         const baseInput = document.getElementById('api-base');
         const modelInput = document.getElementById('api-model');
         const hintEl = document.getElementById('api-protocol-hint');
         
-        // 降低补全强度，不再强制修改已有的合法地址
+        // 自动调整地址路径
         if (baseInput && baseInput.value) {
-            let val = baseInput.value.trim();
-            // 只有当用户填写的地址非常短（只有域名）时才辅助补全
-            const isJustDomain = /^(https?:\/\/[^\/]+)\/?$/.test(val);
-            if (isJustDomain) {
-                if (protocol === 'openai') {
-                    baseInput.value = val.replace(/\/?$/, '/v1');
+            let val = baseInput.value.trim().replace(/\/+$/, '');
+            if (protocol === 'openai') {
+                if (!val.endsWith('/v1') && (val.startsWith('http://') || val.startsWith('https://'))) {
+                    baseInput.value = val + '/v1';
                 }
+            } else if (protocol === 'claude') {
+                baseInput.value = val.replace(/\/v1$/, '');
             }
         }
 
-        // 切换协议时自动加载该协议上次保存的模型
+        // 重新渲染下拉列表
+        if (window.renderModelDropdown) window.renderModelDropdown();
+
+        // 加载记忆模型
         if (modelInput && window.appConfig) {
             const protocolModels = window.appConfig.protocolModels || {};
             if (protocolModels[protocol]) {
                 modelInput.value = protocolModels[protocol];
             } else {
-                // 默认值
-                modelInput.value = protocol === 'claude' ? 'claude-3-5-sonnet-20240620' : 'gpt-4o';
+                modelInput.value = protocol === 'claude' ? 'claude-3-5-sonnet-20240620' : 'gpt-4o-mini-search-preview-2025-03-11';
             }
         }
 
         if (protocol === 'claude') {
             if (baseInput) baseInput.placeholder = '例如: https://api.anthropic.com';
-            if (hintEl) hintEl.textContent = '支持完整路径，如包含 /v1/messages 则不自动追加';
+            if (hintEl) hintEl.textContent = 'Anthropic 兼容格式 (不带 /v1)';
         } else {
             if (baseInput) baseInput.placeholder = '例如: https://api.openai.com/v1';
-            if (hintEl) hintEl.textContent = '支持完整路径，如包含 /chat/completions 则不自动追加';
+            if (hintEl) hintEl.textContent = 'OpenAI 兼容格式';
         }
     }
-
-    if(tempSlider) { tempSlider.addEventListener('input', (e) => { tempVal.textContent = e.target.value; }); }
 
     function updateEngineTabs(engineName) {
         selectedEngine = engineName;
@@ -64,6 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chrome.storage.local.get(['app_config', 'ui_theme'], (res) => {
       window.appConfig = res.app_config || {};
+      
+      // 默认配置初始化
+      if (!window.appConfig.apiBase) window.appConfig.apiBase = 'https://api.aaaaapi.com/v1';
+      if (!window.appConfig.model) window.appConfig.model = 'gpt-4o-mini-search-preview-2025-03-11';
+      if (window.appConfig.autoParse === undefined) window.appConfig.autoParse = true;
+      if (window.appConfig.dataActionContext === undefined) window.appConfig.dataActionContext = true;
+
       updateEngineTabs(window.appConfig.engine || 'custom');
       
       if (!window.appConfig.contexts || window.appConfig.contexts.length === 0) {
@@ -72,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
               { id: 'civ6', name: '🏛️ 文明6游戏策划' },
               { id: 'linux_ai', name: '🐧 Linux/AI极客' },
               { id: 'etymology', name: '📖 openai词源' },
-              { id: 'claude', name: '📖 claude词源' },
+              { id: 'claude', name: '📖 Anthropic词源' },
               { id: 'custom', name: '✍️ 自定义专属角色' }
           ];
       }
@@ -137,6 +257,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (typeof updateLabels === 'function') updateLabels();
+
+      initModelCombobox();
 
       if (typeof window.initContextManager === 'function') {
           window.initContextManager(initialPrompts, defaultGlobalJson);
