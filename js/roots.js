@@ -813,11 +813,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const treeGenBtn = document.getElementById('generate-tree-btn');
                 
                 if (treeSearchInput && treeGenBtn) {
-                    treeSearchInput.value = segment;
-                    // 稍微延迟 100 毫秒点击生成，确保 DOM 已经完全切过去可见
-                    setTimeout(() => {
-                        treeGenBtn.click();
-                    }, 100);
+                    const targetVal = segment.trim();
+                    const centerNode = document.querySelector('#tree-layout-box .node-type-center');
+                    const renderedVal = centerNode ? centerNode.getAttribute('data-label') : '';
+                    
+                    if (renderedVal.toLowerCase().trim() === targetVal.toLowerCase().trim()) {
+                        // 只需要重新居中即可
+                        const miniCenter = document.getElementById('mini-center');
+                        if (miniCenter) {
+                            setTimeout(() => { miniCenter.click(); }, 100);
+                        }
+                    } else {
+                        treeSearchInput.value = targetVal;
+                        // 稍微延迟 100 毫秒点击生成，确保 DOM 已经完全切过去可见
+                        setTimeout(() => {
+                            treeGenBtn.click();
+                        }, 100);
+                    }
                 }
             });
         }

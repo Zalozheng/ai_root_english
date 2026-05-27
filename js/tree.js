@@ -273,11 +273,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function findRoot(segment) {
+        if (!segment) return null;
+        const clean = segment.toLowerCase().replace(/^-|-$/g, '').trim();
+        return globalRoots.find(r => {
+            const rSeg = (r.segment || '').toLowerCase();
+            return rSeg === clean || rSeg.replace(/^-|-$/g, '').trim() === clean;
+        });
+    }
+
     document.getElementById('ctx-jump-btn').addEventListener('click', () => {
         if (!currentActiveJumpData) return;
         contextMenu.style.display = 'none';
-        if (currentActiveJumpData.type === 'root') window.jumpToRoot(currentActiveJumpData.label);
-        else window.jumpToWord(currentActiveJumpData.label);
+        const label = currentActiveJumpData.label;
+        if (currentActiveJumpData.type === 'root' || findRoot(label)) window.jumpToRoot(label);
+        else window.jumpToWord(label);
     });
 
     function handleNodeClick(node) {
@@ -285,14 +295,15 @@ document.addEventListener('DOMContentLoaded', () => {
         node.classList.add('active-node');
         const label = node.getAttribute('data-label');
         const type = node.getAttribute('data-type');
-        const exists = type === 'root' 
-            ? globalRoots.find(r => (r.segment||'').toLowerCase() === label.toLowerCase()) 
+        const isRoot = type === 'root' || (type === 'center' && findRoot(label));
+        const exists = isRoot 
+            ? findRoot(label)
             : globalWords.find(w => (w.word||'').toLowerCase() === label.toLowerCase());
 
         const labelTextEl = node.querySelector('.node-label-text');
         const originalText = labelTextEl ? labelTextEl.innerText : node.innerText;
 
-        if (!exists && (type === 'word' || type === 'center')) {
+        if (!exists && !isRoot && (type === 'word' || type === 'center')) {
             if (labelTextEl) labelTextEl.innerText = `${originalText} (生成中...)`;
             else node.innerText = `${originalText} (生成中...)`;
             node.classList.add('node-generating');
@@ -323,7 +334,10 @@ document.addEventListener('DOMContentLoaded', () => {
             globalWords = Object.keys(items).filter(k=>k.startsWith('W:')).map(k=>items[k]);
             globalRoots = Object.keys(items).filter(k=>k.startsWith('R:')).map(k=>items[k]);
 
-            if (!globalWords.find(w => (w.word||'').toLowerCase() === cleanWord)) {
+            const wData = globalWords.find(w => (w.word||'').toLowerCase() === cleanWord);
+            const rData = findRoot(cleanWord);
+
+            if (!wData && !rData) {
                 domContent.innerHTML = `<div style="padding:100px; color:#38bdf8; text-align:center;"><div style="font-size:40px; animation:spin 1s infinite linear;">🧠</div><div>正在为您现场生成图谱...</div></div>`;
                 chrome.runtime.sendMessage({ action: "fetchLLM", word: cleanWord, forceRefresh: true }, (res) => {
                     if (res && res.success) triggerRender(cleanWord);
@@ -333,7 +347,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             saveToHistory(cleanWord);
 
-            const visited = new Set(); visited.add('W:'+cleanWord);
+            const visited = new Set();
+            visited.add((rData ? 'R:' : 'W:') + cleanWord);
+
             domContent.innerHTML = `<div id="tree-layout-box" style="display:inline-flex; padding:250px; position:relative;">${buildNodeHtml(cleanWord, 'center', 'center', 1, currentMaxDepth, visited)}</div>`;
             tx = 0; ty = 0; scale = 1; applyTransform();
             setTimeout(() => { drawTreeConnections(); centerOnNode(); }, 100);
@@ -346,32 +362,52 @@ document.addEventListener('DOMContentLoaded', () => {
         let meaning = "";
 
         const wData = globalWords.find(w => (w.word||'').toLowerCase() === safeLabel);
-        const rData = globalRoots.find(r => (r.segment||'').toLowerCase() === safeLabel);
+        const rData = findRoot(safeLabel);
 
         if (wData) meaning = getFirstMeaning(wData.primary_meaning);
         else if (rData) meaning = getFirstMeaning(rData.meaning);
 
         if (currentDepth < maxDepth) {
-            if ((type === 'center' || type === 'word') && wData) {
+            if (type === 'center') {
+                if (wData) {
+                    let roots = (wData.parts||[]).map(p => p.segment).filter(Boolean);
+                    let derivs = [];
+                    (wData.parts||[]).forEach(p => {
+                        const rd = findRoot(p.segment);
+                        if (rd && rd.derivatives) derivs.push(...rd.derivatives);
+                    });
+                    derivs = [...new Set(derivs)].filter(d => d.toLowerCase() !== safeLabel).slice(0, 15);
+                    roots = roots.filter(r => !visitedSet.has('R:'+r.toLowerCase()));
+                    derivs = derivs.filter(d => !visitedSet.has('W:'+d.toLowerCase()));
+                    
+                    if (showRoots) leftItems = roots.map(l => ({label:l, type:'root', dir:'left'})); 
+                    if (showWords) rightItems = derivs.map(l => ({label:l, type:'word', dir:'right'})); 
+                } else if (rData) {
+                    let derivs = (rData.derivatives||[]).filter(d => d.toLowerCase() !== safeLabel).slice(0, 15);
+                    derivs = derivs.filter(d => !visitedSet.has('W:'+d.toLowerCase()));
+                    if (showWords) {
+                        const mid = Math.ceil(derivs.length / 2);
+                        const leftDerivs = derivs.slice(0, mid);
+                        const rightDerivs = derivs.slice(mid);
+                        leftItems = leftDerivs.map(l => ({label:l, type:'word', dir:'left'}));
+                        rightItems = rightDerivs.map(l => ({label:l, type:'word', dir:'right'}));
+                    }
+                }
+            } else if (type === 'word' && wData) {
                 let roots = (wData.parts||[]).map(p => p.segment).filter(Boolean);
                 let derivs = [];
                 (wData.parts||[]).forEach(p => {
-                    const rd = globalRoots.find(r => (r.segment||'').toLowerCase() === p.segment.toLowerCase());
+                    const rd = findRoot(p.segment);
                     if (rd && rd.derivatives) derivs.push(...rd.derivatives);
                 });
                 derivs = [...new Set(derivs)].filter(d => d.toLowerCase() !== safeLabel).slice(0, 15);
                 roots = roots.filter(r => !visitedSet.has('R:'+r.toLowerCase()));
                 derivs = derivs.filter(d => !visitedSet.has('W:'+d.toLowerCase()));
                 
-                if (dir === 'center') { 
-                    if (showRoots) leftItems = roots.map(l => ({label:l, type:'root', dir:'left'})); 
-                    if (showWords) rightItems = derivs.map(l => ({label:l, type:'word', dir:'right'})); 
-                }
-                else if (dir === 'right') {
+                if (dir === 'right') {
                     if (showRoots) rightItems.push(...roots.map(l=>({label:l, type:'root', dir:'right'})));
                     if (showWords) rightItems.push(...derivs.map(l=>({label:l, type:'word', dir:'right'})));
-                }
-                else {
+                } else {
                     if (showRoots) leftItems.push(...roots.map(l=>({label:l, type:'root', dir:'left'})));
                     if (showWords) leftItems.push(...derivs.map(l=>({label:l, type:'word', dir:'left'})));
                 }
@@ -395,7 +431,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const cls = type === 'center' ? 'node-type-center active-node' : (type === 'word' ? 'node-type-word' : 'node-type-root');
         
-        // 核心改造：将中文注解直接塞进词框里面 (下半部分)
         let nodeContent = `<div class="node-label-text">${window.escapeHtml(label)}</div>`;
         if (showChinese && meaning) {
             nodeContent += `<div class="node-zh-meaning">${window.escapeHtml(meaning)}</div>`;
