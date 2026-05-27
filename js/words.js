@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const li = document.createElement('li'); 
             li.className = 'data-item';
-            li.innerHTML = `<div class="data-item-title">${window.escapeHtml(actualWord)} <div><span style="font-size:12px; color:#10b981;">/${window.escapeHtml(data.phonetic_us || '-')}/</span> ${freqHtml}</div></div><div class="data-item-sub">${window.escapeHtml(data.primary_meaning || '点击查看详情')}</div>`;
+            li.innerHTML = `<div class="data-item-title">${window.escapeHtml(actualWord)} ${freqHtml}</div><div class="data-item-sub">${window.escapeHtml(data.primary_meaning || '点击查看详情')}</div>`;
             li.addEventListener('click', () => {
                 document.querySelectorAll('#word-list .data-item').forEach(el => el.classList.remove('selected'));
                 li.classList.add('selected'); 

@@ -7,16 +7,17 @@
 </head>
 <body>
 
-  <aside class="sidebar">
-    <div class="sidebar-header"><img src="icons/ui_128.png" alt="icon"> 引擎工作台</div>
+  <aside class="sidebar" id="sidebar">
+    <button id="toggle-sidebar-btn" class="sidebar-edge-toggle" title="折叠/展开侧边栏">◀</button>
+    <div class="sidebar-header"><img src="icons/ui_128.png" alt="icon"> <span class="header-text">引擎工作台</span></div>
     <nav class="nav-menu">
-      <div class="nav-item active" data-target="view-settings">⚙️ 引擎偏好设置</div>
-      <div class="nav-item" data-target="view-words">📖 单词库</div>
-      <div class="nav-item" data-target="view-roots">🌱 词根</div>
-      <div class="nav-item" data-target="view-word-tree">🌳 词树图谱</div>
-      <div class="nav-item" data-target="view-docs">📄 插件使用指南</div>
+      <div class="nav-item active" data-target="view-settings"><span class="nav-icon">⚙️</span> <span class="nav-text">引擎偏好设置</span></div>
+      <div class="nav-item" data-target="view-words"><span class="nav-icon">📖</span> <span class="nav-text">单词库</span></div>
+      <div class="nav-item" data-target="view-roots"><span class="nav-icon">🌱</span> <span class="nav-text">词根</span></div>
+      <div class="nav-item" data-target="view-word-tree"><span class="nav-icon">🌳</span> <span class="nav-text">词树图谱</span></div>
+      <div class="nav-item" data-target="view-docs"><span class="nav-icon">📄</span> <span class="nav-text">插件使用指南</span></div>
     </nav>
-    <div style="padding: 20px; font-size: 13px; color: #666; text-align: center; border-top: 1px solid #27272a;">
+    <div class="sidebar-footer" style="padding: 20px; font-size: 13px; color: #666; text-align: center; border-top: 1px solid #27272a;">
       <div style="margin-bottom: 8px;">版本 <span id="plugin-version"></span></div>
       <a href="https://github.com/Zalozheng/ai_root_english" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: bold;">🔄 检查升级 / GitHub</a>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 12px; font-weight: 500;">
@@ -25,6 +26,8 @@
       </div>
     </div>
   </aside>
+
+  <button id="mobile-menu-btn" class="mobile-menu-btn" title="显示菜单">☰</button>
 
   <main class="main-content">
     

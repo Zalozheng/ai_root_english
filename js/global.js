@@ -244,8 +244,45 @@ window.jumpToRoot = function(rootSegment) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 侧边栏折叠逻辑
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggle-sidebar-btn');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    
+    if (sidebar && toggleBtn) {
+        // 读取持久化的折叠状态
+        chrome.storage.local.get(['sidebarCollapsed'], (res) => {
+            if (res.sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                toggleBtn.textContent = '▶';
+            }
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            const isCollapsed = sidebar.classList.toggle('collapsed');
+            toggleBtn.textContent = isCollapsed ? '▶' : '◀';
+            chrome.storage.local.set({ sidebarCollapsed: isCollapsed });
+        });
+    }
+
+    if (mobileMenuBtn && sidebar) {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('show');
+        });
+        document.addEventListener('click', (e) => {
+            if (sidebar.classList.contains('show') && !sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
+                sidebar.classList.remove('show');
+            }
+        });
+    }
+
     document.querySelectorAll('.nav-item').forEach(item => { 
-        item.addEventListener('click', () => window.switchView(item.getAttribute('data-target'))); 
+        if (item.id === 'toggle-sidebar-btn') return;
+        item.addEventListener('click', () => {
+            window.switchView(item.getAttribute('data-target'));
+            if (window.innerWidth <= 1000 && sidebar) sidebar.classList.remove('show');
+        }); 
     });
 });
 
