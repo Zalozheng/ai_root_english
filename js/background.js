@@ -76,18 +76,13 @@ const StorageModule = {
         return callback(result);
       }
 
-      // 【新增】跨情景借用逻辑：如果当前情景没数据，且允许借用，则搜索其他情景
       if (config.contextFallbackRule !== false) {
           const allMapKeys = Object.keys(data.memory_lines_map);
-          // 优先找当前引擎在其他情景下的记录
           let fallbackKey = allMapKeys.find(k => k.startsWith(actualEngine + '_'));
-          // 如果还是没有，找任何引擎的任何情景
           if (!fallbackKey) fallbackKey = allMapKeys[0];
-
           if (fallbackKey) {
               let result = JSON.parse(JSON.stringify(data));
               result.memory_lines = data.memory_lines_map[fallbackKey];
-              // 标记来源，让用户知道这是借来的
               result.sourceTag = fallbackKey.split('_')[0]; 
               return callback(result);
           }
@@ -107,7 +102,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const config = res.app_config || {};
       const engine = config.engine || 'custom';
       
-      // 【核心修复2】：完美接管右上角弹窗传来的 context 请求，不再强制锁定设置页的上下文
       const context = request.context || config.promptContext || 'general'; 
       const sourceTag = engine; 
 
@@ -125,7 +119,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
-    let roleInjection = "你是一个深谙“唯名词论”的日常英语词汇专家。";
+    let roleInjection = '你是一个深谙"唯名词论"的日常英语词汇专家。';
     let contextInstruction = "极其常见的生活、购物、交流场景";
     
     if (context === 'civ6') {
@@ -149,18 +143,18 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
 
     let systemPrompt = userPrompt;
 
-    // 兜底机制：防撞墙与强制 JSON 格式注入（保留你的 {CONTEXT} 设计！）
     if (!systemPrompt || systemPrompt.includes("系统内置的文字") || (!systemPrompt.includes("display_breakdown") && !systemPrompt.includes("primary_meaning"))) {
-        
         let baseRole = systemPrompt;
-        // 如果连一点角色设定都没写，才给他塞默认的人设
         if (!systemPrompt || systemPrompt.includes("系统内置的文字")) {
             baseRole = roleInjection;
         }
-
-        // 获取 options.js 保存到本地的全局 JSON 模板，如果没有则使用默认回退文本
         const jsonTemplate = config.globalJsonTemplate || `请严格分析单词，仅返回纯JSON对象。
 【警告】必须用真实解析数据填充！
+【JSON 格式规范】
+1. 严禁在 JSON 字符串内部直接使用未转义的双引号 "。
+2. 如需在描述中使用引号，请务必使用中文双引号 “ ” 或单引号 '。
+3. 确保返回的是合法的标准 JSON。
+
 {
   "word": "String (当前查询的单词)",
   "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",
@@ -172,18 +166,24 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
       "segment": "String (词根/前缀/后缀)",
       "type": "String (词根/前缀/后缀)",
       "meaning": "String (中文含义)",
-      "deep_origin": "String (该词根的历史渊源，必须结合你的专业角色来生动讲述！)",
+      "deep_origin": "String (该词根的历史渊源，必须结合你的专业角色来生动讲述！注意：内部严禁出现双引号，请用单引号或中文引号代替)",
       "derivatives": ["String (同根词)"]
     }
   ],
-  "memory_lines": ["String (必须结合 {CONTEXT} 生成一条极度硬核、有强烈画面感的记忆联想)"]
+  "memory_lines": ["String (必须结合 {CONTEXT} 生成一条极度硬核、有强烈画面感的记忆联想，内部严禁出现双引号，请用单引号或中文引号代替)"]
 }`;
-        
-        // 自动注入动态的 JSON 结构，并埋好你原本的 {CONTEXT} 变量
         systemPrompt = `${baseRole}\n${jsonTemplate}`;
     }
 
-    // 【核心修复1】：原汁原味还原你的正则替换注入魔法！
+    if (config.apiProtocol === 'claude' || (config.apiBase && config.apiBase.includes('anthropic'))) {
+        systemPrompt = systemPrompt
+            .replace(/必须先用\s*web_search[^\n]*/g, '')
+            .replace(/site:[^\n]*/g, '')
+            .replace(/获取真实词源拆解后[^\n]*/g, '')
+            .replace(/禁止凭记忆猜测词根[^\n]*/g, '')
+            .trim();
+    }
+
     systemPrompt = systemPrompt.replace(/{CONTEXT}/g, contextInstruction);
 
     const temperature = config.temperature !== undefined ? parseFloat(config.temperature) : 0.2;
@@ -195,14 +195,13 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ model: config.ollamaModel, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: `请解析单词：${word}` }], temperature: temperature, response_format: { type: "json_object" } })
         }).then(async res => {
-            const rawText = await res.text(); if (!res.ok) throw new Error(`Ollama拒绝: ${res.status}`);
+            const rawText = await res.text();
+            if (!res.ok) throw new Error(`Ollama拒绝: ${res.status}`);
             try { const data = JSON.parse(rawText); if (data.error) throw new Error(data.error.message); return data.choices[0].message.content; } 
             catch (e) { throw new Error("Ollama JSON解析失败"); }
         });
     } else {
-        if (config.apiProtocol === 'claude') {
-            // ===== Claude Messages API 格式 =====
-            // Base URL 不含 /v1，SDK 路径为 {base}/v1/messages
+        if (config.apiProtocol === 'claude' || (config.apiBase && config.apiBase.includes('anthropic'))) {
             let API_URL = config.apiBase.replace(/\/?$/, '') + '/v1/messages';
             fetchPromise = fetch(API_URL, {
                 method: "POST",
@@ -219,27 +218,90 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
                 })
             }).then(async res => {
                 const rawText = await res.text();
-                if (!res.ok) throw new Error(`Claude API 拒绝: ${res.status} ${rawText}`);
+                if (!res.ok) throw new Error(`Claude API 拒绝: ${res.status} ${rawText.slice(0, 200)}`);
                 try {
                     const data = JSON.parse(rawText);
                     if (data.error) throw new Error(data.error.message);
-                    // Claude 返回格式: { content: [{ type:"text", text:"..." }] }
                     return data.content[0].text;
                 } catch(e) { throw new Error("Claude 响应解析失败: " + e.message); }
             });
         } else {
-            // ===== OpenAI 兼容格式（默认）=====
             let API_URL = config.apiBase.replace(/\/?$/, '') + '/chat/completions';
+            const needsWebSearch = systemPrompt.includes('web_search') || systemPrompt.includes('site:');
+            const requestBody = {
+                model: config.model || "gpt-4o",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: `请解析单词：${word}` }
+                ],
+                temperature: temperature,
+                response_format: { type: "json_object" }
+            };
+            /* 
+            if (needsWebSearch) {
+                requestBody.tools = [{ type: "web_search_preview" }];
+            }
+            */
             fetchPromise = fetch(API_URL, {
-                method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
-                body: JSON.stringify({ model: config.model || "gpt-4o", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: `请解析单词：${word}` }], temperature: temperature, response_format: { type: "json_object" } })
-            }).then(res => res.json()).then(data => { if (data.error) throw new Error(data.error.message); return data.choices[0].message.content; });
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
+                body: JSON.stringify(requestBody)
+            }).then(async res => {
+                const rawText = await res.text();
+                if (!res.ok) throw new Error(`OpenAI API 拒绝: ${res.status} ${rawText.slice(0, 200)}`);
+                try {
+                    const data = JSON.parse(rawText);
+                    if (data.error) throw new Error(data.error.message);
+                    return data.choices[0].message.content;
+                } catch(e) { throw new Error("OpenAI JSON解析失败: " + e.message); }
+            });
         }
     }
 
     fetchPromise.then(text => {
       text = text.replace(/```json/gi, "").replace(/```/g, "").trim();
-      const parsedData = JSON.parse(text);
+      text = text.replace(/<[^>]+>/g, "").trim();
+      if (!text.startsWith('{')) {
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          if (jsonMatch) text = jsonMatch[0];
+      }
+      // 综合修复 AI 返回的 JSON 字符串
+      function repairJson(jsonStr) {
+          // 1. 尝试修复未转义的双引号（处理键值对中的字符串值）
+          jsonStr = jsonStr.replace(/("[\w_]+":\s*")([\s\S]*?)("(?=\s*[,}\n\r]))/g, (match, p1, p2, p3) => {
+              if (p2.includes('": ')) return match; 
+              const escaped = p2.replace(/\\"/g, '[[TEMP]]').replace(/"/g, '\\"').replace(/\[\[TEMP\]\]/g, '\\"');
+              return p1 + escaped + p3;
+          });
+          // 2. 尝试修复未转义的双引号（处理数组中的字符串元素）
+          jsonStr = jsonStr.replace(/(\[\s*)([\s\S]*?)(\s*\])/g, (match, p1, p2, p3) => {
+              if (p2.includes('{') || p2.includes('": ')) return match; 
+              const repairedElements = p2.replace(/("\s*)([\s\S]*?)("\s*(?=[,\]]|$))/g, (m, a1, a2, a3) => {
+                   const escaped = a2.replace(/\\"/g, '[[TEMP]]').replace(/"/g, '\\"').replace(/\[\[TEMP\]\]/g, '\\"');
+                   return a1 + escaped + a3;
+              });
+              return p1 + repairedElements + p3;
+          });
+          // 3. 修复非法换行符
+          jsonStr = jsonStr.replace(/"((?:[^"\\]|\\.)*)"/gs, (match, inner) =>
+              '"' + inner.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + '"'
+          );
+          // 4. 移除多余的逗号
+          jsonStr = jsonStr.replace(/,\s*([\]}])/g, '$1');
+          return jsonStr;
+      }
+
+      let parsedData;
+      try {
+          parsedData = JSON.parse(text);
+      } catch (e) {
+          try {
+              parsedData = JSON.parse(repairJson(text));
+          } catch (e2) {
+              console.error("AI 响应 JSON 解析失败。原始文本：", text);
+              throw e;
+          }
+      }
       
       chrome.storage.local.get(null, (allData) => {
           let toSave = {};
@@ -286,7 +348,6 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
 
           toSave[cleanWordKey] = wordData;
           
-          // 使用安全分批写入，避免一次性写入超出配额
           safeStorageSet(toSave, (hasError) => {
               if (hasError) {
                   sendResponse({ success: false, error: '本地存储空间不足 (QuotaBytes exceeded)，数据未能缓存。请到设置页面导出并清理旧数据。' });

@@ -46,19 +46,23 @@ document.addEventListener('DOMContentLoaded', () => {
               { id: 'general', name: '🌍 通用生活 (日常)' },
               { id: 'civ6', name: '🏛️ 文明6游戏策划' },
               { id: 'linux_ai', name: '🐧 Linux/AI极客' },
+              { id: 'etymology', name: '📖 openai词源' },
+              { id: 'clauda', name: '📖 claude词源' },
               { id: 'custom', name: '✍️ 自定义专属角色' }
           ];
       }
       if (!window.appConfig.prompts) window.appConfig.prompts = {};
       
       const initialPrompts = {
-          general: "你是一个深谙“唯名词论”的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n(提示：您可以通过点击【设为基础模板】来覆盖本段系统内置的文字)",
-          civ6: "你是一个《文明6》(Civilization VI) 的资深游戏策划兼历史学家。\n请结合游戏中的科技树、尤里卡触发、世界奇观建设、政策卡组合、时代得分或兵种克制等核心游戏机制进行解析。\n\n(这是文明6模式的专属提示词)",
-          linux_ai: "你是一个极其硬核的 Linux 内核开发者兼 AI (CUDA/Ollama) 架构师。\n请结合Linux终端命令、C++底层内存管理、GPU显存分配、深度学习模型架构、或者极客黑客的计算机底层逻辑进行解析。\n\n(这是极客模式的专属提示词)",
+          general: '你是一个深谙\u201c唯名词论\u201d的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n(提示：您可以通过点击【设为基础模板】来覆盖本段系统内置的文字)',
+          civ6: '你是一个《文明6》(Civilization VI) 的资深游戏策划兼历史学家。\n请结合游戏中的科技树、尤里卡触发、世界奇观建设、政策卡组合、时代得分或兵种克制等核心游戏机制进行解析。\n\n(这是文明6模式的专属提示词)',
+          linux_ai: '你是一个极其硬核的 Linux 内核开发者兼 AI (CUDA/Ollama) 架构师。\n请结合Linux终端命令、C++底层内存管理、GPU显存分配、深度学习模型架构、或者极客黑客的计算机底层逻辑进行解析。\n\n(这是极客模式的专属提示词)',
+          clauda: '你是一个英语词汇词源专家，你是一个深谙\u201c唯名词论\u201d的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n仅返回如下纯JSON对象，不要有任何多余文字，memory_lines必须严格输出8个字符串元素：\n{\n  "word": "String",\n  "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",\n  "phonetic_us": "String (美式音标)",\n  "primary_meaning": "String (最常用中文意思)",\n  "noun_source": "String (基础来源名词，格式：英文 (中文))",\n  "parts": [\n    {\n      "segment": "String",\n      "type": "String (词根/前缀/后缀)",\n      "meaning": "String (中文含义)",\n      "deep_origin": "String (历史渊源，内部严禁使用双引号)",\n      "derivatives": ["String"]\n    }\n  ],\n  "memory_lines": [\n    "1. 中文(`英文部件`) + 中文(`英文部件`) → **完整单词**(中文释义)。",\n    "",\n    "2. 💡 情景联想：结合【{CONTEXT}】写画面，30字以内！",\n    "",\n    "3. 极简英文例句带括号中文翻译。",\n    "",\n    "4. 📖 词源故事：用1~2句话讲历史典故或来源趣事，50字以内。",\n    ""\n  ]\n}\n\n(这是词源模式的专属提示词，基于claude真实词源数据)',
+          etymology: '你是一个英语词汇词源专家，你是一个深谙\u201c唯名词论\u201d的日常英语词汇专家。\n请结合极其常见的生活、购物、交流场景进行解析。\n\n当用户输入一个英文单词时：\n必须先用 web_search 查询：\nsite:etymonline.com [单词]\n获取真实词源拆解后，再按格式输出。\n禁止凭记忆猜测词根，一律以查询结果为准。\n\n仅返回如下纯JSON对象，不要有任何多余文字：\n{\n  "word": "String",\n  "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",\n  "phonetic_us": "String (美式音标)",\n  "primary_meaning": "String (最常用中文意思)",\n  "noun_source": "String (基础来源名词，格式：英文 (中文))",\n  "parts": [\n    {\n      "segment": "String",\n      "type": "String (词根/前缀/后缀)",\n      "meaning": "String (中文含义)",\n      "deep_origin": "String (历史渊源，内部严禁使用双引号)",\n      "derivatives": ["String"]\n    }\n  ],\n  "memory_lines": [\n    "1. 中文(`英文部件`) + 中文(`英文部件`) → **完整单词**(中文释义)。",\n    "",\n    "2. 💡 情景联想：结合【{CONTEXT}】写画面，30字以内！",\n    "",\n    "3. 极简英文例句带括号中文翻译。",\n    "",\n    "4. 📖 词源故事：用1~2句话讲历史典故或来源趣事，50字以内。",\n    ""\n  ]\n}\n\n(这是词源模式的专属提示词，基于 etymonline.com 真实词源数据)',
           custom: ""
       };
 
-      const defaultGlobalJson = `请严格分析单词，仅返回纯JSON对象。\n【警告】必须用真实解析数据填充！\n{\n  "word": "String (当前查询的单词)",\n  "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",\n  "phonetic_us": "String (美式音标)",\n  "primary_meaning": "String (最常用的一个中文意思)",\n  "noun_source": "String (基础来源名词，格式：英文 (中文))",\n  "parts": [\n    {\n      "segment": "String (词根/前缀/后缀)",\n      "type": "String (词根/前缀/后缀)",\n      "meaning": "String (中文含义)",\n      "deep_origin": "String (该词根的历史渊源，必须结合你的专业角色来生动讲述！)",\n      "derivatives": ["String (同根词)"]\n    }\n  ],\n  "memory_lines": ["String (必须结合 {CONTEXT} 生成一条极度硬核、有强烈画面感的记忆联想)"]\n}`;
+      const defaultGlobalJson = `请严格分析单词，仅返回纯JSON对象。\n【警告】必须用真实解析数据填充！\n{\n  "word": "String (当前查询的单词)",\n  "display_breakdown": "String (用点分隔音节，如 ex.e.cu.tion)",\n  "phonetic_us": "String (美式音标)",\n  "primary_meaning": "String (最常用的一个中文意思)",\n  "noun_source": "String (基础来源名词，格式：英文 (中文))",\n  "parts": [\n    {\n      "segment": "String (词根/前缀/后缀)",\n      "type": "String (词根/前缀/后缀)",\n      "meaning": "String (中文含义)",\n      "deep_origin": "String (该词根的历史渊源，必须结合你的专业角色来生动讲述！内部严禁使用双引号，请用单引号代替)",\n      "derivatives": ["String (同根词)"]\n    }\n  ],\n  "memory_lines": ["String (必须结合 {CONTEXT} 生成一条极度硬核、有强烈画面感的记忆联想，内部严禁使用双引号)"]\n}`;
 
       let needsImmediateSave = false;
       if (!window.appConfig.baseTemplate || window.appConfig.baseTemplate.includes("专业的AI词汇助手")) {
@@ -79,14 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if(document.getElementById('theme')) document.getElementById('theme').value = res.ui_theme || 'system';
       if(tempSlider) { tempSlider.value = window.appConfig.temperature !== undefined ? window.appConfig.temperature : 0.2; tempVal.textContent = tempSlider.value; }
       
-      // 读取开关状态 (使用 .checked 替换 .value)
       if(document.getElementById('auto-parse')) document.getElementById('auto-parse').checked = window.appConfig.autoParse === true;
       if(document.getElementById('enable-content-script')) document.getElementById('enable-content-script').checked = window.appConfig.enableContentScript !== false;
       if(document.getElementById('history-limit')) document.getElementById('history-limit').value = window.appConfig.historyLimit || '10';
       if(document.getElementById('data-fallback-rule')) document.getElementById('data-fallback-rule').value = window.appConfig.dataFallbackRule || 'cross';
       if(document.getElementById('context-fallback-rule')) document.getElementById('context-fallback-rule').checked = window.appConfig.contextFallbackRule !== false;
       
-      // 数据操作面板持久化
       if(document.getElementById('data-action-context')) document.getElementById('data-action-context').checked = window.appConfig.dataActionContext === true;
       if(document.getElementById('import-mode')) document.getElementById('import-mode').checked = window.appConfig.importMode === true;
 
@@ -109,10 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }
 
-      // 状态回显后，同步更新一遍所有 Label 文案
       if (typeof updateLabels === 'function') updateLabels();
 
-      // 初始化外部模块 (必须在获取到初始配置变量后调用)
       if (typeof window.initContextManager === 'function') {
           window.initContextManager(initialPrompts, defaultGlobalJson);
       }
@@ -171,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chrome.storage.local.set({ app_config: mergedConfig, ui_theme: mergedConfig.ui_theme }, () => {
             window.showStatus('⚡ 设置已实时同步', '#38bdf8');
-            // 刷新下拉框文本
             const contextSelect = document.getElementById('prompt-context');
             if (contextSelect) {
                 const customOpt = Array.from(contextSelect.options).find(opt => opt.value === 'custom');
@@ -183,12 +182,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // 引擎切换自动保存
     document.querySelectorAll('.engine-tab').forEach(tab => {
         tab.addEventListener('click', () => setTimeout(window.autoSaveConfig, 100));
     });
 
-    // 输入框失焦自动保存 (API配置等)
     ['api-protocol', 'api-base', 'api-key', 'api-model', 'ollama-base', 'ollama-model-select', 'custom-context-input'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.addEventListener('blur', window.autoSaveConfig);
@@ -234,7 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const rootStrategyToggle = document.getElementById('root-toggle-switch');
     const rootStrategyLabel = document.getElementById('label-root-strategy');
     
-    // 获取 Hint 元素
     const hints = {
         actionCtx: document.getElementById('hint-action-context'),
         importMode: document.getElementById('hint-import-mode'),
