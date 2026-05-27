@@ -109,43 +109,71 @@ window.initFavFoldersManager = function() {
 
 window.renderFavFoldersUI = function() {
     const statusFilter = document.getElementById('root-status-filter');
-    if (!statusFilter) return;
+    const wordStatusFilter = document.getElementById('word-status-filter');
+    if (!statusFilter && !wordStatusFilter) return;
 
-    const val = statusFilter.value; // 保存当前选中的值
+    const val = statusFilter ? statusFilter.value : '';
+    const wordVal = wordStatusFilter ? wordStatusFilter.value : '';
 
-    // 清空除了“所有”以外的选项
-    statusFilter.innerHTML = '<option value="all">⭐ 所有分组 (全部)</option>';
-
-    window.appConfig.favFolders.forEach((folder) => {
-        const option = document.createElement('option');
-        option.value = folder.id;
-        option.textContent = folder.name;
-        statusFilter.appendChild(option);
-    });
-
-    // 尝试恢复选中状态
-    if (Array.from(statusFilter.options).find(o => o.value === val)) {
-        statusFilter.value = val;
+    if (statusFilter) {
+        statusFilter.innerHTML = '<option value="all">⭐ 所有分组 (全部)</option>';
+    }
+    if (wordStatusFilter) {
+        wordStatusFilter.innerHTML = '<option value="all">⭐ 所有分组 (全部)</option>';
     }
 
-    // 更新管理按钮的显示状态 (仅允许修改自定义文件夹)
-    const newVal = statusFilter.value;
-    const isCustom = newVal && newVal !== 'all' && !BUILTIN_FOLDERS.find(b => b.id === newVal);
-    
-    const editBtn = document.getElementById('edit-fav-btn');
-    const delBtn = document.getElementById('del-fav-btn');
-    if (editBtn) editBtn.style.display = isCustom ? 'flex' : 'none';
-    if (delBtn) delBtn.style.display = isCustom ? 'flex' : 'none';
+    window.appConfig.favFolders.forEach((folder) => {
+        if (statusFilter) {
+            const option = document.createElement('option');
+            option.value = folder.id;
+            option.textContent = folder.name;
+            statusFilter.appendChild(option);
+        }
+        if (wordStatusFilter) {
+            const option = document.createElement('option');
+            option.value = folder.id;
+            option.textContent = folder.name;
+            wordStatusFilter.appendChild(option);
+        }
+    });
+
+    if (statusFilter && Array.from(statusFilter.options).find(o => o.value === val)) {
+        statusFilter.value = val;
+    }
+    if (wordStatusFilter && Array.from(wordStatusFilter.options).find(o => o.value === wordVal)) {
+        wordStatusFilter.value = wordVal;
+    }
+
+    if (statusFilter) {
+        const newVal = statusFilter.value;
+        const isCustom = newVal && newVal !== 'all' && !BUILTIN_FOLDERS.find(b => b.id === newVal);
+        
+        const editBtn = document.getElementById('edit-fav-btn');
+        const delBtn = document.getElementById('del-fav-btn');
+        if (editBtn) editBtn.style.display = isCustom ? 'flex' : 'none';
+        if (delBtn) delBtn.style.display = isCustom ? 'flex' : 'none';
+    }
+    if (wordStatusFilter) {
+        const newVal = wordStatusFilter.value;
+        const isCustom = newVal && newVal !== 'all' && !BUILTIN_FOLDERS.find(b => b.id === newVal);
+        
+        const editBtn = document.getElementById('word-edit-fav-btn');
+        const delBtn = document.getElementById('word-del-fav-btn');
+        if (editBtn) editBtn.style.display = isCustom ? 'flex' : 'none';
+        if (delBtn) delBtn.style.display = isCustom ? 'flex' : 'none';
+    }
 };
 
-window.manageFavFolders = function(action) {
+window.manageFavFolders = function(action, targetSelectorId = 'root-status-filter') {
     if (!window.appConfig) window.appConfig = {};
     if (!window.appConfig.favFolders || !Array.isArray(window.appConfig.favFolders)) {
         window.appConfig.favFolders = [...BUILTIN_FOLDERS];
     }
     
     const statusFilter = document.getElementById('root-status-filter');
-    const selectedId = statusFilter.value;
+    const wordStatusFilter = document.getElementById('word-status-filter');
+    const activeFilter = document.getElementById(targetSelectorId);
+    const selectedId = activeFilter ? activeFilter.value : 'all';
     
     const isCustom = selectedId && selectedId !== 'all' && !BUILTIN_FOLDERS.find(b => b.id === selectedId);
 
@@ -156,8 +184,10 @@ window.manageFavFolders = function(action) {
             window.appConfig.favFolders.push({ id: newId, name: '📁 ' + name.trim() });
             chrome.storage.local.set({ app_config: window.appConfig }, () => {
                 window.renderFavFoldersUI();
-                statusFilter.value = newId;
+                if (statusFilter) statusFilter.value = newId;
+                if (wordStatusFilter) wordStatusFilter.value = newId;
                 window.triggerRootFilter(true);
+                if (window.triggerWordFilter) window.triggerWordFilter(true);
             });
         }
     } else if (action === 'edit' && isCustom) {
@@ -168,39 +198,69 @@ window.manageFavFolders = function(action) {
                 folder.name = '📁 ' + newName.trim();
                 chrome.storage.local.set({ app_config: window.appConfig }, () => {
                     window.renderFavFoldersUI();
-                    statusFilter.value = selectedId;
+                    if (statusFilter) statusFilter.value = selectedId;
+                    if (wordStatusFilter) wordStatusFilter.value = selectedId;
                 });
             }
         }
     } else if (action === 'delete' && isCustom) {
-        if (confirm("🗑️ 确定要彻底删除该分组吗？（该组内的词根将失去标记，但不会从词库被删除）")) {
+        if (confirm("🗑️ 确定要彻底删除该分组吗？（该组内的单词和词根将失去标记，但不会从词库被删除）")) {
             window.appConfig.favFolders = window.appConfig.favFolders.filter(f => f.id !== selectedId);
             chrome.storage.local.set({ app_config: window.appConfig }, () => {
                 // 清理所有相关词根的标记
-                window.globalRoots.forEach(r => {
-                    let changed = false;
-                    if (r.favorite_folder_ids && r.favorite_folder_ids.includes(selectedId)) {
-                        r.favorite_folder_ids = r.favorite_folder_ids.filter(id => id !== selectedId);
-                        changed = true;
-                    }
-                    if (r.favorite_folder_id === selectedId) {
-                        r.favorite_folder_id = null;
-                        changed = true;
-                    }
-                    if (r && changed) {
-                        r.favorite_folder_id = (r.favorite_folder_ids && r.favorite_folder_ids[0]) || null;
-                        r.is_favorite = !!(r.favorite_folder_ids && r.favorite_folder_ids.includes('fav_default'));
-                        const rId = r.id || (r.segment ? ('R:' + r.segment.toLowerCase().replace(/^-|-$/g, '').trim()) : null);
-                        if (rId) {
-                            if (window.dbEngine) window.dbEngine.batchSave('roots', { [rId]: r });
-                            chrome.storage.local.set({ [rId]: r });
+                if (window.globalRoots) {
+                    window.globalRoots.forEach(r => {
+                        let changed = false;
+                        if (r.favorite_folder_ids && r.favorite_folder_ids.includes(selectedId)) {
+                            r.favorite_folder_ids = r.favorite_folder_ids.filter(id => id !== selectedId);
+                            changed = true;
                         }
-                    }
-                });
-                statusFilter.value = 'all';
+                        if (r.favorite_folder_id === selectedId) {
+                            r.favorite_folder_id = null;
+                            changed = true;
+                        }
+                        if (r && changed) {
+                            r.favorite_folder_id = (r.favorite_folder_ids && r.favorite_folder_ids[0]) || null;
+                            r.is_favorite = !!(r.favorite_folder_ids && r.favorite_folder_ids.includes('fav_default'));
+                            const rId = r.id || (r.segment ? ('R:' + r.segment.toLowerCase().replace(/^-|-$/g, '').trim()) : null);
+                            if (rId) {
+                                if (window.dbEngine) window.dbEngine.batchSave('roots', { [rId]: r });
+                                chrome.storage.local.set({ [rId]: r });
+                            }
+                        }
+                    });
+                }
+                
+                // 清理所有相关单词的标记
+                if (window.globalWords) {
+                    window.globalWords.forEach(w => {
+                        let changed = false;
+                        if (w.favorite_folder_ids && w.favorite_folder_ids.includes(selectedId)) {
+                            w.favorite_folder_ids = w.favorite_folder_ids.filter(id => id !== selectedId);
+                            changed = true;
+                        }
+                        if (w.favorite_folder_id === selectedId) {
+                            w.favorite_folder_id = null;
+                            changed = true;
+                        }
+                        if (w && changed) {
+                            w.favorite_folder_id = (w.favorite_folder_ids && w.favorite_folder_ids[0]) || null;
+                            w.is_favorite = !!(w.favorite_folder_ids && w.favorite_folder_ids.includes('fav_default'));
+                            const wId = w.id || (w.word ? ('W:' + w.word.toLowerCase().trim()) : null);
+                            if (wId) {
+                                if (window.dbEngine) window.dbEngine.batchSave('words', { [wId]: w });
+                                chrome.storage.local.set({ [wId]: w });
+                            }
+                        }
+                    });
+                }
+                if (statusFilter) statusFilter.value = 'all';
+                if (wordStatusFilter) wordStatusFilter.value = 'all';
                 window.renderFavFoldersUI();
                 window.triggerRootFilter(true);
+                if (window.triggerWordFilter) window.triggerWordFilter(true);
                 window.clearRootDetail();
+                if (window.clearWordDetail) window.clearWordDetail();
             });
         }
     }

@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.triggerRootFilter = function(resetPage = true) {
+        if (!window.globalRoots) return;
         const searchEl = document.getElementById('root-search');
         if(!searchEl) return;
         const q = searchEl.value.toLowerCase().trim();
@@ -372,9 +373,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // 绑定收藏夹管理按钮
-        if(document.getElementById('add-fav-btn')) document.getElementById('add-fav-btn').addEventListener('click', () => window.manageFavFolders('add'));
-        if(document.getElementById('edit-fav-btn')) document.getElementById('edit-fav-btn').addEventListener('click', () => window.manageFavFolders('edit'));
-        if(document.getElementById('del-fav-btn')) document.getElementById('del-fav-btn').addEventListener('click', () => window.manageFavFolders('delete'));
+        if(document.getElementById('add-fav-btn')) document.getElementById('add-fav-btn').addEventListener('click', () => window.manageFavFolders('add', 'root-status-filter'));
+        if(document.getElementById('edit-fav-btn')) document.getElementById('edit-fav-btn').addEventListener('click', () => window.manageFavFolders('edit', 'root-status-filter'));
+        if(document.getElementById('del-fav-btn')) document.getElementById('del-fav-btn').addEventListener('click', () => window.manageFavFolders('delete', 'root-status-filter'));
     }
 
     // 全局监听：为主列表添加键盘上下选择功能，并支持自动翻页
