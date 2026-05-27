@@ -74,29 +74,39 @@ document.addEventListener('DOMContentLoaded', () => {
         window.contextRootMap = map;
     }
 
-    window.triggerRootFilter = function() {
+    window.triggerRootFilter = function(resetPage = true) {
         const searchEl = document.getElementById('root-search');
         if(!searchEl) return;
-        const q = searchEl.value.toLowerCase();
+        const q = searchEl.value.toLowerCase().trim();
         const sortType = document.getElementById('root-sort').value;
         const typeFilterEl = document.getElementById('root-type-filter');
         const targetType = typeFilterEl ? typeFilterEl.value : 'all';
         const contextFilter = document.getElementById('root-context-filter') ? document.getElementById('root-context-filter').value : 'all';
+        const statusFilter = document.getElementById('root-status-filter') ? document.getElementById('root-status-filter').value : 'all';
 
-        // 如果需要按情景过滤，且还没构建映射表，则构建之
-        if (contextFilter !== 'all' && !window.contextRootMap) {
-            buildContextRootMap();
-        }
+        if (contextFilter !== 'all' && !window.contextRootMap) buildContextRootMap();
 
         let filtered = window.globalRoots.filter(d => {
             const matchSearch = (d.segment || '').toLowerCase().includes(q) || (d.meaning || '').includes(q);
             if (!matchSearch) return false;
 
-            // 极速过滤：直接查表，不再跑 O(N*M) 的嵌套循环
             if (contextFilter !== 'all' && window.contextRootMap) {
                 const rootSeg = (d.segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
                 const rootsInCtx = window.contextRootMap[contextFilter];
                 if (!rootsInCtx || !rootsInCtx.has(rootSeg)) return false;
+            }
+
+            // 分类筛选逻辑
+            if (statusFilter !== 'all') {
+                let matches = false;
+                if (d.favorite_folder_id === statusFilter) matches = true;
+                
+                // 兼容旧数据的逻辑映射
+                if (!matches && statusFilter === 'fav_default' && d.is_favorite) matches = true;
+                if (!matches && statusFilter === 'fav_learned' && d.learning_status === 'learned') matches = true;
+                if (!matches && statusFilter === 'fav_review' && d.learning_status === 'review') matches = true;
+                
+                if (!matches) return false;
             }
 
             if (targetType === 'all') return true;
@@ -115,25 +125,318 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         });
 
-        // 更新数量显示
         const countValueEl = document.querySelector('#root-count .count-value');
         if (countValueEl) countValueEl.textContent = filtered.length;
 
         window.currentFilteredRoots = window.sortData(filtered, sortType);
-        window.currentRootPage = 1;
+        
+        // 修复跳页问题：只有明确要求（如点击搜索/分类）或搜索词不为空且之前没存过时才重置
+        if (resetPage) {
+            if (q.length > 0) {
+                if (window.savedRootPageBeforeSearch === undefined) window.savedRootPageBeforeSearch = window.currentRootPage;
+                window.currentRootPage = 1;
+            } else {
+                if (window.savedRootPageBeforeSearch !== undefined) {
+                    window.currentRootPage = window.savedRootPageBeforeSearch;
+                    window.savedRootPageBeforeSearch = undefined;
+                } else {
+                    window.currentRootPage = 1;
+                }
+            }
+        }
+        
         renderRootList();
     }
 
     if(document.getElementById('root-search')) {
-        document.getElementById('root-search').addEventListener('input', window.triggerRootFilter);
-        document.getElementById('root-sort').addEventListener('change', window.triggerRootFilter);
+        const rootSearchEl = document.getElementById('root-search');
+        const parent = rootSearchEl.parentNode;
+        
+        // 包装搜索框并注入下拉菜单
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = "position: relative; width: 100%;";
+        parent.insertBefore(wrapper, rootSearchEl);
+        wrapper.appendChild(rootSearchEl);
+        
+        const dropdown = document.createElement('div');
+        dropdown.id = 'root-search-dropdown';
+        dropdown.style.cssText = "display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #1e293b; border: 1px solid #38bdf8; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 10001; max-height: 300px; overflow-y: auto; margin-top: 5px; flex-direction: column;";
+        wrapper.appendChild(dropdown);
+
+        let searchHistory = [];
+        chrome.storage.local.get(['root_search_history'], (res) => { if (res.root_search_history) searchHistory = res.root_search_history; });
+
+        const saveHistory = (term) => {
+            if (!term) return;
+            searchHistory = searchHistory.filter(h => h !== term);
+            searchHistory.unshift(term);
+            if (searchHistory.length > 20) searchHistory.pop();
+            chrome.storage.local.set({ root_search_history: searchHistory });
+        };
+
+        let currentSelectedIndex = -1; // 记录键盘选中的项
+        let currentDropdownItems = []; // 缓存当前下拉列表的数据
+
+        const selectItem = (index) => {
+            const children = dropdown.querySelectorAll('.dropdown-item');
+            children.forEach((el, i) => {
+                if (i === index) {
+                    el.style.background = '#0f172a';
+                    el.scrollIntoView({ block: 'nearest' });
+                } else {
+                    el.style.background = 'transparent';
+                }
+            });
+        };
+
+        const renderDropdown = (query = "") => {
+            dropdown.innerHTML = "";
+            currentSelectedIndex = -1;
+            currentDropdownItems = [];
+            const q = query.toLowerCase().trim();
+            let items = [];
+
+            if (q === "") {
+                items = searchHistory.map(h => ({ type: 'history', text: h }));
+            } else {
+                const histMatches = searchHistory.filter(h => h.toLowerCase().includes(q)).map(h => ({ type: 'history', text: h }));
+                const rootMatches = (window.globalRoots || [])
+                    .filter(r => (r.segment||'').toLowerCase().includes(q) || (r.meaning||'').toLowerCase().includes(q))
+                    .slice(0, 15)
+                    .map(r => ({ type: 'root', text: r.segment, meaning: r.meaning, data: r })); // 缓存完整数据供渲染使用
+                
+                // 去重
+                const seen = new Set(histMatches.map(h => h.text.toLowerCase()));
+                const uniqueRootMatches = rootMatches.filter(r => {
+                    const lowText = r.text.toLowerCase();
+                    if (seen.has(lowText)) return false;
+                    seen.add(lowText); return true;
+                });
+                items = [...histMatches, ...uniqueRootMatches];
+            }
+
+            if (items.length === 0) { dropdown.style.display = 'none'; return; }
+            dropdown.style.display = 'flex';
+            currentDropdownItems = items;
+
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.style.cssText = "padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #bae6fd; font-size: 13px; border-bottom: 1px solid #333; transition: 0.2s;";
+                
+                let icon = item.type === 'history' ? '🕒' : '🌱';
+                let mainText = `<span style="font-weight:bold;">${window.escapeHtml(item.text)}</span>`;
+                let subText = item.meaning ? `<span style="color:#71717a; font-size:11px; margin-left:8px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">${window.escapeHtml(item.meaning)}</span>` : '';
+                
+                div.innerHTML = `<div style="display:flex; align-items:center; gap:8px; overflow:hidden; flex:1;"><span>${icon}</span><div style="display:flex; align-items:baseline; overflow:hidden;">${mainText}${subText}</div></div>`;
+                
+                if (item.type === 'history') {
+                    const delBtn = document.createElement('span');
+                    delBtn.style.cssText = "color: #ef4444; font-weight: bold; font-size: 16px; padding: 0 8px; flex-shrink: 0;";
+                    delBtn.innerHTML = "×";
+                    delBtn.title = "删除此历史";
+                    delBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        searchHistory = searchHistory.filter(h => h !== item.text);
+                        chrome.storage.local.set({ root_search_history: searchHistory });
+                        renderDropdown(rootSearchEl.value);
+                        rootSearchEl.focus(); // 保持焦点
+                    });
+                    div.appendChild(delBtn);
+                }
+
+                div.addEventListener('mouseenter', () => {
+                    currentSelectedIndex = index;
+                    selectItem(index);
+                });
+                
+                const finalizeSelection = () => {
+                    rootSearchEl.value = item.text;
+                    dropdown.style.display = 'none';
+                    saveHistory(item.text);
+                    window.triggerRootFilter(true);
+                    
+                    if (item.type === 'root' && item.data) {
+                        window.renderRootDetail(item.data);
+                        setTimeout(() => {
+                            const listItems = document.querySelectorAll('#root-list .data-item');
+                            listItems.forEach(li => {
+                                li.classList.remove('selected');
+                                if (li.querySelector('.data-item-title span').innerText === item.text) {
+                                    li.classList.add('selected');
+                                }
+                            });
+                        }, 100);
+                    }
+                };
+
+                div.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    finalizeSelection();
+                });
+                dropdown.appendChild(div);
+            });
+
+            if (q === "" && searchHistory.length > 0) {
+                const clearBtn = document.createElement('div');
+                clearBtn.style.cssText = "padding: 10px; text-align: center; color: #ef4444; font-size: 12px; cursor: pointer; font-weight: bold; background: #18181b; border-radius: 0 0 8px 8px; transition: 0.2s;";
+                clearBtn.innerText = "🗑️ 清空所有历史";
+                clearBtn.addEventListener('mouseenter', () => clearBtn.style.background = '#27272a');
+                clearBtn.addEventListener('mouseleave', () => clearBtn.style.background = '#18181b');
+                clearBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); searchHistory = []; chrome.storage.local.set({ root_search_history: [] }); dropdown.style.display = 'none';
+                });
+                dropdown.appendChild(clearBtn);
+            }
+        };
+
+        rootSearchEl.addEventListener('input', () => {
+            renderDropdown(rootSearchEl.value);
+            if (rootSearchEl.value.trim() === '') {
+                window.triggerRootFilter(true);
+            }
+        });
+        
+        rootSearchEl.addEventListener('focus', () => renderDropdown(rootSearchEl.value));
+        
+        rootSearchEl.addEventListener('keydown', (e) => {
+            const itemCount = currentDropdownItems.length;
+            
+            if (dropdown.style.display === 'flex' && itemCount > 0) {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    currentSelectedIndex = (currentSelectedIndex + 1) % itemCount;
+                    selectItem(currentSelectedIndex);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    currentSelectedIndex = (currentSelectedIndex - 1 + itemCount) % itemCount;
+                    selectItem(currentSelectedIndex);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentSelectedIndex >= 0 && currentSelectedIndex < itemCount) {
+                        const item = currentDropdownItems[currentSelectedIndex];
+                        rootSearchEl.value = item.text;
+                        dropdown.style.display = 'none';
+                        saveHistory(item.text);
+                        window.triggerRootFilter(true);
+                        
+                        if (item.type === 'root' && item.data) {
+                            window.renderRootDetail(item.data);
+                            setTimeout(() => {
+                                const listItems = document.querySelectorAll('#root-list .data-item');
+                                listItems.forEach(li => {
+                                    li.classList.remove('selected');
+                                    if (li.querySelector('.data-item-title span').innerText === item.text) {
+                                        li.classList.add('selected');
+                                    }
+                                });
+                            }, 100);
+                        }
+                    } else {
+                        dropdown.style.display = 'none';
+                        saveHistory(rootSearchEl.value);
+                        window.triggerRootFilter(true);
+                    }
+                }
+            } else if (e.key === 'Enter') {
+                dropdown.style.display = 'none';
+                saveHistory(rootSearchEl.value);
+                window.triggerRootFilter(true);
+            }
+        });
+
+        document.addEventListener('mousedown', (e) => { if (!wrapper.contains(e.target)) dropdown.style.display = 'none'; });
+
+        document.getElementById('root-sort').addEventListener('change', () => window.triggerRootFilter(true));
         if(document.getElementById('root-type-filter')) {
-            document.getElementById('root-type-filter').addEventListener('change', window.triggerRootFilter);
+            document.getElementById('root-type-filter').addEventListener('change', () => window.triggerRootFilter(true));
         }
         if(document.getElementById('root-context-filter')) {
-            document.getElementById('root-context-filter').addEventListener('change', window.triggerRootFilter);
+            document.getElementById('root-context-filter').addEventListener('change', () => window.triggerRootFilter(true));
         }
+        if(document.getElementById('root-status-filter')) {
+            document.getElementById('root-status-filter').addEventListener('change', () => {
+                window.renderFavFoldersUI(); // 更新按钮状态
+                window.triggerRootFilter(true);
+            });
+        }
+        
+        // 绑定收藏夹管理按钮
+        if(document.getElementById('add-fav-btn')) document.getElementById('add-fav-btn').addEventListener('click', () => window.manageFavFolders('add'));
+        if(document.getElementById('edit-fav-btn')) document.getElementById('edit-fav-btn').addEventListener('click', () => window.manageFavFolders('edit'));
+        if(document.getElementById('del-fav-btn')) document.getElementById('del-fav-btn').addEventListener('click', () => window.manageFavFolders('delete'));
     }
+
+    // 全局监听：为主列表添加键盘上下选择功能，并支持自动翻页
+    document.addEventListener('keydown', (e) => {
+        const viewRoots = document.getElementById('view-roots');
+        const rootSearchEl = document.getElementById('root-search');
+        
+        if (viewRoots && viewRoots.classList.contains('active') && document.activeElement !== rootSearchEl) {
+            const listItems = Array.from(document.querySelectorAll('#root-list .data-item'));
+            if (listItems.length === 0) return;
+
+            let currentIndex = listItems.findIndex(item => item.classList.contains('selected'));
+            
+            const roots = window.currentFilteredRoots || [];
+            const ROOTS_PER_PAGE = 5;
+            const totalPages = Math.max(1, Math.ceil(roots.length / ROOTS_PER_PAGE));
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (currentIndex < listItems.length - 1) {
+                    // 当前页内向下移动
+                    currentIndex++;
+                } else {
+                    // 已经到底部，尝试翻到下一页
+                    if (window.currentRootPage < totalPages) {
+                        window.currentRootPage++;
+                        // 标记需要在渲染后选中第一个元素
+                        window.pendingSelectIndex = 0; 
+                        renderRootList();
+                        return; // renderRootList 会处理后续选中逻辑
+                    } else {
+                        // 已经是最后一页的最后一个，循环回第一页
+                        window.currentRootPage = 1;
+                        window.pendingSelectIndex = 0;
+                        renderRootList();
+                        return;
+                    }
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    // 当前页内向上移动
+                    currentIndex--;
+                } else {
+                    // 已经在顶部，尝试翻到上一页
+                    if (window.currentRootPage > 1) {
+                        window.currentRootPage--;
+                        // 标记需要在渲染后选中最后一个元素
+                        window.pendingSelectIndex = ROOTS_PER_PAGE - 1; 
+                        renderRootList();
+                        return;
+                    } else {
+                        // 已经是第一页的第一个，循环到最后一页
+                        window.currentRootPage = totalPages;
+                        // 计算最后一页有几个元素
+                        const remainder = roots.length % ROOTS_PER_PAGE;
+                        window.pendingSelectIndex = (remainder === 0 && roots.length > 0) ? ROOTS_PER_PAGE - 1 : remainder - 1;
+                        renderRootList();
+                        return;
+                    }
+                }
+            } else {
+                return; // 非上下键不处理
+            }
+
+            // 触发选中项的点击事件，实现高亮和详情渲染
+            if (currentIndex >= 0 && currentIndex < listItems.length) {
+                listItems[currentIndex].click();
+                listItems[currentIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        }
+    });
 
     function renderRootList() {
         const listEl = document.getElementById('root-list');
@@ -155,15 +458,61 @@ document.addEventListener('DOMContentLoaded', () => {
         displayRoots.forEach(data => {
             const li = document.createElement('li'); 
             li.className = 'data-item';
-            const freqHtml = `<span style="font-size:11px; color:#f59e0b; margin-left:8px;" title="查阅次数">🔥${data.lookup_count || 0}</span>`;
-            li.innerHTML = `<div class="data-item-title"><span style="color:#38bdf8;">${window.escapeHtml(data.segment)}</span> ${freqHtml}</div><div class="data-item-sub">${window.escapeHtml(data.meaning || '点击查看详情')}</div>`;
-            li.addEventListener('click', () => {
+            
+            const rootKey = data.id || ('R:' + (data.segment||'').toLowerCase().replace(/^-|-$/g, '').trim());
+            const starIcon = data.is_favorite ? '⭐' : '☆';
+            const starColor = data.is_favorite ? '#f59e0b' : '#6b7280';
+            
+            const actionsHtml = `
+                <div style="display: flex; gap: 8px; font-size: 14px; align-items: center;">
+                    <span class="root-star-btn" data-key="${rootKey}" style="color: ${starColor}; cursor: pointer;" title="收藏">${starIcon}</span>
+                    <span class="root-del-btn" data-key="${rootKey}" style="color: #ef4444; cursor: pointer;" title="单独删除">🗑️</span>
+                </div>
+            `;
+            
+            li.innerHTML = `<div class="data-item-title"><span style="color:#38bdf8;">${window.escapeHtml(data.segment)}</span> ${actionsHtml}</div><div class="data-item-sub">${window.escapeHtml(data.meaning || '点击查看详情')}</div>`;
+            li.addEventListener('click', (e) => {
+                if (e.target.classList.contains('root-star-btn')) {
+                    e.stopPropagation();
+                    data.is_favorite = !data.is_favorite;
+                    if (window.dbEngine) window.dbEngine.batchSave('roots', { [rootKey]: data });
+                    chrome.storage.local.set({ [rootKey]: data }, () => {
+                        window.triggerRootFilter(false);
+                    });
+                    return;
+                }
+                if (e.target.classList.contains('root-del-btn')) {
+                    e.stopPropagation();
+                    if (!confirm(`确定要删除词根 ${data.segment} 吗？`)) return;
+                    if (window.dbEngine) window.dbEngine.delete('roots', rootKey);
+                    chrome.storage.local.remove([rootKey], () => {
+                        window.globalRoots = window.globalRoots.filter(r => (r.id || ('R:' + (r.segment||'').toLowerCase().replace(/^-|-$/g, '').trim())) !== rootKey);
+                        window.triggerRootFilter(false);
+                        window.clearRootDetail();
+                    });
+                    return;
+                }
+
                 document.querySelectorAll('#root-list .data-item').forEach(el => el.classList.remove('selected'));
                 li.classList.add('selected'); 
                 window.renderRootDetail(data);
             });
             listEl.appendChild(li);
         });
+
+        // 处理翻页后的自动选中逻辑
+        if (window.pendingSelectIndex !== undefined) {
+            const items = document.querySelectorAll('#root-list .data-item');
+            if (items.length > 0) {
+                // 如果计算的 index 超出当前页实际元素数量（可能发生在最后一页），则选中最后一个
+                const targetIndex = Math.min(window.pendingSelectIndex, items.length - 1);
+                setTimeout(() => {
+                    items[targetIndex].click();
+                    items[targetIndex].scrollIntoView({ block: 'nearest' });
+                }, 50);
+            }
+            window.pendingSelectIndex = undefined;
+        }
 
         let paginationEl = document.getElementById('root-pagination');
         if (!paginationEl) {
@@ -222,20 +571,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const derivHtml = (fullData.derivatives || []).map(d => `<span class="deriv-tag jump-word-trigger" data-word="${window.escapeHtml(d)}">${window.escapeHtml(d)}</span>`).join('') || '<span style="color:#666;">暂无记录</span>';
 
-        // 修复 1号位：优化下拉框样式和位置，强制深色主题和自动宽度
+        const favFolders = window.appConfig?.favFolders || [{id: 'fav_default', name: '⭐ 默认收藏夹'}];
+        
+        let currentSelectValue = "";
+        if (fullData.learning_status === 'learned') {
+            currentSelectValue = "status_learned";
+        } else if (fullData.learning_status === 'review') {
+            currentSelectValue = "status_review";
+        } else if (fullData.favorite_folder_id || fullData.is_favorite) {
+            currentSelectValue = fullData.favorite_folder_id || 'fav_default';
+        }
+        
+        let folderOptions = `<option value="" style="background:#1e1e1e; color:#fff;">📁 无标记</option>`;
+        folderOptions += `<optgroup label="📚 学习状态">
+            <option value="status_learned" style="background:#1e1e1e; color:#fff;" ${currentSelectValue === 'status_learned' ? 'selected' : ''}>✅ 已学完</option>
+            <option value="status_review" style="background:#1e1e1e; color:#fff;" ${currentSelectValue === 'status_review' ? 'selected' : ''}>🔄 待复习</option>
+        </optgroup>`;
+        folderOptions += `<optgroup label="⭐ 收藏夹">`;
+        favFolders.forEach(f => {
+            folderOptions += `<option value="${f.id}" style="background:#1e1e1e; color:#fff;" ${currentSelectValue === f.id ? 'selected' : ''}>${window.escapeHtml(f.name)}</option>`;
+        });
+        folderOptions += `</optgroup>`;
+
+        let selectColor = '#9ca3af';
+        if (currentSelectValue.startsWith('status_')) selectColor = '#10b981';
+        if (currentSelectValue.startsWith('fav_')) selectColor = '#f59e0b';
+
         pane.innerHTML = `
           <div style="margin-bottom: 20px;">
              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
                  <span style="font-size: 14px; color: #a1a1aa; text-transform: uppercase;">[ 原生记录: ${window.escapeHtml(data.type)} ]</span>
                  
-                 <select class="manual-category-select" data-key="${rootId}" style="background:#27272a; color:#fff; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer; width:max-content !important;" title="手动覆盖分类">
-                     <option value="" style="background:#1e1e1e; color:#fff;">⚙️ 自动分配</option>
-                     <option value="前缀" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '前缀' ? 'selected' : ''}>📌 强制归为: 前缀</option>
-                     <option value="词根" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '词根' ? 'selected' : ''}>🌱 强制归为: 词根</option>
-                     <option value="后缀" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '后缀' ? 'selected' : ''}>🪝 强制归为: 后缀</option>
-                     <option value="组合" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '组合' ? 'selected' : ''}>🧩 强制归为: 组合</option>
-                     <option value="其他" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '其他' ? 'selected' : ''}>📦 强制归为: 其他</option>
-                 </select>
+                 <div style="display: flex; align-items: center; gap: 10px;">
+                     <select class="unified-status-selector" data-key="${rootId}" style="background:transparent; color:${selectColor}; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer;" title="标记学习状态或加入收藏夹">
+                        ${folderOptions}
+                     </select>
+                     <button class="detail-action-btn" data-action="delete" data-key="${rootId}" style="background:transparent; border:none; cursor:pointer; font-size:16px; padding:4px; color:#ef4444;" title="彻底删除">🗑️</button>
+                     
+                     <select class="manual-category-select" data-key="${rootId}" style="background:#27272a; color:#fff; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer; width:max-content !important; margin-left: 8px;" title="手动覆盖分类">
+                         <option value="" style="background:#1e1e1e; color:#fff;">⚙️ 自动分配</option>
+                         <option value="前缀" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '前缀' ? 'selected' : ''}>📌 强制归为: 前缀</option>
+                         <option value="词根" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '词根' ? 'selected' : ''}>🌱 强制归为: 词根</option>
+                         <option value="后缀" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '后缀' ? 'selected' : ''}>🪝 强制归为: 后缀</option>
+                         <option value="组合" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '组合' ? 'selected' : ''}>🧩 强制归为: 组合</option>
+                         <option value="其他" style="background:#1e1e1e; color:#fff;" ${data.manual_category === '其他' ? 'selected' : ''}>📦 强制归为: 其他</option>
+                     </select>
+                 </div>
              </div>
              
              <div style="font-size: 48px; font-weight: 900; color: #38bdf8; margin: 10px 0;">${window.escapeHtml(data.segment)}</div>
@@ -260,6 +641,34 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         pane.querySelectorAll('.jump-word-trigger').forEach(el => el.addEventListener('click', () => window.jumpToWord(el.getAttribute('data-word'))));
+        
+        pane.querySelectorAll('.detail-action-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const action = e.currentTarget.getAttribute('data-action');
+                const key = e.currentTarget.getAttribute('data-key');
+                
+                if (action === 'delete') {
+                    if (!confirm(`确定要在详情页彻底删除词根 ${fullData.segment} 吗？`)) return;
+                    if (window.dbEngine) await window.dbEngine.delete('roots', key);
+                    chrome.storage.local.remove([key], () => {
+                        window.globalRoots = window.globalRoots.filter(r => (r.id || ('R:' + (r.segment||'').toLowerCase().replace(/^-|-$/g, '').trim())) !== key);
+                        window.triggerRootFilter(false);
+                        window.clearRootDetail();
+                    });
+                    return;
+                }
+                
+                if (action === 'favorite') fullData.is_favorite = !fullData.is_favorite;
+                if (action === 'learned') fullData.learning_status = fullData.learning_status === 'learned' ? null : 'learned';
+                if (action === 'review') fullData.learning_status = fullData.learning_status === 'review' ? null : 'review';
+                
+                if (window.dbEngine) await window.dbEngine.batchSave('roots', { [key]: fullData });
+                chrome.storage.local.set({ [key]: fullData }, () => {
+                    window.renderRootDetail(fullData);
+                    window.triggerRootFilter(false);
+                });
+            });
+        });
         
         pane.querySelectorAll('.manual-category-select').forEach(el => {
             el.addEventListener('change', (e) => {

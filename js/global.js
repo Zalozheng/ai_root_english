@@ -74,11 +74,122 @@ window.dbEngine = {
     }
 };
 
-// 全局状态库
-window.globalWords = [];
-window.globalRoots = [];
-window.appConfig = {};
+const BUILTIN_FOLDERS = [
+    {id: 'fav_default', name: '⭐ 默认收藏夹'},
+    {id: 'fav_learned', name: '✅ 已学完'},
+    {id: 'fav_review', name: '🔄 待复习'}
+];
+
+window.appConfig = {
+    favFolders: [...BUILTIN_FOLDERS]
+};
 window.dataBusy = false; // 数据处理状态锁
+
+window.initFavFoldersManager = function() {
+    chrome.storage.local.get(['app_config'], (res) => {
+        if (res.app_config) {
+            window.appConfig = Object.assign(window.appConfig || {}, res.app_config);
+        }
+        if (!window.appConfig.favFolders || !Array.isArray(window.appConfig.favFolders)) {
+            window.appConfig.favFolders = [];
+        }
+        // 确保内置文件夹永远存在于最前面
+        BUILTIN_FOLDERS.slice().reverse().forEach(bf => {
+            if (!window.appConfig.favFolders.find(f => f.id === bf.id)) {
+                window.appConfig.favFolders.unshift(bf);
+            }
+        });
+        window.renderFavFoldersUI();
+    });
+};
+
+window.renderFavFoldersUI = function() {
+    const statusFilter = document.getElementById('root-status-filter');
+    if (!statusFilter) return;
+
+    const val = statusFilter.value; // 保存当前选中的值
+
+    // 清空除了“所有”以外的选项
+    statusFilter.innerHTML = '<option value="all">📁 所有分组 (全部)</option>';
+
+    window.appConfig.favFolders.forEach((folder) => {
+        const option = document.createElement('option');
+        option.value = folder.id;
+        option.textContent = folder.name;
+        statusFilter.appendChild(option);
+    });
+
+    // 尝试恢复选中状态
+    if (Array.from(statusFilter.options).find(o => o.value === val)) {
+        statusFilter.value = val;
+    }
+
+    // 更新管理按钮的显示状态 (仅允许修改自定义文件夹)
+    const newVal = statusFilter.value;
+    const isCustom = newVal && newVal !== 'all' && !BUILTIN_FOLDERS.find(b => b.id === newVal);
+    
+    const editBtn = document.getElementById('edit-fav-btn');
+    const delBtn = document.getElementById('del-fav-btn');
+    if (editBtn) editBtn.style.display = isCustom ? 'flex' : 'none';
+    if (delBtn) delBtn.style.display = isCustom ? 'flex' : 'none';
+};
+
+window.manageFavFolders = function(action) {
+    if (!window.appConfig) window.appConfig = {};
+    if (!window.appConfig.favFolders || !Array.isArray(window.appConfig.favFolders)) {
+        window.appConfig.favFolders = [...BUILTIN_FOLDERS];
+    }
+    
+    const statusFilter = document.getElementById('root-status-filter');
+    const selectedId = statusFilter.value;
+    
+    const isCustom = selectedId && selectedId !== 'all' && !BUILTIN_FOLDERS.find(b => b.id === selectedId);
+
+    if (action === 'add') {
+        const name = prompt("➕ 请输入新分组名称：");
+        if (name && name.trim()) {
+            const newId = 'fav_' + Date.now();
+            window.appConfig.favFolders.push({ id: newId, name: '📁 ' + name.trim() });
+            chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                window.renderFavFoldersUI();
+                statusFilter.value = newId;
+                window.triggerRootFilter(true);
+            });
+        }
+    } else if (action === 'edit' && isCustom) {
+        const folder = window.appConfig.favFolders.find(f => f.id === selectedId);
+        if (folder) {
+            const newName = prompt("✏️ 修改分组名称：", folder.name.replace(/^[📁⭐✅🔄]\s*/, ''));
+            if (newName && newName.trim()) {
+                folder.name = '📁 ' + newName.trim();
+                chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                    window.renderFavFoldersUI();
+                    statusFilter.value = selectedId;
+                });
+            }
+        }
+    } else if (action === 'delete' && isCustom) {
+        if (confirm("🗑️ 确定要彻底删除该分组吗？（该组内的词根将失去标记，但不会从词库被删除）")) {
+            window.appConfig.favFolders = window.appConfig.favFolders.filter(f => f.id !== selectedId);
+            chrome.storage.local.set({ app_config: window.appConfig }, () => {
+                // 清理所有相关词根的标记
+                window.globalRoots.forEach(r => {
+                    if (r.favorite_folder_id === selectedId) {
+                        r.favorite_folder_id = null;
+                        r.is_favorite = false;
+                        r.learning_status = null;
+                        if (window.dbEngine) window.dbEngine.batchSave('roots', { [r.id || ('R:'+r.segment)]: r });
+                        chrome.storage.local.set({ [r.id || ('R:'+r.segment)]: r });
+                    }
+                });
+                statusFilter.value = 'all';
+                window.renderFavFoldersUI();
+                window.triggerRootFilter(true);
+                window.clearRootDetail();
+            });
+        }
+    }
+};
 
 window.showProgress = function(title, percent, text) {
     const modal = document.getElementById('progress-modal');
@@ -244,7 +355,8 @@ window.jumpToRoot = function(rootSegment) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 侧边栏折叠逻辑
+    if (window.initFavFoldersManager) window.initFavFoldersManager();
+    // 侧边栏折叠与移动端显示逻辑
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggle-sidebar-btn');
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');

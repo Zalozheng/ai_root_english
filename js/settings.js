@@ -178,7 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     chrome.storage.local.get(['app_config', 'ui_theme'], (res) => {
-      window.appConfig = res.app_config || {};
+      window.appConfig = Object.assign(window.appConfig || {}, res.app_config || {});
+      if (!window.appConfig.favFolders) window.appConfig.favFolders = [{id: 'fav_default', name: '⭐ 默认收藏夹'}];
       
       // 默认配置初始化
       if (!window.appConfig.apiBase) window.appConfig.apiBase = 'https://api.aaaaapi.com/v1';
