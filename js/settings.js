@@ -111,9 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             if (modelList.style.display === 'block') {
                 modelList.style.display = 'none';
+                modelTrigger.style.transform = 'rotate(0deg)';
             } else {
                 window.renderModelDropdown();
                 modelList.style.display = 'block';
+                modelTrigger.style.transform = 'rotate(180deg)';
                 modelInput.focus();
             }
         });
