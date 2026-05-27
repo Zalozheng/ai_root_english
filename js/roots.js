@@ -119,33 +119,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const countValueEl = document.querySelector('#root-count .count-value');
         if (countValueEl) countValueEl.textContent = filtered.length;
 
-        renderRootList(window.sortData(filtered, sortType));
+        window.currentFilteredRoots = window.sortData(filtered, sortType);
+        window.currentRootPage = 1;
+        renderRootList();
     }
 
     if(document.getElementById('root-search')) {
         document.getElementById('root-search').addEventListener('input', window.triggerRootFilter);
         document.getElementById('root-sort').addEventListener('change', window.triggerRootFilter);
+        if(document.getElementById('root-type-filter')) {
+            document.getElementById('root-type-filter').addEventListener('change', window.triggerRootFilter);
+        }
         if(document.getElementById('root-context-filter')) {
             document.getElementById('root-context-filter').addEventListener('change', window.triggerRootFilter);
         }
-
-        const rootSort = document.getElementById('root-sort');
-        if (rootSort && !document.getElementById('root-type-filter')) {
-            const typeSelect = document.createElement('select'); typeSelect.id = 'root-type-filter'; typeSelect.className = rootSort.className; typeSelect.style.marginLeft = '8px';       
-            typeSelect.innerHTML = `<option value="all">🏷️ 全部类型</option><option value="前缀">前缀</option><option value="词根">词根</option><option value="后缀">后缀</option><option value="组合">🧩 组合</option><option value="其他">其他</option>`;
-            typeSelect.addEventListener('change', window.triggerRootFilter);
-            rootSort.parentNode.insertBefore(typeSelect, rootSort.nextSibling);
-        }
     }
 
-    function renderRootList(roots) {
+    function renderRootList() {
         const listEl = document.getElementById('root-list');
         if(!listEl) return;
         
-        const DISPLAY_LIMIT = 100;
-        const displayRoots = roots.slice(0, DISPLAY_LIMIT);
+        const roots = window.currentFilteredRoots || [];
+        const ROOTS_PER_PAGE = 5;
+        const totalItems = roots.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / ROOTS_PER_PAGE));
         
-        listEl.innerHTML = roots.length === 0 ? '<div style="color:#888; text-align:center; padding: 20px;">未收录</div>' : '';
+        if (!window.currentRootPage || window.currentRootPage < 1) window.currentRootPage = 1;
+        if (window.currentRootPage > totalPages) window.currentRootPage = totalPages;
+        
+        const startIndex = (window.currentRootPage - 1) * ROOTS_PER_PAGE;
+        const displayRoots = roots.slice(startIndex, startIndex + ROOTS_PER_PAGE);
+        
+        listEl.innerHTML = displayRoots.length === 0 ? '<div style="color:#888; text-align:center; padding: 20px;">未收录</div>' : '';
         
         displayRoots.forEach(data => {
             const li = document.createElement('li'); 
@@ -160,11 +165,41 @@ document.addEventListener('DOMContentLoaded', () => {
             listEl.appendChild(li);
         });
 
-        if (roots.length > DISPLAY_LIMIT) {
-            const more = document.createElement('div');
-            more.style.cssText = 'text-align:center; padding:15px; color:#52525b; font-size:12px; border-top:1px dashed #333;';
-            more.textContent = `... 还有 ${roots.length - DISPLAY_LIMIT} 个词根，请使用上方搜索框查找 ...`;
-            listEl.appendChild(more);
+        let paginationEl = document.getElementById('root-pagination');
+        if (!paginationEl) {
+            paginationEl = document.createElement('div');
+            paginationEl.id = 'root-pagination';
+            paginationEl.style.cssText = 'padding: 8px 10px; border-top: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; flex-shrink: 0;';
+            listEl.parentNode.appendChild(paginationEl);
+        }
+        
+        if (totalItems > 0) {
+            paginationEl.innerHTML = `
+                <button id="root-prev-btn" style="background:#27272a; border:1px solid #3f3f46; color:#fff; border-radius:4px; padding:4px 10px; cursor:${window.currentRootPage > 1 ? 'pointer' : 'not-allowed'}; opacity:${window.currentRootPage > 1 ? 1 : 0.5}; font-size:12px;">◀</button>
+                <div style="display:flex; align-items:center; gap:4px; color:#a1a1aa; font-size:12px;">
+                    <input type="number" id="root-page-input" value="${window.currentRootPage}" min="1" max="${totalPages}" style="width:36px; padding:2px; background:#0f0f11; border:1px solid #3f3f46; color:#fff; text-align:center; border-radius:4px; outline:none; -moz-appearance:textfield;">
+                    <span>/ ${totalPages}</span>
+                </div>
+                <button id="root-next-btn" style="background:#27272a; border:1px solid #3f3f46; color:#fff; border-radius:4px; padding:4px 10px; cursor:${window.currentRootPage < totalPages ? 'pointer' : 'not-allowed'}; opacity:${window.currentRootPage < totalPages ? 1 : 0.5}; font-size:12px;">▶</button>
+            `;
+
+            document.getElementById('root-prev-btn').addEventListener('click', () => {
+                if (window.currentRootPage > 1) { window.currentRootPage--; renderRootList(); }
+            });
+            document.getElementById('root-next-btn').addEventListener('click', () => {
+                if (window.currentRootPage < totalPages) { window.currentRootPage++; renderRootList(); }
+            });
+            document.getElementById('root-page-input').addEventListener('change', (e) => {
+                let val = parseInt(e.target.value);
+                if (!isNaN(val) && val >= 1 && val <= totalPages) {
+                    window.currentRootPage = val;
+                    renderRootList();
+                } else {
+                    e.target.value = window.currentRootPage;
+                }
+            });
+        } else {
+            paginationEl.innerHTML = '';
         }
     }
 
