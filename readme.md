@@ -3,6 +3,8 @@ edg上架 https://microsoftedge.microsoft.com/addons/detail/ai%E8%AF%8D%E6%A0%B9
 
 ![Gemini_Generated_Image_jh0x60jh0x60jh0x](./assets/Gemini_Generated_Image_jh0x60jh0x60jh0x.png)
 
+android: https://github.com/Zalozheng/AiWordApp
+
 ## 🌟 项目简介
 
 **AI词根记忆 Pro** 彻底颠覆了传统的死记硬背。它不仅是一个划词翻译工具，更是一个**本地化的私人英语词汇知识库**。
