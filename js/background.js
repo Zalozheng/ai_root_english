@@ -21,6 +21,21 @@ function safeStorageSet(items, callback, batchSize = 50) {
     writeNextBatch();
 }
 
+// 通知 options 页面把新数据同步进 IndexedDB 并刷新列表
+function notifyOptionsPage(keys) {
+    chrome.tabs.query({ url: chrome.runtime.getURL('options.html') + '*' }, (tabs) => {
+        if (!tabs || tabs.length === 0) return;
+        chrome.storage.local.get(keys, (freshData) => {
+            tabs.forEach(tab => {
+                chrome.tabs.sendMessage(tab.id, {
+                    action: 'syncNewDataToDb',
+                    data: freshData
+                }).catch(() => {});
+            });
+        });
+    });
+}
+
 function updateOllamaCorsRule(ollamaUrl) {
   try {
     const url = new URL(ollamaUrl || 'http://127.0.0.1:11434');
@@ -97,6 +112,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "fetchLLM") {
     const word = request.word.replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim(); 
     const forceRefresh = request.forceRefresh || false; 
+    const isPyramid = request.isPyramid || false;
 
     chrome.storage.local.get(["app_config"], (res) => {
       const config = res.app_config || {};
@@ -108,17 +124,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (engine === 'custom' && (!config.apiKey || !config.apiBase)) { sendResponse({ success: false, error: "未配置 API Key。" }); return; }
       if (engine === 'ollama' && (!config.ollamaBase || !config.ollamaModel)) { sendResponse({ success: false, error: "未配置 Ollama 接口。" }); return; }
 
-      StorageModule.getWord(word, engine, context, forceRefresh, (cachedData) => {
-        if (cachedData) sendResponse({ success: true, data: cachedData, cached: true });
-        else if (engine === 'local_only') sendResponse({ success: false, error: "当前为断网模式，且本地词库无此数据。" });
-        else fetchFromLLM(word, config, sourceTag, context, sendResponse);
-      });
+      if (isPyramid) {
+          if (forceRefresh) {
+              fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
+          } else {
+              const rootKey = "R:" + word;
+              chrome.storage.local.get([rootKey], (rootRes) => {
+                  if (rootRes[rootKey] && rootRes[rootKey].deep_origin) {
+                      sendResponse({ success: true, data: rootRes[rootKey], cached: true });
+                  } else {
+                      if (engine === 'local_only') {
+                          if (rootRes[rootKey]) sendResponse({ success: true, data: rootRes[rootKey], cached: true });
+                          else sendResponse({ success: false, error: "当前为断网模式，且本地词库无此数据。" });
+                      } else {
+                          fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
+                      }
+                  }
+              });
+          }
+      } else {
+          StorageModule.getWord(word, engine, context, forceRefresh, (cachedData) => {
+            if (cachedData) {
+                sendResponse({ success: true, data: cachedData, cached: true });
+            } else if (engine === 'local_only') {
+                sendResponse({ success: false, error: "当前为断网模式，且本地词库无此数据。" });
+            } else {
+                fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
+            }
+          });
+      }
     });
     return true; 
   }
 });
 
-function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
+function fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid = false) {
     let roleInjection = '你是一个深谙"唯名词论"的日常英语词汇专家。';
     let contextInstruction = "极其常见的生活、购物、交流场景";
     
@@ -148,7 +188,18 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
         if (!systemPrompt || systemPrompt.includes("系统内置的文字")) {
             baseRole = roleInjection;
         }
-        const jsonTemplate = config.globalJsonTemplate || `请严格分析单词，仅返回纯JSON对象。
+        let jsonTemplate;
+        if (isPyramid && config.enablePyramidJson !== false) {
+             jsonTemplate = config.pyramidJsonTemplate || `请严格分析词根，仅返回纯JSON对象。
+【警告】必须用真实词根金字塔数据填充！
+{
+  "meaning": "核心词根含义，例如：系列，连续",
+  "segment": ["ser", "seri", "sert"],
+  "deep_origin": "用最简短精炼的一句话(15字以内)概括该词根的核心意境或记忆口诀，例如：表示'系列，连续'",
+  "derivatives": ["serial", "series", "insert", "desert"]
+}`;
+        } else {
+             jsonTemplate = config.globalJsonTemplate || `请严格分析单词，仅返回纯JSON对象。
 【警告】必须用真实解析数据填充！
 【JSON 格式规范】
 1. 严禁在 JSON 字符串内部直接使用未转义的双引号 "。
@@ -172,6 +223,7 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
   ],
   "memory_lines": ["String (必须结合 {CONTEXT} 生成一条极度硬核、有强烈画面感的记忆联想，内部严禁出现双引号，请用单引号或中文引号代替)"]
 }`;
+        }
         systemPrompt = `${baseRole}\n${jsonTemplate}`;
     }
 
@@ -389,7 +441,12 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
           parsedData = JSON.parse(text);
       } catch (e) {
           try {
-              parsedData = JSON.parse(repairJson(text));
+              // 预处理：把 AI 用单引号包裹的字符串值转换为双引号
+              let fixedText = text.replace(/("[\w_]+":\s*)'([\s\S]*?)'/g, (match, key, val) => {
+                  const escaped = val.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+                  return key + '"' + escaped + '"';
+              });
+              parsedData = JSON.parse(repairJson(fixedText));
           } catch (e2) {
               console.error("AI 响应 JSON 解析失败。原始文本：", text);
               throw e;
@@ -400,19 +457,79 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
           let toSave = {};
           const rootStrategy = config.rootStrategy || 'keep_old'; 
 
-          (parsedData.parts || []).forEach(p => {
-              const cleanRoot = p.segment.toLowerCase().replace(/^-|-$/g, '').trim();
+          if (isPyramid) {
+              const cleanRoot = (word || '').toLowerCase().replace(/^-|-$/g, '').trim();
               const rootKey = "R:" + cleanRoot;
-              const cleanDerivatives = (p.derivatives || []).map(d => d.replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim()).filter(Boolean);
+              
+              // 处理 segment：支持数组和字符串两种格式
+              let segmentRaw = parsedData.segment;
+              if (Array.isArray(segmentRaw)) {
+                  parsedData.segment = segmentRaw.map(s => (s || '').toLowerCase().replace(/^-|-$/g, '').trim()).filter(Boolean);
+              } else if (typeof segmentRaw === 'string') {
+                  // 兼容旧的逗号分隔字符串格式 → 转为数组
+                  parsedData.segment = segmentRaw.split(/[,，、\s]+/).map(s => s.toLowerCase().replace(/^-|-$/g, '').trim()).filter(s => /^[a-z]+$/.test(s));
+              }
+              if (!parsedData.segment || parsedData.segment.length === 0) {
+                  parsedData.segment = [cleanRoot];
+              }
+
+              // 处理 derivatives：纯字符串数组
+              let rawDerivs = parsedData.derivatives;
+              if (typeof rawDerivs === 'string') rawDerivs = rawDerivs.split(',');
+              const derivsArray = Array.isArray(rawDerivs) ? rawDerivs : [];
+              const cleanDerivatives = derivsArray.map(d => {
+                  let str = typeof d === 'string' ? d : d.word;
+                  return (str || '').replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim();
+              }).filter(Boolean);
+
+              let rootData = allData[rootKey] || {};
+              parsedData.lookup_count = rootData.lookup_count || 0;
+              parsedData.updated_at = Date.now();
+              parsedData.derivatives = [...new Set(cleanDerivatives)];
+              parsedData.type = "根";
+
+              toSave[rootKey] = parsedData;
+
+              safeStorageSet(toSave, (hasError) => {
+                  if (hasError) {
+                      sendResponse({ success: false, error: '本地存储空间不足。' });
+                      return;
+                  }
+                  notifyOptionsPage(Object.keys(toSave));
+                  sendResponse({ success: true, data: parsedData, cached: false });
+              });
+              return;
+          }
+
+
+          let partsArray = Array.isArray(parsedData.parts) ? parsedData.parts : [];
+          partsArray.forEach(p => {
+              const cleanRoot = (p.segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+              if (!cleanRoot) return;
+              const rootKey = "R:" + cleanRoot;
+              
+              let rawDerivs = p.derivatives;
+              if (typeof rawDerivs === 'string') rawDerivs = rawDerivs.split(',');
+              const derivsArray = Array.isArray(rawDerivs) ? rawDerivs : [];
+              const cleanDerivatives = derivsArray.map(d => {
+                  let str = typeof d === 'string' ? d : d.word;
+                  return (str || '').replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim();
+              }).filter(Boolean);
               
               const existingRoot = allData[rootKey] || {};
               p.lookup_count = existingRoot.lookup_count || 0;
               p.updated_at = existingRoot.updated_at || Date.now();
 
               if (allData[rootKey] && rootStrategy === 'keep_old') {
-                  p.meaning = allData[rootKey].meaning; 
-                  p.deep_origin = allData[rootKey].deep_origin; 
-                  const oldDerivs = (allData[rootKey].derivatives || []).map(d => d.replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim());
+                  p.meaning = allData[rootKey].meaning || p.meaning; 
+                  p.deep_origin = allData[rootKey].deep_origin || p.deep_origin; 
+                  let oldRawDerivs = allData[rootKey].derivatives;
+                  if (typeof oldRawDerivs === 'string') oldRawDerivs = oldRawDerivs.split(',');
+                  const oldDerivsArray = Array.isArray(oldRawDerivs) ? oldRawDerivs : [];
+                  const oldDerivs = oldDerivsArray.map(d => {
+                      let str = typeof d === 'string' ? d : d.word;
+                      return (str || '').replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim();
+                  });
                   p.derivatives = [...new Set([...oldDerivs, ...cleanDerivatives])];
                   toSave[rootKey] = p; 
               } else {
@@ -422,30 +539,34 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse) {
           });
 
           const cleanWordKey = "W:" + word; 
-          let wordData = allData[cleanWordKey] || parsedData;
+          let wordData = allData[cleanWordKey] ? JSON.parse(JSON.stringify(allData[cleanWordKey])) : {};
           if (!wordData.memory_lines_map) wordData.memory_lines_map = {};
           
           const newMapKey = `${sourceTag}_${context}`;
           const editedKeys = wordData.edited_keys || [];
-          if (!editedKeys.includes(newMapKey)) {
-            wordData.memory_lines_map[newMapKey] = parsedData.memory_lines || [];
-          }
-          wordData.display_breakdown = parsedData.display_breakdown || wordData.display_breakdown;
-          wordData.phonetic_us = parsedData.phonetic_us || wordData.phonetic_us;
-          wordData.primary_meaning = parsedData.primary_meaning || wordData.primary_meaning;
-          wordData.noun_source = parsedData.noun_source || wordData.noun_source;
-          wordData.parts = parsedData.parts; 
+          // 强制保存，不管是否被编辑过
+          const memLines = parsedData.memory_lines;
+          wordData.memory_lines_map[newMapKey] = Array.isArray(memLines) ? memLines : (memLines ? [memLines] : []);
           
-          wordData.lookup_count = allData[cleanWordKey]?.lookup_count || 0;
-          wordData.updated_at = allData[cleanWordKey]?.updated_at || Date.now();
+          wordData.display_breakdown = parsedData.display_breakdown || wordData.display_breakdown || '';
+          wordData.phonetic_us = parsedData.phonetic_us || wordData.phonetic_us || '';
+          wordData.primary_meaning = parsedData.primary_meaning || wordData.primary_meaning || '';
+          wordData.noun_source = parsedData.noun_source || wordData.noun_source || '';
+          wordData.word = parsedData.word || word;
+          wordData.parts = parsedData.parts || wordData.parts || [];
+          
+          wordData.lookup_count = (allData[cleanWordKey]?.lookup_count || 0);
+          wordData.updated_at = Date.now();
 
           toSave[cleanWordKey] = wordData;
+          console.log('[词根引擎] 即将入库:', cleanWordKey, '已有词根条目:', Object.keys(toSave).filter(k => k.startsWith('R:')).length);
           
           safeStorageSet(toSave, (hasError) => {
               if (hasError) {
                   sendResponse({ success: false, error: '本地存储空间不足 (QuotaBytes exceeded)，数据未能缓存。请到设置页面导出并清理旧数据。' });
                   return;
               }
+              notifyOptionsPage(Object.keys(toSave));
               let resData = JSON.parse(JSON.stringify(wordData));
               resData.memory_lines = wordData.memory_lines_map[`${sourceTag}_${context}`];
               resData.sourceTag = sourceTag;

@@ -27,8 +27,12 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
     saveHistory(word, historySelect, historyEl);
     const res = response.data;
 
-    const partsHtml = (res.parts || []).map((p, i) => {
-      const cleanRoot = escapeHtml(p.segment.replace(/^-|-$/g, '').toLowerCase());
+    chrome.storage.local.get(['app_config'], (configRes) => {
+      const config = configRes.app_config || {};
+      const enablePyramid = config.enablePyramid !== false;
+
+      const partsHtml = (res.parts || []).map((p, i) => {
+      const cleanRoot = escapeHtml(window.getSegStr ? window.getSegStr(p.segment) : (Array.isArray(p.segment) ? p.segment[0] : p.segment || '').replace(/^-|-$/g, '').toLowerCase());
       return `
         <div class="part-row" id="row-${i}">
           <div class="segment-box jump-root-trigger" data-root="${cleanRoot}">
@@ -36,7 +40,10 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
             <div class="segment-type">${escapeHtml(p.type)}</div>
           </div>
           <div class="detail-box">
-            <div class="meaning">${escapeHtml(p.meaning)} <span class="click-hint">(点击查看详细渊源)</span></div>
+            <div class="meaning">
+              ${((p.type.includes('根') || p.type.toLowerCase() === 'root') && enablePyramid) ? `<button class="pyramid-icon-btn tooltip-up" data-root="${cleanRoot}" data-tooltip="🔺 深入探析&#10;点击生成专属词根金字塔" style="padding:2px 6px; font-size:12px; background:rgba(245,158,11,0.1); color:var(--orange); border:1px solid rgba(245,158,11,0.3); border-radius:4px; cursor:pointer; transition:0.2s; margin-right:6px; vertical-align:middle; line-height:1;">🔺</button>` : ''}
+              ${escapeHtml(p.meaning)} <span class="click-hint">(点击查看详细渊源)</span>
+            </div>
             <div class="deep-detail" id="detail-${i}">
               <div style="color:var(--text); margin-bottom:8px;"><b>📖 渊源故事：</b><br>${escapeHtml(p.deep_origin || '暂无')}</div>
               <div><b>🌿 同根派生：</b> ${escapeHtml((p.derivatives || []).join(', ') || '暂无')}</div>
@@ -82,7 +89,6 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
       </div>
       <div style="margin-top:25px;display:flex;justify-content:center;gap:8px;padding-bottom:10px;flex-wrap:wrap;">
         <button class="jump-to-tree-btn" data-word="${escapeHtml(res.word || word)}" style="padding:8px 14px;border-radius:8px;border:1px solid #0ea5e9;background:rgba(14,165,233,0.1);color:#38bdf8;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">🌳 词树图</button>
-        <button class="jump-to-pyramid-btn" data-word="${escapeHtml(res.word || word)}" style="padding:8px 14px;border-radius:8px;border:1px solid #facc15;background:rgba(250,204,21,0.1);color:#facc15;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">🔺 金字塔</button>
         <button class="jump-to-lib-btn" data-word="${escapeHtml(res.word || word)}" style="padding:8px 14px;border-radius:8px;border:1px solid #a855f7;background:rgba(168,85,247,0.1);color:#c084fc;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">📝 进特训库</button>
         <button id="save-lines-btn" style="padding:8px 14px;border-radius:8px;border:1px solid #10b981;background:rgba(16,185,129,0.1);color:#10b981;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">💾 保存</button>
       </div>`;
@@ -122,6 +128,15 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
       analyze({ forceWord: e.currentTarget.getAttribute('data-root'), isBackAction: false, forceRefresh: false, state, els });
     }));
 
+    container.querySelectorAll('.pyramid-icon-btn').forEach(btn => btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const root = e.currentTarget.getAttribute('data-root');
+      chrome.storage.local.set({ pendingPyramidWord: root }, () => {
+        if (isInPage) window.open(chrome.runtime.getURL('options.html'));
+        else chrome.runtime.openOptionsPage();
+      });
+    }));
+
     document.getElementById('save-lines-btn').addEventListener('click', () => {
       const newLines = Array.from(document.querySelectorAll('#lines-render-area .line-input'))
         .map(el => (el.value !== undefined ? el.value : el.innerText).trim())
@@ -149,16 +164,6 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
       });
     }
 
-    const pyramidBtnPopup = container.querySelector('.jump-to-pyramid-btn');
-    if (pyramidBtnPopup) {
-      pyramidBtnPopup.onmouseover = () => { pyramidBtnPopup.style.background = '#facc15'; pyramidBtnPopup.style.color = '#111'; };
-      pyramidBtnPopup.onmouseout = () => { pyramidBtnPopup.style.background = 'rgba(250,204,21,0.1)'; pyramidBtnPopup.style.color = '#facc15'; };
-      pyramidBtnPopup.addEventListener('click', (e) => {
-        const targetWord = e.currentTarget.getAttribute('data-word');
-        window.open(chrome.runtime.getURL('pyramid.html?word=' + encodeURIComponent(targetWord)));
-      });
-    }
-
     const libBtnPopup = container.querySelector('.jump-to-lib-btn');
     if (libBtnPopup) {
       libBtnPopup.onmouseover = () => { libBtnPopup.style.background = '#a855f7'; libBtnPopup.style.color = '#fff'; };
@@ -170,6 +175,7 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
         });
       });
     }
+  });
   });
 }
 

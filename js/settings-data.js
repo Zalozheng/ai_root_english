@@ -12,7 +12,7 @@ window.initDataEngine = function() {
                 let w = items[k];
                 if (w.memory_lines_map && Object.keys(w.memory_lines_map).some(mk => mk.endsWith(`_${context}`))) {
                     (w.parts || []).forEach(p => {
-                        if (p && p.segment) usedRoots.add(p.segment.toLowerCase().replace(/^-|-$/g, '').trim());
+                        if (p && p.segment) usedRoots.add(window.getSegStr(p.segment));
                     });
                 }
             }
@@ -29,7 +29,7 @@ window.initDataEngine = function() {
                     let usedInOther = Object.keys(w.memory_lines_map).some(mk => !mk.endsWith(`_${context}`));
                     if (usedInOther) {
                         (w.parts || []).forEach(p => {
-                            if (p && p.segment) otherRoots.add(p.segment.toLowerCase().replace(/^-|-$/g, '').trim());
+                            if (p && p.segment) otherRoots.add(window.getSegStr(p.segment));
                         });
                     }
                 }
@@ -63,7 +63,7 @@ window.initDataEngine = function() {
                         exportData[k] = cleanItem;
                         count++;
                     } else if (isRoot) {
-                        let rootSeg = (items[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+                        let rootSeg = window.getSegStr(items[k].segment);
                         if (usedRoots.has(rootSeg)) {
                             exportData[k] = items[k];
                             count++;
@@ -239,7 +239,7 @@ window.initDataEngine = function() {
                                             else toSave[k] = all[k]; 
                                         }
                                     } else if (isRoot && (pendingImportType === 'roots' || pendingImportType === 'all')) {
-                                        let rootSeg = (all[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+                                        let rootSeg = window.getSegStr(all[k].segment);
                                         if (usedRoots.has(rootSeg)) keysToRemove.push(k);
                                     }
                                 });
@@ -375,7 +375,7 @@ window.initDataEngine = function() {
                             else itemsToUpdate[k] = cleanItem;
                         }
                     } else if (isRoot) {
-                        let rootSeg = (items[k].segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+                        let rootSeg = window.getSegStr(items[k].segment);
                         let isUsedInCtx = usedRoots.has(rootSeg);
                         let isUsedElsewhere = otherRoots.has(rootSeg);
                         if (isUsedInCtx && !isUsedElsewhere) keysToRemove.push(k);

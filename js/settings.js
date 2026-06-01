@@ -232,6 +232,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if(tempSlider) { tempSlider.value = window.appConfig.temperature !== undefined ? window.appConfig.temperature : 0.2; tempVal.textContent = tempSlider.value; }
       
       if(document.getElementById('auto-parse')) document.getElementById('auto-parse').checked = window.appConfig.autoParse === true;
+      if(document.getElementById('enable-pyramid')) document.getElementById('enable-pyramid').checked = window.appConfig.enablePyramid !== false;
+      if(document.getElementById('enable-pyramid-json')) document.getElementById('enable-pyramid-json').checked = window.appConfig.enablePyramidJson !== false;
       if(document.getElementById('enable-content-script')) document.getElementById('enable-content-script').checked = window.appConfig.enableContentScript !== false;
       if(document.getElementById('history-limit')) document.getElementById('history-limit').value = window.appConfig.historyLimit || '10';
       if(document.getElementById('data-fallback-rule')) document.getElementById('data-fallback-rule').value = window.appConfig.dataFallbackRule || 'cross';
@@ -314,7 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ollamaBase: document.getElementById('ollama-base') ? document.getElementById('ollama-base').value.trim() : '',
             ollamaModel: document.getElementById('ollama-model-select') ? document.getElementById('ollama-model-select').value : '', 
             promptContext: curCtx,
-            autoParse: document.getElementById('auto-parse') ? document.getElementById('auto-parse').checked : true, 
+            autoParse: document.getElementById('auto-parse') ? document.getElementById('auto-parse').checked : true,
+            enablePyramid: document.getElementById('enable-pyramid') ? document.getElementById('enable-pyramid').checked : true, 
+            enablePyramidJson: document.getElementById('enable-pyramid-json') ? document.getElementById('enable-pyramid-json').checked : true,
             enableContentScript: document.getElementById('enable-content-script') ? document.getElementById('enable-content-script').checked : true,
             historyLimit: document.getElementById('history-limit') ? document.getElementById('history-limit').value : 10, 
             dataFallbackRule: document.getElementById('data-fallback-rule') ? document.getElementById('data-fallback-rule').value : 'cross', 
@@ -434,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(el) el.addEventListener('change', () => { updateLabels(); window.autoSaveConfig(); });
     });
     
-    ['theme', 'data-fallback-rule', 'offline-source', 'history-limit', 'prompt-context'].forEach(id => {
+    ['theme', 'data-fallback-rule', 'offline-source', 'history-limit', 'prompt-context', 'enable-pyramid-json'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.addEventListener('change', window.autoSaveConfig);
     });

@@ -87,6 +87,12 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); 
 }
 
+/* 修复金字塔历史下拉选项在明暗模式下的白底问题 */
+#pyramid-history-select option {
+    background-color: #18181b;
+    color: #facc15;
+}
+
 /* 2024 精致模式切换条 (Classic refined) */
 .engine-tabs { 
     display: flex; 

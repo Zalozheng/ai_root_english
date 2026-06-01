@@ -90,11 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (contextFilter !== 'all' && !window.contextRootMap) buildContextRootMap();
 
         let filtered = window.globalRoots.filter(d => {
-            const matchSearch = (d.segment || '').toLowerCase().includes(q) || (d.meaning || '').includes(q);
+            const matchSearch = window.getSegStr(d.segment).includes(q) || (d.meaning || '').includes(q);
             if (!matchSearch) return false;
 
             if (contextFilter !== 'all' && window.contextRootMap) {
-                const rootSeg = (d.segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+                const rootSeg = window.getSegStr(d.segment);
                 const rootsInCtx = window.contextRootMap[contextFilter];
                 if (!rootsInCtx || !rootsInCtx.has(rootSeg)) return false;
             }
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const histMatches = searchHistory.filter(h => h.toLowerCase().includes(q)).map(h => ({ type: 'history', text: h }));
                 const rootMatches = (window.globalRoots || [])
-                    .filter(r => (r.segment||'').toLowerCase().includes(q) || (r.meaning||'').toLowerCase().includes(q))
+                    .filter(r => window.getSegStr(r.segment).includes(q) || (r.meaning||'').toLowerCase().includes(q))
                     .slice(0, 15)
                     .map(r => ({ type: 'root', text: r.segment, meaning: r.meaning, data: r })); // 缓存完整数据供渲染使用
                 
@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const li = document.createElement('li'); 
             li.className = 'data-item';
             
-            const rootKey = data.id || ('R:' + (data.segment||'').toLowerCase().replace(/^-|-$/g, '').trim());
+        const rootKey = data.id || ("R:" + window.getSegStr(data.segment));
             const starIcon = data.is_favorite ? '⭐' : '☆';
             const starColor = data.is_favorite ? '#f59e0b' : '#6b7280';
             
@@ -567,7 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const pane = document.getElementById('root-detail');
         if(!pane) return;
 
-        const rootId = data.id || ("R:" + (data.segment || '').toLowerCase().replace(/^-|-$/g, '').trim());
+        const rootId = data.id || ("R:" + window.getSegStr(data.segment));
         let fullData = data;
         try {
             const dbData = await window.dbEngine.get('roots', rootId);
@@ -629,6 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
                  <span style="font-size: 14px; color: #a1a1aa; text-transform: uppercase;">[ 原生记录: ${window.escapeHtml(data.type)} ]</span>
                  
                  <div style="display: flex; align-items: center; gap: 10px;">
+                     <button class="jump-to-pyramid-btn-lib" data-segment="${window.escapeHtml(data.segment)}" style="background:rgba(245,158,11,0.1); color:#facc15; border:1px solid rgba(245,158,11,0.3); border-radius:6px; font-size:12px; padding:4px 8px; cursor:pointer; display:flex; align-items:center; gap:4px; font-weight:bold;" title="生成专属词根金字塔">🔺 金字塔</button>
                      <!-- 标记状态 -->
                      <select class="unified-status-selector" data-key="${rootId}" style="background:transparent; color:${statusColor}; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer;" title="标记学习状态">
                         ${statusOptions}
@@ -674,6 +675,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         pane.querySelectorAll('.jump-word-trigger').forEach(el => el.addEventListener('click', () => window.jumpToWord(el.getAttribute('data-word'))));
+        
+        const pyBtn = pane.querySelector('.jump-to-pyramid-btn-lib');
+        if (pyBtn) {
+            pyBtn.addEventListener('click', (e) => {
+                const targetRoot = e.currentTarget.getAttribute('data-segment');
+                chrome.storage.local.set({ pendingPyramidWord: targetRoot }, () => {
+                    // Activate the pyramid tab since we are already on options page
+                    const pyNav = document.getElementById('nav-pyramid');
+                    if (pyNav) pyNav.click();
+                });
+            });
+        }
         
         pane.querySelectorAll('.detail-action-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {

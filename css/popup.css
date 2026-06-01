@@ -69,9 +69,9 @@ input:checked + .slider:before { transform: translateX(16px); }
 
 .core-meaning { font-size: 14px; font-weight: 600; color: var(--red); margin-bottom: 16px; padding: 8px 12px; background: rgba(239,68,68,0.05); border-left: 4px solid var(--red); border-radius: 0 8px 8px 0;}
 
-.part-row { display: flex; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); transition: 0.2s; }
+.part-row { display: flex; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); transition: 0.2s; }
 .part-row:hover { border-color: var(--accent); transform: translateX(2px); box-shadow: 0 2px 8px var(--shadow);}
-.segment-box { flex: 0 0 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--root-bg); border-right: 1px solid var(--root-border); padding: 12px 6px; cursor: pointer; transition: 0.2s;}
+.segment-box { flex: 0 0 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--root-bg); border-right: 1px solid var(--root-border); padding: 12px 6px; cursor: pointer; transition: 0.2s; border-top-left-radius: 9px; border-bottom-left-radius: 9px;}
 .segment-box:hover { background: var(--accent); }
 .segment-text { font-size: 17px; font-weight: 800; color: var(--root-text); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
 .segment-box:hover .segment-text { color: #fff; }
@@ -112,6 +112,7 @@ input:checked + .slider:before { transform: translateX(16px); }
   box-shadow: 0 4px 15px var(--shadow);
 }
 [data-tooltip]:hover::after { opacity: 1; visibility: visible; }
+[data-tooltip].tooltip-up::after { top: auto; bottom: calc(100% + 8px); }
 
 /* 右侧按钮 tooltip 向左对齐，不超出右边界 */
 .header-right [data-tooltip]::after,

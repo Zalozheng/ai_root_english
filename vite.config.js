@@ -32,6 +32,7 @@ export default defineConfig({
     webExtension({
       manifest: 'manifest.json',
       additionalInputs: ['docs.html'],
+      disableAutoLaunch: true, // 防止找不到 Chrome 而报错
       webExtConfig: {
         browser: 'chrome',
       },

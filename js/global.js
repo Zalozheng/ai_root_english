@@ -8,6 +8,13 @@ const STORES = {
     ROOTS: 'roots'
 };
 
+// 安全获取词根 segment 的主字符串（兼容数组和字符串两种格式）
+window.getSegStr = function(segment) {
+    if (!segment) return '';
+    if (Array.isArray(segment)) return (segment[0] || '').toLowerCase().replace(/^-|-$/g, '').trim();
+    return String(segment).toLowerCase().replace(/^-|-$/g, '').trim();
+};
+
 window.dbEngine = {
     db: null,
     async init() {
@@ -222,7 +229,7 @@ window.manageFavFolders = function(action, targetSelectorId = 'root-status-filte
                         if (r && changed) {
                             r.favorite_folder_id = (r.favorite_folder_ids && r.favorite_folder_ids[0]) || null;
                             r.is_favorite = !!(r.favorite_folder_ids && r.favorite_folder_ids.includes('fav_default'));
-                            const rId = r.id || (r.segment ? ('R:' + r.segment.toLowerCase().replace(/^-|-$/g, '').trim()) : null);
+                            const rId = r.id || (r.segment ? ('R:' + window.getSegStr(r.segment)) : null);
                             if (rId) {
                                 if (window.dbEngine) window.dbEngine.batchSave('roots', { [rId]: r });
                                 chrome.storage.local.set({ [rId]: r });
@@ -348,7 +355,7 @@ window.showStatus = function(msg, color) {
 
 window.sortData = function(arr, type) {
     let sorted = [...arr];
-    if (type === 'az') sorted.sort((a, b) => ((a.word || a.segment || '').toLowerCase().replace(/^-|-$/g, '')).localeCompare(((b.word || b.segment || '').toLowerCase().replace(/^-|-$/g, ''))));
+    if (type === 'az') sorted.sort((a, b) => (a.word || window.getSegStr(a.segment)).localeCompare(b.word || window.getSegStr(b.segment)));
     else if (type === 'freq') sorted.sort((a, b) => (b.lookup_count || 0) - (a.lookup_count || 0));
     else if (type === 'time') sorted.sort((a, b) => (b.updated_at || 0) - (a.updated_at || 0));
     return sorted;
@@ -415,7 +422,7 @@ window.jumpToWord = function(rawTargetWord) {
 
 window.jumpToRoot = function(rootSegment) {
     const cleanRoot = rootSegment.toLowerCase().replace(/^-|-$/g, '').trim();
-    const existing = window.globalRoots.find(d => (d.segment||'').toLowerCase().replace(/^-|-$/g, '') === cleanRoot);
+    const existing = window.globalRoots.find(d => window.getSegStr(d.segment) === cleanRoot);
     window.switchView('view-roots');
     if (existing) {
         document.querySelectorAll('#root-list .data-item').forEach(el => el.classList.remove('selected'));
@@ -500,3 +507,42 @@ async function migrateToIndexedDB() {
     });
 }
 migrateToIndexedDB();
+
+// 监听来自 background.js 的新词/词根数据，实时同步进 IndexedDB 并刷新库页面列表
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'syncNewDataToDb' && request.data) {
+        const data = request.data;
+        const wordsToSave = {};
+        const rootsToSave = {};
+        for (const k in data) {
+            if (k.startsWith('W:')) wordsToSave[k] = data[k];
+            if (k.startsWith('R:')) rootsToSave[k] = data[k];
+        }
+        Promise.all([
+            Object.keys(wordsToSave).length > 0 && window.dbEngine ? window.dbEngine.batchSave('words', wordsToSave) : Promise.resolve(),
+            Object.keys(rootsToSave).length > 0 && window.dbEngine ? window.dbEngine.batchSave('roots', rootsToSave) : Promise.resolve()
+        ]).then(() => {
+            // 把新词追加进内存列表并刷新 UI，不需要重新读库
+            for (const k in wordsToSave) {
+                const newWord = wordsToSave[k];
+                newWord.id = k;
+                if (window.globalWords) {
+                    const idx = window.globalWords.findIndex(w => (w.id || ('W:' + (w.word || '').toLowerCase().trim())) === k);
+                    if (idx >= 0) window.globalWords[idx] = newWord;
+                    else window.globalWords.push(newWord);
+                }
+            }
+            for (const k in rootsToSave) {
+                const newRoot = rootsToSave[k];
+                newRoot.id = k;
+                if (window.globalRoots) {
+                    const idx = window.globalRoots.findIndex(r => (r.id || ('R:' + window.getSegStr(r.segment))) === k);
+                    if (idx >= 0) window.globalRoots[idx] = newRoot;
+                    else window.globalRoots.push(newRoot);
+                }
+            }
+            if (typeof window.triggerWordFilter === 'function') window.triggerWordFilter(false);
+            if (typeof window.triggerRootFilter === 'function') window.triggerRootFilter(false);
+        }).catch(e => console.error('[DB同步] 失败:', e));
+    }
+});

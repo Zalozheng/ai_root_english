@@ -104,6 +104,42 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
         });
     }
 
+    // ======= 词根金字塔 JSON 结构约束初始化 =======
+    const pyramidJsonTextarea = document.getElementById('pyramid-json-prompt');
+    const resetPyramidJsonBtn = document.getElementById('reset-pyramid-json-btn');
+    const defaultPyramidJson = `请严格分析词根，仅返回纯JSON对象。
+【警告】必须用真实词根金字塔数据填充！
+{
+  "meaning": "核心词根含义，例如：系列，连续",
+  "segment": ["ser", "seri", "sert"],
+  "deep_origin": "用最简短精炼的一句话(15字以内)概括该词根的核心意境或记忆口诀，例如：表示'系列，连续'",
+  "derivatives": ["serial", "series", "insert", "desert"]
+}`;
+
+    if (window.appConfig && window.appConfig.pyramidJsonTemplate) {
+        let changed = false;
+        const tpl = window.appConfig.pyramidJsonTemplate;
+        // 迁移旧格式：如果还在用字符串形式的 segment，就重置为新模板
+        if (tpl.includes('"segment": "') || tpl.includes('{"word": "\u6d3e\u751f\u8bcd"')) {
+            window.appConfig.pyramidJsonTemplate = defaultPyramidJson;
+            changed = true;
+        }
+        if (changed) chrome.storage.local.set({ app_config: window.appConfig });
+    }
+
+    if (pyramidJsonTextarea) {
+        pyramidJsonTextarea.value = window.appConfig.pyramidJsonTemplate || defaultPyramidJson;
+    }
+    if (resetPyramidJsonBtn && pyramidJsonTextarea) {
+        resetPyramidJsonBtn.addEventListener('click', () => {
+            if (confirm('🔄 确定要将词根金字塔 JSON 结构恢复为系统默认吗？')) {
+                pyramidJsonTextarea.value = defaultPyramidJson; 
+                window.appConfig.pyramidJsonTemplate = defaultPyramidJson; 
+                window.showStatus('🔄 已恢复默认结构', '#10b981');
+            }
+        });
+    }
+
     if (contextSelect) {
         renderContextSelect();
         contextSelect.addEventListener('change', (e) => {
@@ -194,6 +230,8 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
                     window.appConfig.prompts[currentId] = targetArea.value;
                 } else if (targetId === 'global-json-prompt') {
                     window.appConfig.globalJsonTemplate = targetArea.value;
+                } else if (targetId === 'pyramid-json-prompt') {
+                    window.appConfig.pyramidJsonTemplate = targetArea.value;
                 }
 
                 chrome.storage.local.set({ app_config: window.appConfig }, () => {
@@ -214,8 +252,12 @@ window.initContextManager = function(initialPrompts, defaultGlobalJson) {
     if (document.getElementById('edit-global-json-btn')) {
         document.getElementById('edit-global-json-btn').addEventListener('click', () => openZenEditor('global-json-prompt', '🧩 调整 JSON 结构约束', '#a855f7'));
     }
+    if (document.getElementById('edit-pyramid-json-btn')) {
+        document.getElementById('edit-pyramid-json-btn').addEventListener('click', () => openZenEditor('pyramid-json-prompt', '🔺 调整金字塔 JSON 结构', '#facc15'));
+    }
     
     // 也允许点击预览框直接进入编辑
     if (promptArea) promptArea.addEventListener('click', () => openZenEditor('custom-prompt', '📜 编辑 System Prompt', '#38bdf8'));
     if (jsonTextarea) jsonTextarea.addEventListener('click', () => openZenEditor('global-json-prompt', '🧩 调整 JSON 结构约束', '#a855f7'));
+    if (pyramidJsonTextarea) pyramidJsonTextarea.addEventListener('click', () => openZenEditor('pyramid-json-prompt', '🔺 调整金字塔 JSON 结构', '#facc15'));
 };
