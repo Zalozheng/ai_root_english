@@ -80,8 +80,9 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
               <div class="line-input" contenteditable="true" style="word-break:break-word;white-space:pre-wrap;min-height:22px;">${escapeHtml(l)}</div>
             </div>`).join("")}</div>
       </div>
-      <div style="margin-top:25px;display:flex;justify-content:center;gap:8px;padding-bottom:10px;">
-        <button class="jump-to-tree-btn" data-word="${escapeHtml(res.word || word)}" style="padding:8px 14px;border-radius:8px;border:1px solid #0ea5e9;background:rgba(14,165,233,0.1);color:#38bdf8;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">🌳 词树图展开</button>
+      <div style="margin-top:25px;display:flex;justify-content:center;gap:8px;padding-bottom:10px;flex-wrap:wrap;">
+        <button class="jump-to-tree-btn" data-word="${escapeHtml(res.word || word)}" style="padding:8px 14px;border-radius:8px;border:1px solid #0ea5e9;background:rgba(14,165,233,0.1);color:#38bdf8;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">🌳 词树图</button>
+        <button class="jump-to-pyramid-btn" data-word="${escapeHtml(res.word || word)}" style="padding:8px 14px;border-radius:8px;border:1px solid #facc15;background:rgba(250,204,21,0.1);color:#facc15;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">🔺 金字塔</button>
         <button class="jump-to-lib-btn" data-word="${escapeHtml(res.word || word)}" style="padding:8px 14px;border-radius:8px;border:1px solid #a855f7;background:rgba(168,85,247,0.1);color:#c084fc;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">📝 进特训库</button>
         <button id="save-lines-btn" style="padding:8px 14px;border-radius:8px;border:1px solid #10b981;background:rgba(16,185,129,0.1);color:#10b981;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">💾 保存</button>
       </div>`;
@@ -145,6 +146,16 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
         chrome.storage.local.set({ pendingTreeWord: targetWord }, () => {
           if (isInPage) window.open(chrome.runtime.getURL('options.html')); else chrome.runtime.openOptionsPage();
         });
+      });
+    }
+
+    const pyramidBtnPopup = container.querySelector('.jump-to-pyramid-btn');
+    if (pyramidBtnPopup) {
+      pyramidBtnPopup.onmouseover = () => { pyramidBtnPopup.style.background = '#facc15'; pyramidBtnPopup.style.color = '#111'; };
+      pyramidBtnPopup.onmouseout = () => { pyramidBtnPopup.style.background = 'rgba(250,204,21,0.1)'; pyramidBtnPopup.style.color = '#facc15'; };
+      pyramidBtnPopup.addEventListener('click', (e) => {
+        const targetWord = e.currentTarget.getAttribute('data-word');
+        window.open(chrome.runtime.getURL('pyramid.html?word=' + encodeURIComponent(targetWord)));
       });
     }
 
