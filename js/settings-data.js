@@ -41,9 +41,13 @@ window.initDataEngine = function() {
     // 导出引擎
     function handleExport(type) {
         const scopeCtx = getActionScope();
-        chrome.storage.local.get(null, (items) => {
-            let exportData = {}; let count = 0;
-            let usedRoots = scopeCtx ? getRootsUsedInContext(items, scopeCtx) : null;
+        
+        let items = {};
+        (window.globalWords || []).forEach(w => { if(w && w.id) items[w.id] = w; });
+        (window.globalRoots || []).forEach(r => { if(r && r.id) items[r.id] = r; });
+        
+        let exportData = {}; let count = 0;
+        let usedRoots = scopeCtx ? getRootsUsedInContext(items, scopeCtx) : null;
 
             for (let k in items) {
                 let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
@@ -94,7 +98,6 @@ window.initDataEngine = function() {
             
             const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'}); const url = URL.createObjectURL(blob);
             const a = document.createElement('a'); a.href = url; a.download = `${filenamePrefix}_export_${scopeCtx || 'global'}_${type}_${count}.json`; a.click(); URL.revokeObjectURL(url);
-        });
     }
 
     if(document.getElementById('export-words-btn')) document.getElementById('export-words-btn').addEventListener('click', () => handleExport('words'));
@@ -125,7 +128,7 @@ window.initDataEngine = function() {
             window.showProgress("🚀 正在导入词库", 5, "正在读取 JSON 文件...");
 
             const reader = new FileReader();
-            reader.onload = (ev) => {
+            reader.onload = async (ev) => {
                 try {
                     const data = JSON.parse(ev.target.result);
                     let importedData = {};
@@ -172,12 +175,16 @@ window.initDataEngine = function() {
                             if (pendingImportType === 'roots' || pendingImportType === 'all') {
                                 (data[k].parts || []).forEach(p => {
                                     if (!p.segment) return;
-                                    const cleanRoot = p.segment.toLowerCase().replace(/^-|-$/g, '').trim();
+                                    const cleanRoot = window.getSegStr(p.segment);
+                                    if (!cleanRoot) return;
                                     const rootKey = "R:" + cleanRoot;
-                                    const cleanDerivs = (p.derivatives || []).map(d => d.replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim()).filter(Boolean);
+                                    const cleanDerivs = (p.derivatives || []).map(d => {
+                                        let str = typeof d === 'string' ? d : (d.word || '');
+                                        return str.replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim();
+                                    }).filter(Boolean);
                                     if (!extractedRoots[rootKey]) {
                                         extractedRoots[rootKey] = {
-                                            segment: p.segment.toLowerCase().trim(),
+                                            segment: p.segment,
                                             type: p.type || '词根',
                                             meaning: p.meaning || '',
                                             deep_origin: p.deep_origin || '',
@@ -213,10 +220,13 @@ window.initDataEngine = function() {
                         return;
                     }
 
-                    chrome.storage.local.get(null, (all) => {
-                        let toSave = {};
-                        let keysToRemove = [];
-                        let usedRoots = scopeCtx ? getRootsUsedInContext(all, scopeCtx) : null;
+                    let all = {};
+                    (window.globalWords || []).forEach(w => { if(w && w.id) all[w.id] = w; });
+                    (window.globalRoots || []).forEach(r => { if(r && r.id) all[r.id] = r; });
+                    
+                    let toSave = {};
+                    let keysToRemove = [];
+                    let usedRoots = scopeCtx ? getRootsUsedInContext(all, scopeCtx) : null;
 
                         if (isReplaceMode) {
                             if (!scopeCtx) {
@@ -287,18 +297,13 @@ window.initDataEngine = function() {
                                     await window.dbEngine.batchSave('roots', rootsToDb).catch(e => console.warn('DB同步跳过:', e));
                                 }
 
-                                window.safeStorageSet(toSave, (hasError) => {
-                                    window.dataBusy = false;
-                                    let wordCount = Object.keys(toSave).filter(k => k.startsWith('W:')).length;
-                                    let rootCount = Object.keys(toSave).filter(k => k.startsWith('R:')).length;
-                                    if (hasError) {
-                                        window.finishProgress("⚠️ 导入部分受限", `存储配额不足。导入单词:${wordCount}, 词根:${rootCount}`);
-                                    } else {
-                                        window.finishProgress("✅ 导入成功", `成功导入单词:${wordCount}, 词根:${rootCount}。点击“完成”刷新列表。`);
-                                    }
-                                    if(window.loadWordsLibrary) window.loadWordsLibrary();
-                                    if(window.loadRootsLibrary) window.loadRootsLibrary();
-                                });
+                                window.dataBusy = false;
+                                let wordCount = Object.keys(toSave).filter(k => k.startsWith('W:')).length;
+                                let rootCount = Object.keys(toSave).filter(k => k.startsWith('R:')).length;
+                                window.finishProgress("✅ 导入成功", `成功导入单词:${wordCount}, 词根:${rootCount}。点击“完成”刷新列表。`);
+                                
+                                if(window.loadWordsLibrary) window.loadWordsLibrary();
+                                if(window.loadRootsLibrary) window.loadRootsLibrary();
                             } else {
                                 window.dataBusy = false;
                                 window.hideProgress();
@@ -308,11 +313,16 @@ window.initDataEngine = function() {
 
                         if (keysToRemove.length > 0) {
                             window.showProgress("🧹 正在清理旧数据", 40, `正在移除 ${keysToRemove.length} 条旧记录...`);
-                            chrome.storage.local.remove(keysToRemove, finalize);
+                            if (window.dbEngine && typeof window.dbEngine.batchDelete === 'function') {
+                                let wordKeys = keysToRemove.filter(k => k.startsWith('W:'));
+                                let rootKeys = keysToRemove.filter(k => k.startsWith('R:'));
+                                if (wordKeys.length > 0) await window.dbEngine.batchDelete('words', wordKeys).catch(e => console.warn('清理words失败', e));
+                                if (rootKeys.length > 0) await window.dbEngine.batchDelete('roots', rootKeys).catch(e => console.warn('清理roots失败', e));
+                            }
+                            finalize();
                         } else {
                             finalize();
                         }
-                    });
                 } catch (err) { 
                     window.dataBusy = false; 
                     window.hideProgress();
@@ -343,107 +353,98 @@ window.initDataEngine = function() {
         window.dataBusy = true;
         window.showProgress("🗑️ 准备清理磁盘", 10, "正在扫描待删除记录...");
 
-        chrome.storage.local.get(null, async (items) => {
-            let keysToRemove = [];
-            let itemsToUpdate = {};
-            let usedRoots = null;
-            let otherRoots = null;
-            
-            if (scopeCtx) {
-                usedRoots = getRootsUsedInContext(items, scopeCtx);
-                otherRoots = getRootsUsedInOtherContexts(items, scopeCtx);
+        let items = {};
+        (window.globalWords || []).forEach(w => { if(w && w.id) items[w.id] = w; });
+        (window.globalRoots || []).forEach(r => { if(r && r.id) items[r.id] = r; });
+
+        let keysToRemove = [];
+        let itemsToUpdate = {};
+        let usedRoots = null;
+        let otherRoots = null;
+        
+        if (scopeCtx) {
+            usedRoots = getRootsUsedInContext(items, scopeCtx);
+            otherRoots = getRootsUsedInOtherContexts(items, scopeCtx);
+        }
+
+        for (let k in items) {
+            let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
+            if (type === 'words' && !isWord) continue;
+            if (type === 'roots' && !isRoot) continue;
+            if (type === 'all' && !isWord && !isRoot) continue;
+
+            if (!scopeCtx) {
+                keysToRemove.push(k);
+            } else {
+                if (isWord && items[k].memory_lines_map) {
+                    let map = items[k].memory_lines_map;
+                    let hasCtx = Object.keys(map).some(mk => mk.endsWith(`_${scopeCtx}`));
+                    if (hasCtx) {
+                        let cleanItem = JSON.parse(JSON.stringify(items[k]));
+                        Object.keys(cleanItem.memory_lines_map).forEach(mk => { 
+                            if (mk.endsWith(`_${scopeCtx}`)) delete cleanItem.memory_lines_map[mk]; 
+                        });
+                        if (Object.keys(cleanItem.memory_lines_map).length === 0) keysToRemove.push(k);
+                        else itemsToUpdate[k] = cleanItem;
+                    }
+                } else if (isRoot) {
+                    let rootSeg = window.getSegStr(items[k].segment);
+                    let isUsedInCtx = usedRoots.has(rootSeg);
+                    let isUsedElsewhere = otherRoots.has(rootSeg);
+                    if (isUsedInCtx && !isUsedElsewhere) keysToRemove.push(k);
+                    else if (!isUsedInCtx && !isUsedElsewhere) keysToRemove.push(k);
+                }
             }
+        }
+        
+        let finalize = async () => {
+            // 立即执行的 UI/内存清理
+            window.globalWords = [];
+            window.globalRoots = [];
+            window.contextRootMap = null;
+            const wList = document.getElementById('word-list');
+            const rList = document.getElementById('root-list');
+            if (wList && (!scopeCtx || type === 'words' || type === 'all')) wList.innerHTML = '';
+            if (rList && (!scopeCtx || type === 'roots' || type === 'all')) rList.innerHTML = '';
+            if(window.clearWordDetail) window.clearWordDetail();
+            if(window.clearRootDetail) window.clearRootDetail();
 
-            for (let k in items) {
-                let isWord = k.startsWith('W:'); let isRoot = k.startsWith('R:');
-                if (type === 'words' && !isWord) continue;
-                if (type === 'roots' && !isRoot) continue;
-                if (type === 'all' && !isWord && !isRoot) continue;
+            window.showProgress("🗑️ 物理抹除中", 40, "正在清理磁盘数据库，请稍候...");
 
+            // 执行物理清理
+            if (window.dbEngine) {
                 if (!scopeCtx) {
-                    keysToRemove.push(k);
+                    if (type === 'words' || type === 'all') await window.dbEngine.clear('words');
+                    window.showProgress("🗑️ 物理抹除中", 70, "词根库清理中...");
+                    if (type === 'roots' || type === 'all') await window.dbEngine.clear('roots');
                 } else {
-                    if (isWord && items[k].memory_lines_map) {
-                        let map = items[k].memory_lines_map;
-                        let hasCtx = Object.keys(map).some(mk => mk.endsWith(`_${scopeCtx}`));
-                        if (hasCtx) {
-                            let cleanItem = JSON.parse(JSON.stringify(items[k]));
-                            Object.keys(cleanItem.memory_lines_map).forEach(mk => { 
-                                if (mk.endsWith(`_${scopeCtx}`)) delete cleanItem.memory_lines_map[mk]; 
-                            });
-                            if (Object.keys(cleanItem.memory_lines_map).length === 0) keysToRemove.push(k);
-                            else itemsToUpdate[k] = cleanItem;
+                    if (keysToRemove.length > 0 && typeof window.dbEngine.batchDelete === 'function') {
+                        let wordKeys = keysToRemove.filter(k => k.startsWith('W:'));
+                        let rootKeys = keysToRemove.filter(k => k.startsWith('R:'));
+                        if (wordKeys.length > 0) await window.dbEngine.batchDelete('words', wordKeys);
+                        if (rootKeys.length > 0) await window.dbEngine.batchDelete('roots', rootKeys);
+                    }
+                    if (Object.keys(itemsToUpdate).length > 0 && typeof window.dbEngine.batchSave === 'function') {
+                        let wordItems = {}; let rootItems = {};
+                        for(let k in itemsToUpdate) {
+                            if(k.startsWith('W:')) wordItems[k] = itemsToUpdate[k];
+                            else rootItems[k] = itemsToUpdate[k];
                         }
-                    } else if (isRoot) {
-                        let rootSeg = window.getSegStr(items[k].segment);
-                        let isUsedInCtx = usedRoots.has(rootSeg);
-                        let isUsedElsewhere = otherRoots.has(rootSeg);
-                        if (isUsedInCtx && !isUsedElsewhere) keysToRemove.push(k);
-                        else if (!isUsedInCtx && !isUsedElsewhere) keysToRemove.push(k);
+                        if (Object.keys(wordItems).length > 0) await window.dbEngine.batchSave('words', wordItems);
+                        if (Object.keys(rootItems).length > 0) await window.dbEngine.batchSave('roots', rootItems);
                     }
                 }
             }
             
-            let finalize = async () => {
-                // 立即执行的 UI/内存清理
-                window.globalWords = [];
-                window.globalRoots = [];
-                window.contextRootMap = null;
-                const wList = document.getElementById('word-list');
-                const rList = document.getElementById('root-list');
-                if (wList && (!scopeCtx || type === 'words' || type === 'all')) wList.innerHTML = '';
-                if (rList && (!scopeCtx || type === 'roots' || type === 'all')) rList.innerHTML = '';
-                if(window.clearWordDetail) window.clearWordDetail();
-                if(window.clearRootDetail) window.clearRootDetail();
+            window.dataBusy = false;
+            window.finishProgress("✅ 清理完成", `成功移除了选定范围内的数据。`);
+            
+            // 重新加载数据
+            if(window.loadWordsLibrary) window.loadWordsLibrary();
+            if(window.loadRootsLibrary) window.loadRootsLibrary();
+        };
 
-                window.showProgress("🗑️ 物理抹除中", 40, "正在清理磁盘数据库，请稍候...");
-
-                // 执行物理清理
-                if (window.dbEngine) {
-                    if (!scopeCtx) {
-                        if (type === 'words' || type === 'all') await window.dbEngine.clear('words');
-                        window.showProgress("🗑️ 物理抹除中", 70, "词根库清理中...");
-                        if (type === 'roots' || type === 'all') await window.dbEngine.clear('roots');
-                    } else {
-                        const total = keysToRemove.length;
-                        for (let i=0; i<total; i++) {
-                            const k = keysToRemove[i];
-                            const store = k.startsWith('W:') ? 'words' : 'roots';
-                            await window.dbEngine.delete(store, k);
-                            if (i % 100 === 0) window.showProgress("🗑️ 物理抹除中", 40 + Math.round((i/total)*40), `清理进度: ${i}/${total}`);
-                        }
-                        if (Object.keys(itemsToUpdate).length > 0) {
-                            const wUp = {}; const rUp = {};
-                            for(let k in itemsToUpdate) {
-                                if(k.startsWith('W:')) wUp[k] = itemsToUpdate[k];
-                                else rUp[k] = itemsToUpdate[k];
-                            }
-                            if (Object.keys(wUp).length > 0) await window.dbEngine.batchSave('words', wUp);
-                            if (Object.keys(rUp).length > 0) await window.dbEngine.batchSave('roots', rUp);
-                        }
-                    }
-                }
-
-                window.dataBusy = false;
-                window.finishProgress("✅ 清理完成", "磁盘数据已彻底清空。");
-                if(window.loadWordsLibrary) window.loadWordsLibrary();
-                if(window.loadRootsLibrary) window.loadRootsLibrary();
-            };
-
-            let tasks = (keysToRemove.length > 0 ? 1 : 0) + (Object.keys(itemsToUpdate).length > 0 ? 1 : 0);
-            if (tasks === 0) {
-                if (!scopeCtx) await finalize();
-                else { window.hideProgress(); window.showStatus("✅ 该范围内已被清空", "#10b981"); window.dataBusy = false; }
-                return;
-            }
-
-            window.showProgress("🧹 同步配置", 30, "正在清理 Storage 记录...");
-            let done = 0;
-            let checkDone = () => { done++; if (done === tasks) finalize(); };
-
-            if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove, checkDone);
-            if (Object.keys(itemsToUpdate).length > 0) window.safeStorageSet(itemsToUpdate, checkDone);
-        });
+        finalize();
     }
 
     if(document.getElementById('delete-words-btn')) document.getElementById('delete-words-btn').addEventListener('click', () => handleDelete('words'));

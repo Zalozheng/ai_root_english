@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 request.onsuccess = () => {
                     window.globalRoots = request.result;
+                    window._rootsDbLoaded = true;
                     if (!window.globalWords || window.globalWords.length === 0) {
                         const wordTx = db.transaction(['words'], 'readonly');
                         const wordStore = wordTx.objectStore('words');
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 chrome.storage.local.get(null, (items) => {
                     window.globalRoots = Object.keys(items).filter(k => k.startsWith('R:')).map(k => items[k]);
+                    window._rootsDbLoaded = true;
                     window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
                     window.triggerRootFilter();
                     if (callback) callback();
@@ -61,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const map = {};
         window.globalWords.forEach(w => {
             const mLinesMap = w.memory_lines_map || {};
-            const wordRoots = (w.parts || []).map(p => (p.segment || '').toLowerCase().replace(/^-|-$/g, '').trim()).filter(Boolean);
+            const wordRoots = (w.parts || []).map(p => window.getSegStr(p.segment)).filter(Boolean);
             
             Object.keys(mLinesMap).forEach(k => {
                 if (k.includes('_')) {
@@ -469,8 +471,8 @@ document.addEventListener('DOMContentLoaded', () => {
         displayRoots.forEach(data => {
             const li = document.createElement('li'); 
             li.className = 'data-item';
-            
-        const rootKey = data.id || ("R:" + window.getSegStr(data.segment));
+            const rootKey = data.id || ("R:" + window.getSegStr(data.segment));
+            li.setAttribute('data-key', rootKey);
             const starIcon = data.is_favorite ? '⭐' : '☆';
             const starColor = data.is_favorite ? '#f59e0b' : '#6b7280';
             
@@ -497,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!confirm(`确定要删除词根 ${data.segment} 吗？`)) return;
                     if (window.dbEngine) window.dbEngine.delete('roots', rootKey);
                     chrome.storage.local.remove([rootKey], () => {
-                        window.globalRoots = window.globalRoots.filter(r => (r.id || ('R:' + (r.segment||'').toLowerCase().replace(/^-|-$/g, '').trim())) !== rootKey);
+                        window.globalRoots = window.globalRoots.filter(r => (r.id || ('R:' + window.getSegStr(r.segment))) !== rootKey);
                         window.triggerRootFilter(false);
                         window.clearRootDetail();
                     });
@@ -697,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!confirm(`确定要在详情页彻底删除词根 ${fullData.segment} 吗？`)) return;
                     if (window.dbEngine) await window.dbEngine.delete('roots', key);
                     chrome.storage.local.remove([key], () => {
-                        window.globalRoots = window.globalRoots.filter(r => (r.id || ('R:' + (r.segment||'').toLowerCase().replace(/^-|-$/g, '').trim())) !== key);
+                        window.globalRoots = window.globalRoots.filter(r => (r.id || ('R:' + window.getSegStr(r.segment))) !== key);
                         window.triggerRootFilter(false);
                         window.clearRootDetail();
                     });
@@ -732,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (window.globalRoots) {
                     const idx = window.globalRoots.findIndex(r => {
-                        const rId = r.id || ('R:' + (r.segment||'').toLowerCase().replace(/^-|-$/g, '').trim());
+                        const rId = r.id || ('R:' + window.getSegStr(r.segment));
                         return rId === key;
                     });
                     if (idx !== -1) {
@@ -779,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (window.globalRoots) {
                     const idx = window.globalRoots.findIndex(r => {
-                        const rId = r.id || ('R:' + (r.segment||'').toLowerCase().replace(/^-|-$/g, '').trim());
+                        const rId = r.id || ('R:' + window.getSegStr(r.segment));
                         return rId === key;
                     });
                     if (idx !== -1) {

@@ -71,6 +71,24 @@ window.dbEngine = {
             request.onerror = (e) => reject(e);
         });
     },
+    async batchDelete(type, keys) {
+        const db = await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([type], 'readwrite');
+            const store = transaction.objectStore(type);
+            for (let key of keys) {
+                store.delete(key);
+            }
+            transaction.oncomplete = () => {
+                console.log(`[DB] 批量删除成功: ${type}`);
+                resolve();
+            };
+            transaction.onerror = (e) => {
+                console.error(`[DB] 批量删除失败: ${type}`, e);
+                reject(e);
+            };
+        });
+    },
     async clear(type) {
         const db = await this.init();
         return new Promise((resolve, reject) => {
@@ -371,14 +389,12 @@ window.switchView = function(targetId) {
         if (section.id === targetId) {
             section.classList.add('active');
             if (targetId === 'view-words') {
-                const listEl = document.getElementById('word-list');
-                if (!(window.globalWords && window.globalWords.length > 0 && listEl && listEl.children.length > 0) && window.loadWordsLibrary) {
+                if (!window._wordsDbLoaded && window.loadWordsLibrary) {
                     window.loadWordsLibrary();
                 }
             }
             if (targetId === 'view-roots') {
-                const listEl = document.getElementById('root-list');
-                if (!(window.globalRoots && window.globalRoots.length > 0 && listEl && listEl.children.length > 0) && window.loadRootsLibrary) {
+                if (!window._rootsDbLoaded && window.loadRootsLibrary) {
                     window.loadRootsLibrary();
                 }
             }
@@ -400,14 +416,24 @@ window.jumpToWord = function(rawTargetWord) {
             if (!window.globalWords.find(d => (d.word||'').toLowerCase() === cleanTarget)) {
                 window.globalWords.push(existing);
             }
-            document.querySelectorAll('#word-list .data-item').forEach(el => el.classList.remove('selected'));
-            const listItems = document.querySelectorAll('#word-list .data-item');
-            for(let li of listItems) {
-                if(li.querySelector('.data-item-title').innerText.split('/')[0].trim().toLowerCase() === cleanTarget) {
-                    li.classList.add('selected'); li.scrollIntoView({behavior: "smooth", block: "center"}); break;
-                }
+            
+            const wordSearchEl = document.getElementById('word-search');
+            if (wordSearchEl && wordSearchEl.value !== cleanTarget) {
+                wordSearchEl.value = cleanTarget;
+                if (window.triggerWordFilter) window.triggerWordFilter(true);
             }
-            if(window.renderWordDetail) window.renderWordDetail(existing);
+            
+            setTimeout(() => {
+                document.querySelectorAll('#word-list .data-item').forEach(el => el.classList.remove('selected'));
+                const listItems = document.querySelectorAll('#word-list .data-item');
+                const targetKey = existing.id || ("W:" + cleanTarget);
+                for(let li of listItems) {
+                    if(li.getAttribute('data-key') === targetKey) {
+                        li.classList.add('selected'); li.scrollIntoView({behavior: "smooth", block: "center"}); break;
+                    }
+                }
+                if(window.renderWordDetail) window.renderWordDetail(existing);
+            }, 50);
         } else {
             const pane = document.getElementById('word-detail');
             pane.innerHTML = `<div style="text-align:center; padding:50px;">正在解析 ${cleanTarget}...</div>`;
@@ -422,17 +448,31 @@ window.jumpToWord = function(rawTargetWord) {
 
 window.jumpToRoot = function(rootSegment) {
     const cleanRoot = rootSegment.toLowerCase().replace(/^-|-$/g, '').trim();
-    const existing = window.globalRoots.find(d => window.getSegStr(d.segment) === cleanRoot);
+    const existing = window.globalRoots.find(d => {
+        if (Array.isArray(d.segment)) {
+            return d.segment.some(s => (s||'').toLowerCase().replace(/^-|-$/g, '').trim() === cleanRoot);
+        }
+        return window.getSegStr(d.segment) === cleanRoot;
+    });
     window.switchView('view-roots');
     if (existing) {
-        document.querySelectorAll('#root-list .data-item').forEach(el => el.classList.remove('selected'));
-        const listItems = document.querySelectorAll('#root-list .data-item');
-        for(let li of listItems) {
-            if(li.querySelector('.data-item-title').innerText.replace(/^-|-$/g, '').trim().toLowerCase() === cleanRoot) {
-                li.classList.add('selected'); li.scrollIntoView({behavior: "smooth", block: "center"}); break;
-            }
+        const rootSearchEl = document.getElementById('root-search');
+        if (rootSearchEl && rootSearchEl.value !== cleanRoot) {
+            rootSearchEl.value = cleanRoot;
+            if (window.triggerRootFilter) window.triggerRootFilter(true);
         }
-        if(window.renderRootDetail) window.renderRootDetail(existing);
+        
+        setTimeout(() => {
+            document.querySelectorAll('#root-list .data-item').forEach(el => el.classList.remove('selected'));
+            const listItems = document.querySelectorAll('#root-list .data-item');
+            const targetKey = existing.id || ("R:" + window.getSegStr(existing.segment));
+            for(let li of listItems) {
+                if(li.getAttribute('data-key') === targetKey) {
+                    li.classList.add('selected'); li.scrollIntoView({behavior: "smooth", block: "center"}); break;
+                }
+            }
+            if(window.renderRootDetail) window.renderRootDetail(existing);
+        }, 50);
     }
 };
 
@@ -508,41 +548,58 @@ async function migrateToIndexedDB() {
 }
 migrateToIndexedDB();
 
+window.processSyncData = function(data) {
+    const wordsToSave = {};
+    const rootsToSave = {};
+    for (const k in data) {
+        if (k.startsWith('W:')) wordsToSave[k] = data[k];
+        if (k.startsWith('R:')) rootsToSave[k] = data[k];
+    }
+    
+    Promise.all([
+        Object.keys(wordsToSave).length > 0 && window.dbEngine ? window.dbEngine.batchSave('words', wordsToSave) : Promise.resolve(),
+        Object.keys(rootsToSave).length > 0 && window.dbEngine ? window.dbEngine.batchSave('roots', rootsToSave) : Promise.resolve()
+    ]).then(() => {
+        for (const k in wordsToSave) {
+            const newWord = wordsToSave[k];
+            newWord.id = k;
+            if (window.globalWords) {
+                const idx = window.globalWords.findIndex(w => (w.id || ('W:' + (w.word || '').toLowerCase().trim())) === k);
+                if (idx >= 0) window.globalWords[idx] = newWord;
+                else window.globalWords.push(newWord);
+            }
+        }
+        for (const k in rootsToSave) {
+            const newRoot = rootsToSave[k];
+            newRoot.id = k;
+            if (window.globalRoots) {
+                const idx = window.globalRoots.findIndex(r => (r.id || ('R:' + window.getSegStr(r.segment))) === k);
+                if (idx >= 0) window.globalRoots[idx] = newRoot;
+                else window.globalRoots.push(newRoot);
+            }
+        }
+        if (typeof window.triggerWordFilter === 'function') window.triggerWordFilter(false);
+        if (typeof window.triggerRootFilter === 'function') window.triggerRootFilter(false);
+    }).catch(e => console.error('[DB同步] 失败:', e));
+};
+
 // 监听来自 background.js 的新词/词根数据，实时同步进 IndexedDB 并刷新库页面列表
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'syncNewDataToDb' && request.data) {
-        const data = request.data;
-        const wordsToSave = {};
-        const rootsToSave = {};
-        for (const k in data) {
-            if (k.startsWith('W:')) wordsToSave[k] = data[k];
-            if (k.startsWith('R:')) rootsToSave[k] = data[k];
-        }
-        Promise.all([
-            Object.keys(wordsToSave).length > 0 && window.dbEngine ? window.dbEngine.batchSave('words', wordsToSave) : Promise.resolve(),
-            Object.keys(rootsToSave).length > 0 && window.dbEngine ? window.dbEngine.batchSave('roots', rootsToSave) : Promise.resolve()
-        ]).then(() => {
-            // 把新词追加进内存列表并刷新 UI，不需要重新读库
-            for (const k in wordsToSave) {
-                const newWord = wordsToSave[k];
-                newWord.id = k;
-                if (window.globalWords) {
-                    const idx = window.globalWords.findIndex(w => (w.id || ('W:' + (w.word || '').toLowerCase().trim())) === k);
-                    if (idx >= 0) window.globalWords[idx] = newWord;
-                    else window.globalWords.push(newWord);
-                }
-            }
-            for (const k in rootsToSave) {
-                const newRoot = rootsToSave[k];
-                newRoot.id = k;
-                if (window.globalRoots) {
-                    const idx = window.globalRoots.findIndex(r => (r.id || ('R:' + window.getSegStr(r.segment))) === k);
-                    if (idx >= 0) window.globalRoots[idx] = newRoot;
-                    else window.globalRoots.push(newRoot);
-                }
-            }
-            if (typeof window.triggerWordFilter === 'function') window.triggerWordFilter(false);
-            if (typeof window.triggerRootFilter === 'function') window.triggerRootFilter(false);
-        }).catch(e => console.error('[DB同步] 失败:', e));
+        window.processSyncData(request.data);
     }
 });
+
+// 处理可能错过的后台同步数据
+window.syncPendingData = function() {
+    chrome.storage.local.get(['pending_sync_keys'], (res) => {
+        if (res.pending_sync_keys && res.pending_sync_keys.length > 0) {
+            const keys = res.pending_sync_keys;
+            chrome.storage.local.get(keys, (data) => {
+                window.processSyncData(data);
+                chrome.storage.local.remove('pending_sync_keys');
+            });
+        }
+    });
+};
+window.syncPendingData();

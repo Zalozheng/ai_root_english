@@ -241,6 +241,10 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if(document.getElementById('data-action-context')) document.getElementById('data-action-context').checked = window.appConfig.dataActionContext === true;
       if(document.getElementById('import-mode')) document.getElementById('import-mode').checked = window.appConfig.importMode === true;
+      if (document.getElementById('prompt-context')) {
+          document.getElementById('prompt-context').value = window.appConfig.context || 'etymology';
+      }
+      if(document.getElementById('theme')) document.getElementById('theme').value = window.appConfig.ui_theme || 'system';
 
       if(document.getElementById('api-base')) document.getElementById('api-base').value = window.appConfig.apiBase || '';
       if(document.getElementById('api-key')) document.getElementById('api-key').value = window.appConfig.apiKey || '';

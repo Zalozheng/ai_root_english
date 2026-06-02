@@ -20,11 +20,53 @@ function safeStorageSet(items, callback, batchSize = 50) {
     }
     writeNextBatch();
 }
+// ===== IndexedDB 引擎 (Service Worker 版) =====
+const DB_NAME = 'AiEtymologyDB';
+const DB_VERSION = 1;
+const dbEngine = {
+    db: null,
+    async init() {
+        if (this.db) return this.db;
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => { this.db = request.result; resolve(this.db); };
+            // 注意：Service Worker 中通常不需要 onupgradeneeded，因为前端负责建表，但为防万一加上
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('words')) db.createObjectStore('words', { keyPath: 'id' });
+                if (!db.objectStoreNames.contains('roots')) db.createObjectStore('roots', { keyPath: 'id' });
+            };
+        });
+    },
+    async get(type, key) {
+        try {
+            const db = await this.init();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([type], 'readonly');
+                const store = transaction.objectStore(type);
+                const request = store.get(key);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (e) => reject(e);
+            });
+        } catch (e) {
+            console.error('IndexedDB get error:', e);
+            return null;
+        }
+    }
+};
 
 // 通知 options 页面把新数据同步进 IndexedDB 并刷新列表
 function notifyOptionsPage(keys) {
     chrome.tabs.query({ url: chrome.runtime.getURL('options.html') + '*' }, (tabs) => {
-        if (!tabs || tabs.length === 0) return;
+        if (!tabs || tabs.length === 0) {
+            chrome.storage.local.get(['pending_sync_keys'], (res) => {
+                let pending = res.pending_sync_keys || [];
+                let newPending = [...new Set([...pending, ...keys])];
+                chrome.storage.local.set({ pending_sync_keys: newPending });
+            });
+            return;
+        }
         chrome.storage.local.get(keys, (freshData) => {
             tabs.forEach(tab => {
                 chrome.tabs.sendMessage(tab.id, {
@@ -54,12 +96,12 @@ chrome.storage.local.get(['app_config'], (res) => { updateOllamaCorsRule((res.ap
 chrome.storage.onChanged.addListener((changes) => { if (changes.app_config) updateOllamaCorsRule(changes.app_config.newValue.ollamaBase); });
 
 const StorageModule = {
-  getWord: (word, engineMode, context, forceRefresh, callback) => {
+  getWord: async (word, engineMode, context, forceRefresh, callback) => {
     if (forceRefresh) return callback(null); 
     const cleanWord = word.toLowerCase().trim(); 
 
-    chrome.storage.local.get(["W:" + cleanWord, "app_config"], (res) => {
-      const data = res["W:" + cleanWord];
+    const data = await dbEngine.get('words', "W:" + cleanWord);
+    chrome.storage.local.get(["app_config"], (res) => {
       const config = res.app_config || {};
       if (!data || !data.memory_lines_map) return callback(null);
 
@@ -129,12 +171,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
               fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
           } else {
               const rootKey = "R:" + word;
-              chrome.storage.local.get([rootKey], (rootRes) => {
-                  if (rootRes[rootKey] && rootRes[rootKey].deep_origin) {
-                      sendResponse({ success: true, data: rootRes[rootKey], cached: true });
+              dbEngine.get('roots', rootKey).then(rootData => {
+                  if (rootData && rootData.deep_origin && config.rootStrategy !== 'force_new') {
+                      sendResponse({ success: true, data: rootData, cached: true });
                   } else {
                       if (engine === 'local_only') {
-                          if (rootRes[rootKey]) sendResponse({ success: true, data: rootRes[rootKey], cached: true });
+                          if (rootData) sendResponse({ success: true, data: rootData, cached: true });
                           else sendResponse({ success: false, error: "当前为断网模式，且本地词库无此数据。" });
                       } else {
                           fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
@@ -371,7 +413,7 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid 
                     }
 
                     // 3. 检测是否是 JSON 格式与联网功能冲突
-                    if (shouldTryTools && shouldTryJsonFmt && rawText.includes('json_object') && (rawText.includes('supported with web_search') || rawText.includes('conflict'))) {
+                    if (shouldTryJsonFmt && rawText.includes('json_object') && (rawText.includes('supported with web_search') || rawText.includes('conflict'))) {
                         console.warn("当前 API 不支持 JSON 格式与联网功能同时开启，正在降级重试...");
                         nextTryJsonFmt = false;
                         needsRetry = true;

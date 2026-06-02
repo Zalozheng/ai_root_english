@@ -277,8 +277,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!segment) return null;
         const clean = segment.toLowerCase().replace(/^-|-$/g, '').trim();
         return globalRoots.find(r => {
-            const rSeg = (r.segment || '').toLowerCase();
-            return rSeg === clean || rSeg.replace(/^-|-$/g, '').trim() === clean;
+            if (Array.isArray(r.segment)) {
+                return r.segment.some(s => (s||'').toLowerCase().replace(/^-|-$/g, '').trim() === clean);
+            }
+            const rSeg = (r.segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
+            return rSeg === clean;
         });
     }
 

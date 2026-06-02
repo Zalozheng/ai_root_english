@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 request.onsuccess = () => {
                     window.globalWords = request.result;
+                    window._wordsDbLoaded = true;
                     window.triggerWordFilter();
                     if (callback) callback();
                     resolve();
@@ -23,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 chrome.storage.local.get(null, (items) => {
                     window.globalWords = Object.keys(items).filter(k => k.startsWith('W:')).map(k => items[k]);
+                    window._wordsDbLoaded = true;
                     window.triggerWordFilter();
                     if (callback) callback();
                     resolve();
@@ -420,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const li = document.createElement('li'); 
             li.className = 'data-item';
+            li.setAttribute('data-key', wordId);
             li.innerHTML = `<div class="data-item-title"><span style="color:#38bdf8;">${window.escapeHtml(actualWord)}</span> ${actionsHtml}</div><div class="data-item-sub">${window.escapeHtml(data.primary_meaning || '点击查看详情')}</div>`;
             li.addEventListener('click', (e) => {
                 if (e.target.classList.contains('word-del-btn')) {
