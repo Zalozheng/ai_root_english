@@ -33,6 +33,7 @@ export default defineConfig({
       manifest: 'manifest.json',
       additionalInputs: ['docs.html'],
       disableAutoLaunch: true, // 防止找不到 Chrome 而报错
+      skipManifestValidation: true, // 跳过在线拉取 Schema 验证，防止网络 TLS 报错
       webExtConfig: {
         browser: 'chrome',
       },
