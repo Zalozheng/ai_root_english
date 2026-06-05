@@ -53,6 +53,21 @@ const dbEngine = {
             console.error('IndexedDB get error:', e);
             return null;
         }
+    },
+    async getAll(type) {
+        try {
+            const db = await this.init();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([type], 'readonly');
+                const store = transaction.objectStore(type);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (e) => reject(e);
+            });
+        } catch (e) {
+            console.error('IndexedDB getAll error:', e);
+            return [];
+        }
     }
 };
 
@@ -163,11 +178,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const context = request.context || config.promptContext || 'general'; 
       const sourceTag = engine; 
 
-      if (engine === 'custom' && (!config.apiKey || !config.apiBase)) { sendResponse({ success: false, error: "未配置 API Key。" }); return; }
-      if (engine === 'ollama' && (!config.ollamaBase || !config.ollamaModel)) { sendResponse({ success: false, error: "未配置 Ollama 接口。" }); return; }
-
       if (isPyramid) {
           if (forceRefresh) {
+              if (engine === 'custom' && (!config.apiKey || !config.apiBase)) { sendResponse({ success: false, error: "未配置 API Key。" }); return; }
+              if (engine === 'ollama' && (!config.ollamaBase || !config.ollamaModel)) { sendResponse({ success: false, error: "未配置 Ollama 接口。" }); return; }
               fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
           } else {
               const rootKey = "R:" + word;
@@ -175,12 +189,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                   if (rootData && rootData.deep_origin && config.rootStrategy !== 'force_new') {
                       sendResponse({ success: true, data: rootData, cached: true });
                   } else {
-                      if (engine === 'local_only') {
-                          if (rootData) sendResponse({ success: true, data: rootData, cached: true });
-                          else sendResponse({ success: false, error: "当前为断网模式，且本地词库无此数据。" });
-                      } else {
-                          fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
-                      }
+                      // Fallback: search all roots for matching segment
+                      dbEngine.getAll('roots').then(allRoots => {
+                          const querySegs = word.split(/[,/|、+;:\s]+/).map(s => s.replace(/^-|-$/g, '').trim().toLowerCase()).filter(Boolean);
+                          const matchingRoots = (allRoots || []).filter(r => {
+                              if (!r.segment || !r.deep_origin) return false;
+                              const segs = Array.isArray(r.segment) ? r.segment : (typeof r.segment === 'string' ? r.segment.split(/[,，、\s]+/) : []);
+                              return segs.some(s => {
+                                  const clean = s.replace(/^-|-$/g, '').trim().toLowerCase();
+                                  return querySegs.includes(clean) || (querySegs.length === 1 && clean === querySegs[0]);
+                              });
+                          });
+                          
+                          matchingRoots.sort((a, b) => {
+                              const aLen = Array.isArray(a.segment) ? a.segment.length : 1;
+                              const bLen = Array.isArray(b.segment) ? b.segment.length : 1;
+                              return bLen - aLen;
+                          });
+                          
+                          const matchedRoot = matchingRoots.length > 0 ? matchingRoots[0] : null;
+                          
+                          if (matchedRoot && config.rootStrategy !== 'force_new') {
+                              sendResponse({ success: true, data: matchedRoot, cached: true });
+                          } else {
+                              if (engine === 'local_only') {
+                                  sendResponse({ success: false, error: "当前为断网模式，且本地词库无此数据。" });
+                              } else {
+                                  if (engine === 'custom' && (!config.apiKey || !config.apiBase)) { sendResponse({ success: false, error: "未配置 API Key。" }); return; }
+                                  if (engine === 'ollama' && (!config.ollamaBase || !config.ollamaModel)) { sendResponse({ success: false, error: "未配置 Ollama 接口。" }); return; }
+                                  fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
+                              }
+                          }
+                      });
                   }
               });
           }
@@ -191,6 +231,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             } else if (engine === 'local_only') {
                 sendResponse({ success: false, error: "当前为断网模式，且本地词库无此数据。" });
             } else {
+                if (engine === 'custom' && (!config.apiKey || !config.apiBase)) { sendResponse({ success: false, error: "未配置 API Key。" }); return; }
+                if (engine === 'ollama' && (!config.ollamaBase || !config.ollamaModel)) { sendResponse({ success: false, error: "未配置 Ollama 接口。" }); return; }
                 fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid);
             }
           });
@@ -548,7 +590,17 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid 
           partsArray.forEach(p => {
               const cleanRoot = (p.segment || '').toLowerCase().replace(/^-|-$/g, '').trim();
               if (!cleanRoot) return;
-              const rootKey = "R:" + cleanRoot;
+              
+              // 智能查找：是否已有包含此片段的超级词根
+              const existingSuperRootEntry = Object.entries(allData).find(([k, r]) => {
+                  if (!k.startsWith('R:')) return false;
+                  if (!r.segment) return false;
+                  const segs = Array.isArray(r.segment) ? r.segment : (typeof r.segment === 'string' ? r.segment.split(/[,，、\s]+/) : []);
+                  return segs.some(s => s.replace(/^-|-$/g, '').trim().toLowerCase() === cleanRoot);
+              });
+              
+              const targetRootKey = existingSuperRootEntry ? existingSuperRootEntry[0] : "R:" + cleanRoot;
+              let targetObj = existingSuperRootEntry ? existingSuperRootEntry[1] : p;
               
               let rawDerivs = p.derivatives;
               if (typeof rawDerivs === 'string') rawDerivs = rawDerivs.split(',');
@@ -558,26 +610,35 @@ function fetchFromLLM(word, config, sourceTag, context, sendResponse, isPyramid 
                   return (str || '').replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim();
               }).filter(Boolean);
               
-              const existingRoot = allData[rootKey] || {};
-              p.lookup_count = existingRoot.lookup_count || 0;
-              p.updated_at = existingRoot.updated_at || Date.now();
+              targetObj.lookup_count = targetObj.lookup_count || 0;
+              targetObj.updated_at = targetObj.updated_at || Date.now();
 
-              if (allData[rootKey] && rootStrategy === 'keep_old') {
-                  p.meaning = allData[rootKey].meaning || p.meaning; 
-                  p.deep_origin = allData[rootKey].deep_origin || p.deep_origin; 
-                  let oldRawDerivs = allData[rootKey].derivatives;
+              if (existingSuperRootEntry && rootStrategy === 'keep_old') {
+                  // 不覆盖超级词根的 meaning 和 deep_origin
+                  let oldRawDerivs = targetObj.derivatives;
                   if (typeof oldRawDerivs === 'string') oldRawDerivs = oldRawDerivs.split(',');
                   const oldDerivsArray = Array.isArray(oldRawDerivs) ? oldRawDerivs : [];
                   const oldDerivs = oldDerivsArray.map(d => {
                       let str = typeof d === 'string' ? d : d.word;
                       return (str || '').replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim();
                   });
-                  p.derivatives = [...new Set([...oldDerivs, ...cleanDerivatives])];
-                  toSave[rootKey] = p; 
+                  targetObj.derivatives = [...new Set([...oldDerivs, ...cleanDerivatives])];
               } else {
-                  p.derivatives = [...new Set(cleanDerivatives)];
-                  toSave[rootKey] = p;
+                  if (existingSuperRootEntry) {
+                      // force_new 策略下，允许合并部分新信息
+                      let oldRawDerivs = targetObj.derivatives;
+                      if (typeof oldRawDerivs === 'string') oldRawDerivs = oldRawDerivs.split(',');
+                      const oldDerivsArray = Array.isArray(oldRawDerivs) ? oldRawDerivs : [];
+                      const oldDerivs = oldDerivsArray.map(d => {
+                          let str = typeof d === 'string' ? d : d.word;
+                          return (str || '').replace(/（[^）]*）|\([^)]*\)/g, '').toLowerCase().trim();
+                      });
+                      targetObj.derivatives = [...new Set([...oldDerivs, ...cleanDerivatives])];
+                  } else {
+                      targetObj.derivatives = [...new Set(cleanDerivatives)];
+                  }
               }
+              toSave[targetRootKey] = targetObj;
           });
 
           const cleanWordKey = "W:" + word; 

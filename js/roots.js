@@ -92,7 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (contextFilter !== 'all' && !window.contextRootMap) buildContextRootMap();
 
         let filtered = window.globalRoots.filter(d => {
-            const matchSearch = window.getSegStr(d.segment).includes(q) || (d.meaning || '').includes(q);
+            const segStr = Array.isArray(d.segment) ? d.segment.join(', ').toLowerCase() : window.getSegStr(d.segment).toLowerCase();
+            const matchSearch = segStr.includes(q) || (d.meaning || '').toLowerCase().includes(q);
             if (!matchSearch) return false;
 
             if (contextFilter !== 'all' && window.contextRootMap) {
@@ -208,10 +209,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 items = searchHistory.map(h => ({ type: 'history', text: h }));
             } else {
                 const histMatches = searchHistory.filter(h => h.toLowerCase().includes(q)).map(h => ({ type: 'history', text: h }));
-                const rootMatches = (window.globalRoots || [])
-                    .filter(r => window.getSegStr(r.segment).includes(q) || (r.meaning||'').toLowerCase().includes(q))
-                    .slice(0, 15)
-                    .map(r => ({ type: 'root', text: r.segment, meaning: r.meaning, data: r })); // 缓存完整数据供渲染使用
+                let allMatches = (window.globalRoots || [])
+                    .filter(r => {
+                        const segStr = Array.isArray(r.segment) ? r.segment.join(', ').toLowerCase() : window.getSegStr(r.segment).toLowerCase();
+                        return segStr.includes(q) || (r.meaning||'').toLowerCase().includes(q);
+                    })
+                    .map(r => {
+                        let segs = Array.isArray(r.segment) ? r.segment : window.getSegStr(r.segment).split(',').map(s=>s.trim());
+                        let displaySeg = segs[0];
+                        const matched = segs.find(s => s.toLowerCase().includes(q));
+                        if (matched) {
+                            displaySeg = matched;
+                        } else if (segs.length > 1) {
+                            displaySeg = `${segs[0]}...`;
+                        }
+                        return { type: 'root', text: displaySeg, meaning: r.meaning, data: r };
+                    });
+                
+                allMatches.sort((a, b) => {
+                    const aText = a.text.toLowerCase();
+                    const bText = b.text.toLowerCase();
+                    if (aText === q && bText !== q) return -1;
+                    if (bText === q && aText !== q) return 1;
+                    if (aText.startsWith(q) && !bText.startsWith(q)) return -1;
+                    if (bText.startsWith(q) && !aText.startsWith(q)) return 1;
+                    return 0;
+                });
+                
+                const rootMatches = allMatches.slice(0, 15);
                 
                 // 去重
                 const seen = new Set(histMatches.map(h => h.text.toLowerCase()));
@@ -270,7 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             const listItems = document.querySelectorAll('#root-list .data-item');
                             listItems.forEach(li => {
                                 li.classList.remove('selected');
-                                if (li.querySelector('.data-item-title span').innerText === item.text) {
+                                const rootKey = item.data.id || ("R:" + window.getSegStr(item.data.segment));
+                                if (li.getAttribute('data-key') === rootKey) {
                                     li.classList.add('selected');
                                 }
                             });
@@ -483,7 +509,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             
-            li.innerHTML = `<div class="data-item-title"><span style="color:#38bdf8;">${window.escapeHtml(data.segment)}</span> ${actionsHtml}</div><div class="data-item-sub">${window.escapeHtml(data.meaning || '点击查看详情')}</div>`;
+            let segs = Array.isArray(data.segment) ? data.segment : window.getSegStr(data.segment).split(',').map(s=>s.trim());
+            let displaySegStr = segs[0];
+            const searchEl = document.getElementById('root-search');
+            const q = searchEl ? searchEl.value.toLowerCase().trim() : '';
+            if (q) {
+                const matched = segs.find(s => s.toLowerCase().includes(q));
+                if (matched && matched !== segs[0]) {
+                    displaySegStr = `${segs[0]} (${matched})`;
+                }
+            } else if (segs.length > 1) {
+                displaySegStr = `${segs[0]}...`;
+            }
+            const fullSegStr = Array.isArray(data.segment) ? data.segment.join(', ') : window.getSegStr(data.segment);
+            li.innerHTML = `<div class="data-item-title"><span style="color:#38bdf8;" title="${window.escapeHtml(fullSegStr)}">${window.escapeHtml(displaySegStr)}</span> ${actionsHtml}</div><div class="data-item-sub">${window.escapeHtml(data.meaning || '点击查看详情')}</div>`;
             li.addEventListener('click', (e) => {
                 if (e.target.classList.contains('root-star-btn')) {
                     e.stopPropagation();
@@ -625,13 +664,15 @@ document.addEventListener('DOMContentLoaded', () => {
             folderOptions += `<option value="${f.id}" style="background:#1e1e1e; color:#fff;">${prefix}${window.escapeHtml(f.name)}</option>`;
         });
 
+        const primarySegment = Array.isArray(data.segment) ? data.segment[0] : window.getSegStr(data.segment).split(',')[0].trim();
+        
         pane.innerHTML = `
           <div style="margin-bottom: 20px;">
              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
                  <span style="font-size: 14px; color: #a1a1aa; text-transform: uppercase;">[ 原生记录: ${window.escapeHtml(data.type)} ]</span>
                  
                  <div style="display: flex; align-items: center; gap: 10px;">
-                     <button class="jump-to-pyramid-btn-lib" data-segment="${window.escapeHtml(data.segment)}" style="background:rgba(245,158,11,0.1); color:#facc15; border:1px solid rgba(245,158,11,0.3); border-radius:6px; font-size:12px; padding:4px 8px; cursor:pointer; display:flex; align-items:center; gap:4px; font-weight:bold;" title="生成专属词根金字塔">🔺 金字塔</button>
+                     <button class="jump-to-pyramid-btn-lib" data-segment="${window.escapeHtml(primarySegment)}" style="background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; border: none; border-radius: 8px; font-size: 13px; padding: 6px 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: bold; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3); transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(234, 88, 12, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(234, 88, 12, 0.3)';" title="生成专属词根金字塔">🔺 开启金字塔</button>
                      <!-- 标记状态 -->
                      <select class="unified-status-selector" data-key="${rootId}" style="background:transparent; color:${statusColor}; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer;" title="标记学习状态">
                         ${statusOptions}
@@ -655,7 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
                  </div>
              </div>
              
-             <div style="font-size: 48px; font-weight: 900; color: #38bdf8; margin: 10px 0;">${window.escapeHtml(data.segment)}</div>
+             <div style="font-size: 48px; font-weight: 900; color: #38bdf8; margin: 10px 0; line-height: 1.2; word-break: break-word;">${window.escapeHtml(Array.isArray(data.segment) ? data.segment.join(', ') : data.segment)}</div>
              <div style="font-size: 20px; font-weight: bold; color: #fff;">${window.escapeHtml(data.meaning)}</div>
           </div>
           
@@ -670,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <div style="margin-top: 50px; display: flex; justify-content: center; padding-bottom: 30px;">
-              <button class="jump-to-tree-btn" data-segment="${window.escapeHtml(data.segment)}" style="padding: 12px 30px; border-radius: 10px; border: 1px solid #0ea5e9; background: rgba(14,165,233,0.1); color: #38bdf8; font-size: 15px; font-weight:bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;">
+              <button class="jump-to-tree-btn" data-segment="${window.escapeHtml(primarySegment)}" style="padding: 12px 30px; border-radius: 10px; border: 1px solid #0ea5e9; background: rgba(14,165,233,0.1); color: #38bdf8; font-size: 15px; font-weight:bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;">
                   🌳 在【词树图谱】中探索全貌
               </button>
           </div>
@@ -847,6 +888,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             });
+        }
+        
+        chrome.storage.local.get(['pendingRootLibraryWord'], (res) => { if (res.pendingRootLibraryWord) executeRootJump(res.pendingRootLibraryWord); });
+        chrome.storage.onChanged.addListener((c, ns) => { if (ns === 'local' && c.pendingRootLibraryWord && c.pendingRootLibraryWord.newValue) executeRootJump(c.pendingRootLibraryWord.newValue); });
+        
+        function executeRootJump(word) {
+            setTimeout(() => {
+                if (typeof window.switchView === 'function') window.switchView('view-roots');
+                const searchEl = document.getElementById('root-search');
+                if (searchEl) {
+                    searchEl.value = word;
+                    window.triggerRootFilter(false);
+                    
+                    const q = word.toLowerCase().trim().replace(/^-|-$/g, '');
+                    const roots = window.currentFilteredRoots || [];
+                    let exactIndex = roots.findIndex(r => {
+                        const segs = Array.isArray(r.segment) ? r.segment : window.getSegStr(r.segment).split(',').map(s=>s.trim());
+                        return segs.some(s => s.toLowerCase().replace(/^-|-$/g, '') === q);
+                    });
+                    
+                    if (exactIndex === -1) exactIndex = 0;
+                    
+                    const ROOTS_PER_PAGE = 5;
+                    window.currentRootPage = Math.floor(exactIndex / ROOTS_PER_PAGE) + 1;
+                    window.pendingSelectIndex = exactIndex % ROOTS_PER_PAGE;
+                    window.triggerRootFilter(false);
+                }
+                chrome.storage.local.remove('pendingRootLibraryWord');
+            }, 150);
         }
     };
 });

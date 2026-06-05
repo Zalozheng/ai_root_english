@@ -41,7 +41,7 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
           </div>
           <div class="detail-box">
             <div class="meaning">
-              ${((p.type.includes('根') || p.type.toLowerCase() === 'root') && enablePyramid) ? `<button class="pyramid-icon-btn tooltip-up" data-root="${cleanRoot}" data-tooltip="🔺 深入探析&#10;点击生成专属词根金字塔" style="padding:2px 6px; font-size:12px; background:rgba(245,158,11,0.1); color:var(--orange); border:1px solid rgba(245,158,11,0.3); border-radius:4px; cursor:pointer; transition:0.2s; margin-right:6px; vertical-align:middle; line-height:1;">🔺</button>` : ''}
+              ${(enablePyramid) ? `<button class="pyramid-icon-btn tooltip-up" data-root="${cleanRoot}" data-tooltip="🔺 深入探析&#10;点击生成专属词根金字塔" style="padding:2px 6px; font-size:12px; background:rgba(245,158,11,0.1); color:var(--orange); border:1px solid rgba(245,158,11,0.3); border-radius:4px; cursor:pointer; transition:0.2s; margin-right:6px; vertical-align:middle; line-height:1;">🔺</button>` : ''}
               ${escapeHtml(p.meaning)} <span class="click-hint">(点击查看详细渊源)</span>
             </div>
             <div class="deep-detail" id="detail-${i}">
@@ -82,10 +82,17 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
         <div class="memory-title"><span>💡 情境联想</span> <span class="source-badge" style="font-size:10px; background:var(--orange); color:white; padding:2px 6px; border-radius:4px;">${sourceTagText}</span></div>
         <div id="lines-render-area" style="margin-top:8px;">${(res.memory_lines || [])
           .filter(l => l.trim().length > 0)
-          .map(l => `<div class="memory-line-item" style="display:flex;align-items:flex-start;gap:4px;margin-bottom:6px;">
+          .map(l => {
+            let safeL = escapeHtml(l);
+            safeL = safeL.replace(/\[\[(.*?)\]\]/g, (match, p1) => {
+               let cleanRoot = p1.replace(/^-|-$/g, '').toLowerCase();
+               return `<span class="jump-root-trigger" data-root="${cleanRoot}" style="color:#a855f7;cursor:pointer;font-weight:bold;text-decoration:underline;">${p1}</span>`;
+            });
+            return `<div class="memory-line-item" style="display:flex;align-items:flex-start;gap:4px;margin-bottom:6px;">
               <span style="color:var(--text-muted);margin-top:2px;flex-shrink:0;">•</span>
-              <div class="line-input" contenteditable="true" style="word-break:break-word;white-space:pre-wrap;min-height:22px;">${escapeHtml(l)}</div>
-            </div>`).join("")}</div>
+              <div class="line-input" contenteditable="true" style="word-break:break-word;white-space:pre-wrap;min-height:22px;">${safeL}</div>
+            </div>`;
+          }).join("")}</div>
       </div>
       <div style="margin-top:25px;display:flex;justify-content:center;gap:8px;padding-bottom:10px;flex-wrap:wrap;">
         <button class="jump-to-tree-btn" data-word="${escapeHtml(res.word || word)}" style="padding:8px 14px;border-radius:8px;border:1px solid #0ea5e9;background:rgba(14,165,233,0.1);color:#38bdf8;font-size:13px;font-weight:bold;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;">🌳 词树图</button>
@@ -125,7 +132,11 @@ export function analyze({ forceWord, isBackAction, forceRefresh, state, els }) {
 
     container.querySelectorAll('.jump-root-trigger').forEach(btn => btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      analyze({ forceWord: e.currentTarget.getAttribute('data-root'), isBackAction: false, forceRefresh: false, state, els });
+      const targetRoot = e.currentTarget.getAttribute('data-root');
+      chrome.storage.local.set({ pendingRootLibraryWord: targetRoot }, () => {
+        if (state.isInPage) window.open(chrome.runtime.getURL('options.html'));
+        else chrome.runtime.openOptionsPage();
+      });
     }));
 
     container.querySelectorAll('.pyramid-icon-btn').forEach(btn => btn.addEventListener('click', (e) => {

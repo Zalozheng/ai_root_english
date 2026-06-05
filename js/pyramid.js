@@ -169,7 +169,10 @@ function initPyramid() {
     let segments = [];
     const segmentRaw = rootData.segment || data.word || data.display_breakdown || "";
     if (Array.isArray(segmentRaw)) {
-        segments = segmentRaw.map(s => (s || '').replace(/^-|-$/g, '').trim()).filter(Boolean);
+        segmentRaw.forEach(s => {
+            segments = segments.concat(extractCleanSegments(String(s || ''), null));
+        });
+        if (segments.length === 0 && data.word) segments.push(data.word);
     } else {
         segments = extractCleanSegments(String(segmentRaw), data.word);
     }
@@ -198,34 +201,67 @@ function initPyramid() {
     }
 
     // Derivatives
-    const derivs = data.derivatives || rootData.derivatives || [];
-    if (derivs.length > 0) {
+    const customLines = (rootData.memory_lines_map || {})['custom_etymology'];
+    if (customLines && customLines.length > 0) {
       derivBox.style.display = 'block';
-      derivTitle.innerText = `派生词汇 (${derivs.length})`;
+      derivTitle.innerText = `派生词汇深度拆解 (${customLines.length})`;
       derivsEl.innerHTML = '';
-      derivs.forEach(d => {
+      customLines.forEach(line => {
         const item = document.createElement('div');
-        item.className = 'deriv-item';
-        // Add default styling since it might be missing in css for pyramid items
-        item.style.cssText = 'padding: 8px 16px; font-size: 14px; font-weight: bold; background: rgba(250,204,21,0.1); color: #facc15; border: 1px solid rgba(250,204,21,0.3); border-radius: 8px; cursor: pointer; transition: 0.2s;';
-        item.onmouseover = () => { item.style.background = '#facc15'; item.style.color = '#111'; };
-        item.onmouseout = () => { item.style.background = 'rgba(250,204,21,0.1)'; item.style.color = '#facc15'; };
+        item.className = 'deriv-item custom-etymology-line';
+        item.style.cssText = 'padding: 8px 16px; font-size: 15px; background: rgba(250,204,21,0.05); color: #e5e7eb; border: 1px dashed rgba(250,204,21,0.2); border-radius: 8px; margin-bottom: 8px; line-height: 1.5; text-align: left; word-break: break-all;';
         
-        let wordStr = typeof d === 'string' ? d : (d.word || '');
-        wordStr = wordStr.replace(/^-|-$/g, '').trim();
-        if (!wordStr) return;
-        item.innerText = wordStr;
-        item.onclick = () => {
-            if (typeof window.jumpToWord === 'function') {
-                window.jumpToWord(wordStr);
-            } else {
-                window.open(chrome.runtime.getURL('popup.html?word=' + encodeURIComponent(wordStr)), '_blank', 'width=400,height=600');
-            }
-        };
+        let htmlStr = String(line).replace(/\[\[(.*?)\]\]/g, (match, p1) => {
+            const cleanP1 = p1.replace(/^-|-$/g, '').toLowerCase();
+            return `<span class="jump-word-trigger" data-word="${cleanP1}" style="color: #facc15; font-weight: bold; cursor: pointer; text-decoration: underline; padding: 0 4px;">${p1}</span>`;
+        });
+        
+        item.innerHTML = htmlStr;
+        
+        // Add click listeners to the generated spans
+        item.querySelectorAll('.jump-word-trigger').forEach(span => {
+            span.onclick = (e) => {
+                e.stopPropagation();
+                const wordStr = span.getAttribute('data-word');
+                if (typeof window.jumpToWord === 'function') {
+                    window.jumpToWord(wordStr);
+                } else {
+                    window.open(chrome.runtime.getURL('popup.html?word=' + encodeURIComponent(wordStr)), '_blank', 'width=400,height=600');
+                }
+            };
+        });
+        
         derivsEl.appendChild(item);
       });
     } else {
-      derivBox.style.display = 'none';
+      const derivs = data.derivatives || rootData.derivatives || [];
+      if (derivs.length > 0) {
+        derivBox.style.display = 'block';
+        derivTitle.innerText = `派生词汇 (${derivs.length})`;
+        derivsEl.innerHTML = '';
+        derivs.forEach(d => {
+          const item = document.createElement('div');
+          item.className = 'deriv-item';
+          item.style.cssText = 'padding: 8px 16px; font-size: 14px; font-weight: bold; background: rgba(250,204,21,0.1); color: #facc15; border: 1px solid rgba(250,204,21,0.3); border-radius: 8px; cursor: pointer; transition: 0.2s;';
+          item.onmouseover = () => { item.style.background = '#facc15'; item.style.color = '#111'; };
+          item.onmouseout = () => { item.style.background = 'rgba(250,204,21,0.1)'; item.style.color = '#facc15'; };
+          
+          let wordStr = typeof d === 'string' ? d : (d.word || '');
+          wordStr = wordStr.replace(/^-|-$/g, '').trim();
+          if (!wordStr) return;
+          item.innerText = wordStr;
+          item.onclick = () => {
+              if (typeof window.jumpToWord === 'function') {
+                  window.jumpToWord(wordStr);
+              } else {
+                  window.open(chrome.runtime.getURL('popup.html?word=' + encodeURIComponent(wordStr)), '_blank', 'width=400,height=600');
+              }
+          };
+          derivsEl.appendChild(item);
+        });
+      } else {
+        derivBox.style.display = 'none';
+      }
     }
   }
   chrome.storage.local.get(['pendingPyramidWord'], (res) => { if (res.pendingPyramidWord) executePyramidJump(res.pendingPyramidWord); });

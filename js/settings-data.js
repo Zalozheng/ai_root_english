@@ -135,6 +135,7 @@ window.initDataEngine = function() {
                     let extractedRoots = {};
                     const keys = Object.keys(data);
                     const totalKeys = keys.length;
+                    const hasExplicitRoots = keys.some(k => k.startsWith('R:'));
                     
                     window.showProgress("🚀 正在解析数据", 15, `共 ${totalKeys} 条记录...`);
 
@@ -172,7 +173,9 @@ window.initDataEngine = function() {
                             if (pendingImportType === 'words' || pendingImportType === 'all') {
                                 importedData[k] = data[k];
                             }
-                            if (pendingImportType === 'roots' || pendingImportType === 'all') {
+                            
+                            // 只有在 JSON 没有提供原生词根时，才从单词的 parts 里自动提取
+                            if (!hasExplicitRoots && (pendingImportType === 'roots' || pendingImportType === 'all')) {
                                 (data[k].parts || []).forEach(p => {
                                     if (!p.segment) return;
                                     const cleanRoot = window.getSegStr(p.segment);
@@ -450,4 +453,139 @@ window.initDataEngine = function() {
     if(document.getElementById('delete-words-btn')) document.getElementById('delete-words-btn').addEventListener('click', () => handleDelete('words'));
     if(document.getElementById('delete-roots-btn')) document.getElementById('delete-roots-btn').addEventListener('click', () => handleDelete('roots'));
     if(document.getElementById('delete-all-btn')) document.getElementById('delete-all-btn').addEventListener('click', () => handleDelete('all'));
+
+    // --- AI Batch Upgrade Roots ---
+    async function handleBatchRootUpgrade() {
+        if (!window.globalRoots || window.globalRoots.length === 0) {
+            window.showStatus("⚠️ 词根库为空，无需升级", "#f59e0b");
+            return;
+        }
+        
+        let config = window.appConfig || {};
+        if (config.engine === 'custom' && (!config.apiKey || !config.apiBase)) {
+            alert("未配置自定义 API Key 或 API Base。请先在基础设置中配置。");
+            return;
+        }
+
+        const confirmMsg = `即将使用当前配置的 API 对 ${window.globalRoots.length} 个词根进行深度分析(PIE提取 + 拆解公式化)。这是一个耗时操作。\n确定要继续吗？`;
+        if (!confirm(confirmMsg)) return;
+        
+        window.dataBusy = true;
+        let total = window.globalRoots.length;
+        let successCount = 0;
+        
+        window.showProgress("🤖 AI 深度分析词根中", 0, `准备处理 ${total} 个词根...`);
+        
+        const concurrency = 3;
+        let index = 0;
+        
+        async function fetchAI(prompt, sysRole) {
+            if (config.engine === 'ollama') {
+                let API_URL = (config.ollamaBase || '').replace(/\/?$/, '') + '/v1/chat/completions';
+                let body = {
+                    model: config.ollamaModel,
+                    messages: [
+                        { role: "system", content: sysRole },
+                        { role: "user", content: prompt }
+                    ],
+                    temperature: 0.2
+                };
+                try {
+                    let res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+                    let data = await res.json();
+                    return data.choices[0].message.content.trim();
+                } catch(e) { return null; }
+            } else {
+                let isClaude = config.apiProtocol === 'claude' || ((config.apiBase || '').includes('anthropic'));
+                let API_URL = (config.apiBase || '').trim();
+                if (!API_URL.includes('/chat/completions') && !API_URL.includes('/messages')) {
+                    API_URL = API_URL.replace(/\/?$/, '') + (isClaude ? '/v1/messages' : '/chat/completions');
+                }
+                let body = {};
+                if (isClaude) {
+                    body = {
+                        model: config.model,
+                        system: sysRole,
+                        messages: [{ role: "user", content: prompt }],
+                        max_tokens: 1024,
+                        temperature: 0.2
+                    };
+                } else {
+                    body = {
+                        model: config.model,
+                        messages: [
+                            { role: "system", content: sysRole },
+                            { role: "user", content: prompt }
+                        ],
+                        temperature: 0.2
+                    };
+                }
+                let headers = { "Content-Type": "application/json" };
+                if (isClaude) {
+                    headers["x-api-key"] = config.apiKey;
+                    headers["anthropic-version"] = "2023-06-01";
+                } else {
+                    headers["Authorization"] = `Bearer ${config.apiKey}`;
+                }
+                
+                try {
+                    let res = await fetch(API_URL, { method: "POST", headers, body: JSON.stringify(body) });
+                    let data = await res.json();
+                    if (isClaude) return data.content[0].text.trim();
+                    return data.choices[0].message.content.trim();
+                } catch(e) { return null; }
+            }
+        }
+
+        async function processWorker() {
+            while (index < total) {
+                let currentIndex = index++;
+                let rootData = window.globalRoots[currentIndex];
+                let modified = false;
+                
+                window.showProgress("🤖 AI 深度分析词根中", Math.round((currentIndex / total) * 100), `正在处理: ${rootData.segment || '未知词根'} (${currentIndex + 1}/${total})`);
+                
+                // 1. Extract PIE root
+                if (!rootData.pie_root && rootData.deep_origin) {
+                    let pPrompt = `分析这段词源文本：'${rootData.deep_origin}'。如果其中包含 PIE (印欧祖语) 词根（通常以星号开头，如 *sed-），请提取出该 PIE 词根。仅返回词根字符串（如 *sed-），不要包含任何其他文字。如果没有 PIE 词根，请返回 'none'。`;
+                    let ans = await fetchAI(pPrompt, "你是一个词源分析专家，只做文本提取，禁止输出多余文字。");
+                    if (ans && ans.toLowerCase() !== 'none' && ans.includes('*')) {
+                        rootData.pie_root = ans;
+                        modified = true;
+                    }
+                }
+                
+                // 2. Format custom_etymology
+                if (rootData.memory_lines_map && rootData.memory_lines_map['custom_etymology']) {
+                    let lines = rootData.memory_lines_map['custom_etymology'];
+                    let needFormat = !lines.some(l => l.includes('[['));
+                    if (needFormat) {
+                        let fPrompt = `请分析以下词源记忆文本。找出其中的英文长尾衍生词，并将其格式化为拆解公式。\n${lines.join('\n')}\n格式要求：单词 = [[前缀-]] + [[词根]] + [[-后缀]] (中文含义)。只返回格式化后的文本。`;
+                        let ans = await fetchAI(fPrompt, "你是一个词源格式化专家，禁止输出多余的聊天内容。");
+                        if (ans && ans.includes('=')) {
+                            rootData.memory_lines_map['custom_etymology'] = ans.split('\n').filter(l => l.trim());
+                            modified = true;
+                        }
+                    }
+                }
+                
+                if (modified) {
+                    const rId = rootData.id || ("R:" + window.getSegStr(rootData.segment));
+                    rootData.updated_at = Date.now();
+                    if (window.dbEngine) await window.dbEngine.batchSave('roots', { [rId]: rootData });
+                    successCount++;
+                }
+            }
+        }
+        
+        let workers = [];
+        for(let i=0; i<concurrency; i++) workers.push(processWorker());
+        await Promise.all(workers);
+        
+        window.dataBusy = false;
+        window.finishProgress("✅ AI升级完成", `共扫描 ${total} 个词根，成功更新并提取了 ${successCount} 个词根的深度信息。`);
+        if(window.loadRootsLibrary) window.loadRootsLibrary();
+    }
+    
+    if(document.getElementById('ai-upgrade-roots-btn')) document.getElementById('ai-upgrade-roots-btn').addEventListener('click', handleBatchRootUpgrade);
 };
