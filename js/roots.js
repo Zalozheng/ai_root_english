@@ -672,7 +672,7 @@ document.addEventListener('DOMContentLoaded', () => {
                  <span style="font-size: 14px; color: #a1a1aa; text-transform: uppercase;">[ 原生记录: ${window.escapeHtml(data.type)} ]</span>
                  
                  <div style="display: flex; align-items: center; gap: 10px;">
-                     <button class="jump-to-pyramid-btn-lib" data-segment="${window.escapeHtml(primarySegment)}" style="background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; border: none; border-radius: 8px; font-size: 13px; padding: 6px 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: bold; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3); transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(234, 88, 12, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(234, 88, 12, 0.3)';" title="生成专属词根金字塔">🔺 开启金字塔</button>
+                     <button class="jump-to-pyramid-btn-lib" data-segment="${window.escapeHtml(primarySegment)}" title="生成专属词根金字塔">🔺 开启金字塔</button>
                      <!-- 标记状态 -->
                      <select class="unified-status-selector" data-key="${rootId}" style="background:transparent; color:${statusColor}; border:1px solid #3f3f46; border-radius:6px; font-size:12px; padding:4px 8px; outline:none; cursor:pointer;" title="标记学习状态">
                         ${statusOptions}
